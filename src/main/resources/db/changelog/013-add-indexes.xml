@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="013-add-indexes" author="marketing-automation">
+        
+        <!-- Contacts indexes -->
+        <createIndex tableName="contacts" indexName="idx_contacts_email">
+            <column name="email"/>
+        </createIndex>
+        
+        <createIndex tableName="contacts" indexName="idx_contacts_lead_score">
+            <column name="lead_score"/>
+        </createIndex>
+        
+        <createIndex tableName="contacts" indexName="idx_contacts_last_activity">
+            <column name="last_activity_at"/>
+        </createIndex>
+        
+        <createIndex tableName="contacts" indexName="idx_contacts_created_at">
+            <column name="created_at"/>
+        </createIndex>
+        
+        <!-- Contact Tags indexes -->
+        <createIndex tableName="contact_tags" indexName="idx_contact_tags_tag_name">
+            <column name="tag_name"/>
+        </createIndex>
+        
+        <!-- Campaigns indexes -->
+        <createIndex tableName="campaigns" indexName="idx_campaigns_status">
+            <column name="status"/>
+        </createIndex>
+        
+        <createIndex tableName="campaigns" indexName="idx_campaigns_scheduled_at">
+            <column name="scheduled_at"/>
+        </createIndex>
+        
+        <createIndex tableName="campaigns" indexName="idx_campaigns_created_at">
+            <column name="created_at"/>
+        </createIndex>
+        
+        <!-- Automation Rules indexes -->
+        <createIndex tableName="automation_rules" indexName="idx_automation_rules_trigger_type">
+            <column name="trigger_type"/>
+        </createIndex>
+        
+        <createIndex tableName="automation_rules" indexName="idx_automation_rules_is_active">
+            <column name="is_active"/>
+        </createIndex>
+        
+        <createIndex tableName="automation_rules" indexName="idx_automation_rules_trigger_active">
+            <column name="trigger_type"/>
+            <column name="is_active"/>
+        </createIndex>
+        
+        <!-- Reports indexes -->
+        <createIndex tableName="reports" indexName="idx_reports_type">
+            <column name="report_type"/>
+        </createIndex>
+        
+        <createIndex tableName="reports" indexName="idx_reports_entity_id">
+            <column name="entity_id"/>
+        </createIndex>
+        
+        <createIndex tableName="reports" indexName="idx_reports_generated_at">
+            <column name="generated_at"/>
+        </createIndex>
+        
+        <!-- Contact Lists indexes -->
+        <createIndex tableName="contact_lists" indexName="idx_contact_lists_name">
+            <column name="name"/>
+        </createIndex>
+        
+        <createIndex tableName="contact_lists" indexName="idx_contact_lists_is_dynamic">
+            <column name="is_dynamic"/>
+        </createIndex>
+        
+        <rollback>
+            <dropIndex tableName="contacts" indexName="idx_contacts_email"/>
+            <dropIndex tableName="contacts" indexName="idx_contacts_lead_score"/>
+            <dropIndex tableName="contacts" indexName="idx_contacts_last_activity"/>
+            <dropIndex tableName="contacts" indexName="idx_contacts_created_at"/>
+            <dropIndex tableName="contact_tags" indexName="idx_contact_tags_tag_name"/>
+            <dropIndex tableName="campaigns" indexName="idx_campaigns_status"/>
+            <dropIndex tableName="campaigns" indexName="idx_campaigns_scheduled_at"/>
+            <dropIndex tableName="campaigns" indexName="idx_campaigns_created_at"/>
+            <dropIndex tableName="automation_rules" indexName="idx_automation_rules_trigger_type"/>
+            <dropIndex tableName="automation_rules" indexName="idx_automation_rules_is_active"/>
+            <dropIndex tableName="automation_rules" indexName="idx_automation_rules_trigger_active"/>
+            <dropIndex tableName="reports" indexName="idx_reports_type"/>
+            <dropIndex tableName="reports" indexName="idx_reports_entity_id"/>
+            <dropIndex tableName="reports" indexName="idx_reports_generated_at"/>
+            <dropIndex tableName="contact_lists" indexName="idx_contact_lists_name"/>
+            <dropIndex tableName="contact_lists" indexName="idx_contact_lists_is_dynamic"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

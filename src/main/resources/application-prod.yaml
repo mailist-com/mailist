@@ -1,0 +1,51 @@
+spring:
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/marketing_automation_prod}
+    username: ${DATABASE_USERNAME:postgres}
+    password: ${DATABASE_PASSWORD:postgres}
+    
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: false
+        
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.xml
+    contexts: prod
+    drop-first: false
+
+# EmailLabs Configuration
+emaillabs:
+  api-base-url: https://api.emaillabs.net.pl/v1
+  api-key: ${EMAILLABS_API_KEY}
+  secret: ${EMAILLABS_SECRET}
+  timeout-seconds: 30
+  retry-attempts: 3
+
+# Logging for production
+logging:
+  level:
+    com.mailist.marketing: INFO
+    org.springframework.web: WARN
+    org.hibernate.SQL: WARN
+    org.hibernate.type.descriptor.sql.BasicBinder: WARN
+  pattern:
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/marketing-automation.log
+    max-size: 10MB
+    max-history: 30
+
+# Management endpoints for production
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: when-authorized

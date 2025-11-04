@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="014-insert-sample-data" author="marketing-automation" context="dev">
+        
+        <!-- Insert sample contacts -->
+        <insert tableName="contacts">
+            <column name="id" value="1"/>
+            <column name="first_name" value="Jan"/>
+            <column name="last_name" value="Kowalski"/>
+            <column name="email" value="jan.kowalski@example.com"/>
+            <column name="phone" value="+48123456789"/>
+            <column name="lead_score" value="75"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        
+        <insert tableName="contacts">
+            <column name="id" value="2"/>
+            <column name="first_name" value="Anna"/>
+            <column name="last_name" value="Nowak"/>
+            <column name="email" value="anna.nowak@example.com"/>
+            <column name="phone" value="+48987654321"/>
+            <column name="lead_score" value="45"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        
+        <insert tableName="contacts">
+            <column name="id" value="3"/>
+            <column name="first_name" value="Piotr"/>
+            <column name="last_name" value="Wiśniewski"/>
+            <column name="email" value="piotr.wisniewski@example.com"/>
+            <column name="lead_score" value="90"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        
+        <!-- Insert sample contact tags -->
+        <insert tableName="contact_tags">
+            <column name="contact_id" value="1"/>
+            <column name="tag_name" value="VIP"/>
+            <column name="tag_color" value="#gold"/>
+            <column name="tag_description" value="VIP Customer"/>
+        </insert>
+        
+        <insert tableName="contact_tags">
+            <column name="contact_id" value="1"/>
+            <column name="tag_name" value="Newsletter"/>
+            <column name="tag_color" value="#blue"/>
+            <column name="tag_description" value="Newsletter Subscriber"/>
+        </insert>
+        
+        <insert tableName="contact_tags">
+            <column name="contact_id" value="2"/>
+            <column name="tag_name" value="Prospect"/>
+            <column name="tag_color" value="#green"/>
+            <column name="tag_description" value="Potential Customer"/>
+        </insert>
+        
+        <insert tableName="contact_tags">
+            <column name="contact_id" value="2"/>
+            <column name="tag_name" value="Newsletter"/>
+            <column name="tag_color" value="#blue"/>
+            <column name="tag_description" value="Newsletter Subscriber"/>
+        </insert>
+        
+        <insert tableName="contact_tags">
+            <column name="contact_id" value="3"/>
+            <column name="tag_name" value="Customer"/>
+            <column name="tag_color" value="#purple"/>
+            <column name="tag_description" value="Active Customer"/>
+        </insert>
+        
+        <insert tableName="contact_tags">
+            <column name="contact_id" value="3"/>
+            <column name="tag_name" value="High-Value"/>
+            <column name="tag_color" value="#red"/>
+            <column name="tag_description" value="High Value Customer"/>
+        </insert>
+        
+        <!-- Insert sample contact lists -->
+        <insert tableName="contact_lists">
+            <column name="id" value="1"/>
+            <column name="name" value="Newsletter Subscribers"/>
+            <column name="description" value="All newsletter subscribers"/>
+            <column name="is_dynamic" value="false"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        
+        <insert tableName="contact_lists">
+            <column name="id" value="2"/>
+            <column name="name" value="VIP Customers"/>
+            <column name="description" value="High-value VIP customers"/>
+            <column name="is_dynamic" value="true"/>
+            <column name="segment_rule" value="leadScore > 80 AND hasTag('VIP')"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        
+        <!-- Insert sample campaigns -->
+        <insert tableName="campaigns">
+            <column name="id" value="1"/>
+            <column name="name" value="Welcome Campaign"/>
+            <column name="subject" value="Witamy w Marketing Automation!"/>
+            <column name="html_content" value="&lt;h1&gt;Witamy w naszym serwisie!&lt;/h1&gt;&lt;p&gt;Dziękujemy za rejestrację.&lt;/p&gt;"/>
+            <column name="text_content" value="Witamy w naszym serwisie! Dziękujemy za rejestrację."/>
+            <column name="template_name" value="Welcome Email"/>
+            <column name="status" value="DRAFT"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        
+        <insert tableName="campaigns">
+            <column name="id" value="2"/>
+            <column name="name" value="Monthly Promotion"/>
+            <column name="subject" value="20% zniżki na wszystkie produkty!"/>
+            <column name="html_content" value="&lt;h1&gt;Specjalna promocja!&lt;/h1&gt;&lt;p&gt;Skorzystaj z 20% zniżki na wszystkie produkty.&lt;/p&gt;"/>
+            <column name="text_content" value="Specjalna promocja! Skorzystaj z 20% zniżki na wszystkie produkty."/>
+            <column name="template_name" value="Promotion Email"/>
+            <column name="status" value="DRAFT"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        
+        <!-- Insert campaign recipients -->
+        <insert tableName="campaign_recipients">
+            <column name="campaign_id" value="1"/>
+            <column name="recipient_email" value="jan.kowalski@example.com"/>
+        </insert>
+        
+        <insert tableName="campaign_recipients">
+            <column name="campaign_id" value="1"/>
+            <column name="recipient_email" value="anna.nowak@example.com"/>
+        </insert>
+        
+        <insert tableName="campaign_recipients">
+            <column name="campaign_id" value="2"/>
+            <column name="recipient_email" value="piotr.wisniewski@example.com"/>
+        </insert>
+        
+        <!-- Insert sample automation rules -->
+        <insert tableName="automation_rules">
+            <column name="id" value="1"/>
+            <column name="name" value="Welcome Email Automation"/>
+            <column name="description" value="Send welcome email when new contact is added"/>
+            <column name="trigger_type" value="TAG_ADDED"/>
+            <column name="is_active" value="true"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        
+        <insert tableName="automation_rules">
+            <column name="id" value="2"/>
+            <column name="name" value="High Engagement Follow-up"/>
+            <column name="description" value="Follow up with highly engaged contacts"/>
+            <column name="trigger_type" value="EMAIL_OPENED"/>
+            <column name="is_active" value="true"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        
+        <!-- Insert automation conditions -->
+        <insert tableName="automation_conditions">
+            <column name="rule_id" value="1"/>
+            <column name="condition_field" value="tag"/>
+            <column name="condition_operator" value="HAS_TAG"/>
+            <column name="condition_value" value="Newsletter"/>
+            <column name="condition_type" value="contact"/>
+        </insert>
+        
+        <insert tableName="automation_conditions">
+            <column name="rule_id" value="2"/>
+            <column name="condition_field" value="leadScore"/>
+            <column name="condition_operator" value="GREATER_THAN"/>
+            <column name="condition_value" value="70"/>
+            <column name="condition_type" value="contact"/>
+        </insert>
+        
+        <!-- Insert automation actions -->
+        <insert tableName="automation_actions">
+            <column name="rule_id" value="1"/>
+            <column name="action_type" value="SEND_EMAIL"/>
+            <column name="action_value" value="welcome-template"/>
+            <column name="action_delay_minutes" value="0"/>
+        </insert>
+        
+        <insert tableName="automation_actions">
+            <column name="rule_id" value="2"/>
+            <column name="action_type" value="UPDATE_LEAD_SCORE"/>
+            <column name="action_value" value="10"/>
+            <column name="action_delay_minutes" value="0"/>
+        </insert>
+        
+        <insert tableName="automation_actions">
+            <column name="rule_id" value="2"/>
+            <column name="action_type" value="ADD_TAG"/>
+            <column name="action_value" value="VIP"/>
+            <column name="action_delay_minutes" value="1440"/>
+        </insert>
+        
+        <!-- Insert automation else actions -->
+        <insert tableName="automation_else_actions">
+            <column name="rule_id" value="1"/>
+            <column name="action_type" value="ADD_TAG"/>
+            <column name="action_value" value="New Customer"/>
+            <column name="action_delay_minutes" value="0"/>
+        </insert>
+        
+        <rollback>
+            <delete tableName="automation_else_actions"/>
+            <delete tableName="automation_actions"/>
+            <delete tableName="automation_conditions"/>
+            <delete tableName="automation_rules"/>
+            <delete tableName="campaign_recipients"/>
+            <delete tableName="campaigns"/>
+            <delete tableName="contact_list_contacts"/>
+            <delete tableName="contact_lists"/>
+            <delete tableName="contact_tags"/>
+            <delete tableName="contacts"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

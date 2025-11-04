@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="008-create-campaign-recipients-table" author="marketing-automation">
+        <createTable tableName="campaign_recipients">
+            <column name="campaign_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="recipient_email" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        
+        <addPrimaryKey tableName="campaign_recipients" columnNames="campaign_id,recipient_email"/>
+        
+        <addForeignKeyConstraint
+            baseTableName="campaign_recipients"
+            baseColumnNames="campaign_id"
+            constraintName="fk_campaign_recipients_campaign_id"
+            referencedTableName="campaigns"
+            referencedColumnNames="id"
+            onDelete="CASCADE"/>
+            
+        <rollback>
+            <dropTable tableName="campaign_recipients"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

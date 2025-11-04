@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="011-create-automation-else-actions-table" author="marketing-automation">
+        <createTable tableName="automation_else_actions">
+            <column name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="rule_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="action_type" type="VARCHAR(50)"/>
+            <column name="action_value" type="VARCHAR(500)"/>
+            <column name="action_delay_minutes" type="INTEGER"/>
+            <column name="action_parameters" type="TEXT"/>
+        </createTable>
+        
+        <addForeignKeyConstraint
+            baseTableName="automation_else_actions"
+            baseColumnNames="rule_id"
+            constraintName="fk_automation_else_actions_rule_id"
+            referencedTableName="automation_rules"
+            referencedColumnNames="id"
+            onDelete="CASCADE"/>
+            
+        <rollback>
+            <dropTable tableName="automation_else_actions"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

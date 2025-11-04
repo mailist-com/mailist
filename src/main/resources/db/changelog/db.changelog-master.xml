@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <!-- Multi-tenant infrastructure -->
+    <include file="db/changelog/000-create-organizations-table.xml"/>
+    <include file="db/changelog/000-create-users-table.xml"/>
+    
+    <!-- Initial schema creation -->
+    <include file="db/changelog/001-create-contacts-table.xml"/>
+    <include file="db/changelog/002-create-contact-lists-table.xml"/>
+    <include file="db/changelog/003-create-campaigns-table.xml"/>
+    <include file="db/changelog/004-create-automation-rules-table.xml"/>
+    <include file="db/changelog/005-create-reports-table.xml"/>
+    
+    <!-- Relationship tables -->
+    <include file="db/changelog/006-create-contact-tags-table.xml"/>
+    <include file="db/changelog/007-create-contact-list-contacts-table.xml"/>
+    <include file="db/changelog/008-create-campaign-recipients-table.xml"/>
+    <include file="db/changelog/009-create-automation-conditions-table.xml"/>
+    <include file="db/changelog/010-create-automation-actions-table.xml"/>
+    <include file="db/changelog/011-create-automation-else-actions-table.xml"/>
+    <include file="db/changelog/012-create-report-metrics-table.xml"/>
+    
+    <!-- Indexes and constraints -->
+    <include file="db/changelog/013-add-indexes.xml"/>
+    
+    <!-- Sample data -->
+    <include file="db/changelog/014-insert-sample-data.xml"/>
+    
+    <!-- Multi-tenant support -->
+    <include file="db/changelog/015-add-tenant-id-columns.xml"/>
+    
+    <!-- Enhanced authentication -->
+    <include file="db/changelog/016-update-users-auth-fields.xml"/>
+
+</databaseChangeLog>
