@@ -26,6 +26,22 @@ emaillabs:
   timeout-seconds: 30
   retry-attempts: 3
 
+# CORS Configuration for Production
+cors:
+  allowed-origins:
+    - ${FRONTEND_URL:https://app.mailist.com}
+    - ${FRONTEND_URL_ALT:https://www.mailist.com}
+  allowed-methods:
+    - GET
+    - POST
+    - PUT
+    - PATCH
+    - DELETE
+    - OPTIONS
+  allowed-headers: "*"
+  allow-credentials: true
+  max-age: 3600
+
 # Logging for production
 logging:
   level:
