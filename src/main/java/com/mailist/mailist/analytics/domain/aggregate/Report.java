@@ -43,13 +43,7 @@ public class Report extends BaseTenantEntity {
     @MapKeyColumn(name = "metric_name")
     @Column(name = "metric_value")
     private Map<String, Double> metrics = new HashMap<>();
-    
-    @Column(name = "period_start")
-    private LocalDateTime periodStart;
-    
-    @Column(name = "period_end")
-    private LocalDateTime periodEnd;
-    
+
     private String description;
     
     @Enumerated(EnumType.STRING)
@@ -95,7 +89,7 @@ public class Report extends BaseTenantEntity {
     }
     
     // Factory methods
-    public static Report createCampaignReport(String name, String description, Long entityId, 
+    public static Report createCampaignReport(String name, String description, Long entityId,
                                             ReportFormat format, ReportData data, String generatedBy) {
         return Report.builder()
                 .name(name)
@@ -103,14 +97,13 @@ public class Report extends BaseTenantEntity {
                 .reportType(ReportType.CAMPAIGN)
                 .entityId(entityId)
                 .reportFormat(format)
+                .reportData(data)
                 .generatedBy(generatedBy)
-                .periodStart(data != null ? data.getPeriodStart() : null)
-                .periodEnd(data != null ? data.getPeriodEnd() : null)
                 .expiresAt(LocalDateTime.now().plusDays(30))
                 .build();
     }
     
-    public static Report createContactReport(String name, String description, Long entityId, 
+    public static Report createContactReport(String name, String description, Long entityId,
                                            ReportFormat format, ReportData data, String generatedBy) {
         return Report.builder()
                 .name(name)
@@ -118,14 +111,13 @@ public class Report extends BaseTenantEntity {
                 .reportType(ReportType.CONTACT)
                 .entityId(entityId)
                 .reportFormat(format)
+                .reportData(data)
                 .generatedBy(generatedBy)
-                .periodStart(data != null ? data.getPeriodStart() : null)
-                .periodEnd(data != null ? data.getPeriodEnd() : null)
                 .expiresAt(LocalDateTime.now().plusDays(30))
                 .build();
     }
     
-    public static Report createAutomationReport(String name, String description, Long entityId, 
+    public static Report createAutomationReport(String name, String description, Long entityId,
                                               ReportFormat format, ReportData data, String generatedBy) {
         return Report.builder()
                 .name(name)
@@ -133,23 +125,21 @@ public class Report extends BaseTenantEntity {
                 .reportType(ReportType.AUTOMATION)
                 .entityId(entityId)
                 .reportFormat(format)
+                .reportData(data)
                 .generatedBy(generatedBy)
-                .periodStart(data != null ? data.getPeriodStart() : null)
-                .periodEnd(data != null ? data.getPeriodEnd() : null)
                 .expiresAt(LocalDateTime.now().plusDays(30))
                 .build();
     }
     
-    public static Report createOverallReport(String name, String description, 
+    public static Report createOverallReport(String name, String description,
                                            ReportFormat format, ReportData data, String generatedBy) {
         return Report.builder()
                 .name(name)
                 .description(description)
                 .reportType(ReportType.OVERALL)
                 .reportFormat(format)
+                .reportData(data)
                 .generatedBy(generatedBy)
-                .periodStart(data != null ? data.getPeriodStart() : null)
-                .periodEnd(data != null ? data.getPeriodEnd() : null)
                 .expiresAt(LocalDateTime.now().plusDays(30))
                 .build();
     }
