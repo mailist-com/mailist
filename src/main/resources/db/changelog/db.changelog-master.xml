@@ -44,4 +44,7 @@
     <!-- 010: Remove subdomain from organizations - not needed for internal multi-tenancy -->
     <include file="db/changelog/016-remove-organization-subdomain.xml"/>
 
+    <!-- 011: Fix sequence values after manual inserts to prevent duplicate key errors -->
+    <include file="db/changelog/017-fix-sequence-after-inserts.xml"/>
+
 </databaseChangeLog>
