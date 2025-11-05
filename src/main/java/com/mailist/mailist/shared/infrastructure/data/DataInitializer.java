@@ -109,6 +109,7 @@ public class DataInitializer implements CommandLineRunner {
                 .name("Newsletter Subscribers")
                 .description("All newsletter subscribers")
                 .isDynamic(false)
+                .isActive(true)
                 .build();
         newsletterList.setTenantId(organization.getId());
 
@@ -116,6 +117,7 @@ public class DataInitializer implements CommandLineRunner {
                 .name("VIP Customers")
                 .description("High-value VIP customers")
                 .isDynamic(true)
+                .isActive(true)
                 .segmentRule("leadScore > 80 AND hasTag('VIP')")
                 .build();
         vipList.setTenantId(organization.getId());
