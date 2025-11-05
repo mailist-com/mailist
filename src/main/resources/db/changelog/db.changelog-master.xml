@@ -29,4 +29,7 @@
     <!-- 005: Fix missing columns in automation tables -->
     <include file="db/changelog/011-fix-automation-actions-columns.xml"/>
 
+    <!-- 006: Fix column names to match JPA entities -->
+    <include file="db/changelog/012-fix-automation-columns.xml"/>
+
 </databaseChangeLog>
