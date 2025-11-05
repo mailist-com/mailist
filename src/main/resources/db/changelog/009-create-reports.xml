@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="009-create-reports" author="marketing-automation">
+        <comment>Create reports and related tables</comment>
+
+        <createTable tableName="reports">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="tenant_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="entity_id" type="BIGINT"/>
+            <column name="format" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="file_path" type="VARCHAR(500)"/>
+            <column name="generated_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <!-- Add foreign key for tenant -->
+        <addForeignKeyConstraint
+            baseTableName="reports"
+            baseColumnNames="tenant_id"
+            referencedTableName="organizations"
+            referencedColumnNames="id"
+            constraintName="fk_reports_tenant"
+            onDelete="CASCADE"/>
+
+        <!-- Create report_metrics table -->
+        <createTable tableName="report_metrics">
+            <column name="report_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="metric_name" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="metric_value" type="VARCHAR(500)"/>
+        </createTable>
+
+        <!-- Add primary key -->
+        <addPrimaryKey tableName="report_metrics" columnNames="report_id,metric_name" constraintName="pk_report_metrics"/>
+
+        <!-- Add foreign key -->
+        <addForeignKeyConstraint
+            baseTableName="report_metrics"
+            baseColumnNames="report_id"
+            referencedTableName="reports"
+            referencedColumnNames="id"
+            constraintName="fk_report_metrics_report"
+            onDelete="CASCADE"/>
+
+    </changeSet>
+
+</databaseChangeLog>

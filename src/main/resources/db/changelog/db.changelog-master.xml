@@ -5,36 +5,28 @@
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
 
-    <!-- Multi-tenant infrastructure -->
-    <include file="db/changelog/000-create-organizations-table.xml"/>
-    <include file="db/changelog/000-create-users-table.xml"/>
-    
-    <!-- Initial schema creation -->
-    <include file="db/changelog/001-create-contacts-table.xml"/>
-    <include file="db/changelog/002-create-contact-lists-table.xml"/>
-    <include file="db/changelog/003-create-campaigns-table.xml"/>
-    <include file="db/changelog/004-create-automation-rules-table.xml"/>
-    <include file="db/changelog/005-create-reports-table.xml"/>
-    
-    <!-- Relationship tables -->
-    <include file="db/changelog/006-create-contact-tags-table.xml"/>
-    <include file="db/changelog/007-create-contact-list-contacts-table.xml"/>
-    <include file="db/changelog/008-create-campaign-recipients-table.xml"/>
-    <include file="db/changelog/009-create-automation-conditions-table.xml"/>
-    <include file="db/changelog/010-create-automation-actions-table.xml"/>
-    <include file="db/changelog/011-create-automation-else-actions-table.xml"/>
-    <include file="db/changelog/012-create-report-metrics-table.xml"/>
-    
-    <!-- Indexes and constraints -->
-    <include file="db/changelog/013-add-indexes.xml"/>
-    
-    <!-- Sample data -->
-    <include file="db/changelog/014-insert-sample-data.xml"/>
-    
-    <!-- Multi-tenant support -->
-    <include file="db/changelog/015-add-tenant-id-columns.xml"/>
-    
-    <!-- Enhanced authentication -->
-    <include file="db/changelog/016-update-users-auth-fields.xml"/>
+    <!-- Master Changelog for Mailist Application -->
+    <!-- All migrations are executed in order -->
+
+    <!-- 001: Create base tables for multi-tenancy -->
+    <include file="db/changelog/001-create-organizations.xml"/>
+
+    <!-- 002: Create users and authentication tables -->
+    <include file="db/changelog/002-create-users.xml"/>
+    <include file="db/changelog/003-create-user-preferences.xml"/>
+    <include file="db/changelog/004-create-refresh-tokens.xml"/>
+
+    <!-- 003: Create marketing automation tables -->
+    <include file="db/changelog/005-create-contacts.xml"/>
+    <include file="db/changelog/006-create-contact-lists.xml"/>
+    <include file="db/changelog/007-create-campaigns.xml"/>
+    <include file="db/changelog/008-create-automation-rules.xml"/>
+    <include file="db/changelog/009-create-reports.xml"/>
+
+    <!-- 004: Create indexes for performance -->
+    <include file="db/changelog/010-create-indexes.xml"/>
+
+    <!-- 005: Insert sample data (dev only) -->
+    <include file="db/changelog/011-insert-sample-data.xml"/>
 
 </databaseChangeLog>

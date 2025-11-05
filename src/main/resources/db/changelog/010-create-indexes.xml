@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="010-create-indexes" author="marketing-automation">
+        <comment>Create performance indexes for all tables</comment>
+
+        <!-- Users indexes -->
+        <createIndex tableName="users" indexName="idx_users_tenant_id">
+            <column name="tenant_id"/>
+        </createIndex>
+        <createIndex tableName="users" indexName="idx_users_created_at">
+            <column name="created_at"/>
+        </createIndex>
+        <createIndex tableName="users" indexName="idx_users_role">
+            <column name="role"/>
+        </createIndex>
+
+        <!-- Refresh tokens indexes -->
+        <createIndex tableName="refresh_tokens" indexName="idx_refresh_tokens_token">
+            <column name="token"/>
+        </createIndex>
+        <createIndex tableName="refresh_tokens" indexName="idx_refresh_tokens_user_id">
+            <column name="user_id"/>
+        </createIndex>
+        <createIndex tableName="refresh_tokens" indexName="idx_refresh_tokens_expires_at">
+            <column name="expires_at"/>
+        </createIndex>
+
+        <!-- Contacts indexes -->
+        <createIndex tableName="contacts" indexName="idx_contacts_tenant_id">
+            <column name="tenant_id"/>
+        </createIndex>
+        <createIndex tableName="contacts" indexName="idx_contacts_created_at">
+            <column name="created_at"/>
+        </createIndex>
+        <createIndex tableName="contacts" indexName="idx_contacts_updated_at">
+            <column name="updated_at"/>
+        </createIndex>
+        <createIndex tableName="contacts" indexName="idx_contacts_status">
+            <column name="status"/>
+        </createIndex>
+
+        <!-- Contact tags indexes -->
+        <createIndex tableName="contact_tags" indexName="idx_contact_tags_contact_id">
+            <column name="contact_id"/>
+        </createIndex>
+        <createIndex tableName="contact_tags" indexName="idx_contact_tags_tag">
+            <column name="tag"/>
+        </createIndex>
+
+        <!-- Contact lists indexes -->
+        <createIndex tableName="contact_lists" indexName="idx_contact_lists_tenant_id">
+            <column name="tenant_id"/>
+        </createIndex>
+        <createIndex tableName="contact_lists" indexName="idx_contact_lists_created_at">
+            <column name="created_at"/>
+        </createIndex>
+
+        <!-- Contact list contacts indexes -->
+        <createIndex tableName="contact_list_contacts" indexName="idx_contact_list_contacts_list_id">
+            <column name="list_id"/>
+        </createIndex>
+        <createIndex tableName="contact_list_contacts" indexName="idx_contact_list_contacts_contact_id">
+            <column name="contact_id"/>
+        </createIndex>
+
+        <!-- Campaigns indexes -->
+        <createIndex tableName="campaigns" indexName="idx_campaigns_tenant_id">
+            <column name="tenant_id"/>
+        </createIndex>
+        <createIndex tableName="campaigns" indexName="idx_campaigns_status">
+            <column name="status"/>
+        </createIndex>
+        <createIndex tableName="campaigns" indexName="idx_campaigns_created_at">
+            <column name="created_at"/>
+        </createIndex>
+        <createIndex tableName="campaigns" indexName="idx_campaigns_scheduled_at">
+            <column name="scheduled_at"/>
+        </createIndex>
+
+        <!-- Campaign recipients indexes -->
+        <createIndex tableName="campaign_recipients" indexName="idx_campaign_recipients_campaign_id">
+            <column name="campaign_id"/>
+        </createIndex>
+        <createIndex tableName="campaign_recipients" indexName="idx_campaign_recipients_contact_id">
+            <column name="contact_id"/>
+        </createIndex>
+        <createIndex tableName="campaign_recipients" indexName="idx_campaign_recipients_status">
+            <column name="status"/>
+        </createIndex>
+
+        <!-- Automation rules indexes -->
+        <createIndex tableName="automation_rules" indexName="idx_automation_rules_tenant_id">
+            <column name="tenant_id"/>
+        </createIndex>
+        <createIndex tableName="automation_rules" indexName="idx_automation_rules_is_active">
+            <column name="is_active"/>
+        </createIndex>
+        <createIndex tableName="automation_rules" indexName="idx_automation_rules_trigger_type">
+            <column name="trigger_type"/>
+        </createIndex>
+        <createIndex tableName="automation_rules" indexName="idx_automation_rules_created_at">
+            <column name="created_at"/>
+        </createIndex>
+
+        <!-- Automation conditions indexes -->
+        <createIndex tableName="automation_conditions" indexName="idx_automation_conditions_rule_id">
+            <column name="rule_id"/>
+        </createIndex>
+
+        <!-- Automation actions indexes -->
+        <createIndex tableName="automation_actions" indexName="idx_automation_actions_rule_id">
+            <column name="rule_id"/>
+        </createIndex>
+
+        <!-- Automation else actions indexes -->
+        <createIndex tableName="automation_else_actions" indexName="idx_automation_else_actions_rule_id">
+            <column name="rule_id"/>
+        </createIndex>
+
+        <!-- Reports indexes -->
+        <createIndex tableName="reports" indexName="idx_reports_tenant_id">
+            <column name="tenant_id"/>
+        </createIndex>
+        <createIndex tableName="reports" indexName="idx_reports_type">
+            <column name="type"/>
+        </createIndex>
+        <createIndex tableName="reports" indexName="idx_reports_entity_id">
+            <column name="entity_id"/>
+        </createIndex>
+        <createIndex tableName="reports" indexName="idx_reports_generated_at">
+            <column name="generated_at"/>
+        </createIndex>
+
+        <!-- Report metrics indexes -->
+        <createIndex tableName="report_metrics" indexName="idx_report_metrics_report_id">
+            <column name="report_id"/>
+        </createIndex>
+
+    </changeSet>
+
+</databaseChangeLog>

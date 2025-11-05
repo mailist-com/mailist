@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="011-insert-sample-data" author="marketing-automation">
+        <comment>Insert sample data for development and testing</comment>
+
+        <!-- Insert test users -->
+        <!-- Password for all users: "password" (BCrypt encoded) -->
+        <insert tableName="users">
+            <column name="tenant_id" valueNumeric="1"/>
+            <column name="email" value="admin@mailist.com"/>
+            <column name="password" value="$2a$10$N9qo8uLOickgx2ZMRZoMyeIX01xqWq6tgs.xXQ8Q8Q8Q8Q8Q8Q8Q8Qe"/>
+            <column name="first_name" value="Admin"/>
+            <column name="last_name" value="User"/>
+            <column name="role" value="ADMIN"/>
+            <column name="is_active" valueBoolean="true"/>
+            <column name="two_factor_enabled" valueBoolean="false"/>
+        </insert>
+
+        <insert tableName="users">
+            <column name="tenant_id" valueNumeric="1"/>
+            <column name="email" value="john.doe@mailist.com"/>
+            <column name="password" value="$2a$10$N9qo8uLOickgx2ZMRZoMyeIX01xqWq6tgs.xXQ8Q8Q8Q8Q8Q8Q8Q8Qe"/>
+            <column name="first_name" value="John"/>
+            <column name="last_name" value="Doe"/>
+            <column name="role" value="USER"/>
+            <column name="is_active" valueBoolean="true"/>
+            <column name="phone" value="+1234567890"/>
+            <column name="company" value="Mailist Inc"/>
+            <column name="two_factor_enabled" valueBoolean="false"/>
+        </insert>
+
+        <insert tableName="users">
+            <column name="tenant_id" valueNumeric="1"/>
+            <column name="email" value="jane.smith@mailist.com"/>
+            <column name="password" value="$2a$10$N9qo8uLOickgx2ZMRZoMyeIX01xqWq6tgs.xXQ8Q8Q8Q8Q8Q8Q8Q8Qe"/>
+            <column name="first_name" value="Jane"/>
+            <column name="last_name" value="Smith"/>
+            <column name="role" value="USER"/>
+            <column name="is_active" valueBoolean="true"/>
+            <column name="phone" value="+1234567891"/>
+            <column name="company" value="Mailist Inc"/>
+            <column name="two_factor_enabled" valueBoolean="false"/>
+        </insert>
+
+        <!-- Insert user preferences for test users -->
+        <insert tableName="user_preferences">
+            <column name="user_id" valueNumeric="1"/>
+            <column name="email_notifications" valueBoolean="true"/>
+            <column name="sms_notifications" valueBoolean="false"/>
+            <column name="weekly_report" valueBoolean="true"/>
+            <column name="marketing_emails" valueBoolean="false"/>
+            <column name="dark_mode" valueBoolean="false"/>
+        </insert>
+
+        <insert tableName="user_preferences">
+            <column name="user_id" valueNumeric="2"/>
+            <column name="email_notifications" valueBoolean="true"/>
+            <column name="sms_notifications" valueBoolean="true"/>
+            <column name="weekly_report" valueBoolean="true"/>
+            <column name="marketing_emails" valueBoolean="true"/>
+            <column name="dark_mode" valueBoolean="true"/>
+        </insert>
+
+        <insert tableName="user_preferences">
+            <column name="user_id" valueNumeric="3"/>
+            <column name="email_notifications" valueBoolean="true"/>
+            <column name="sms_notifications" valueBoolean="false"/>
+            <column name="weekly_report" valueBoolean="false"/>
+            <column name="marketing_emails" valueBoolean="false"/>
+            <column name="dark_mode" valueBoolean="true"/>
+        </insert>
+
+        <!-- Insert test contacts -->
+        <insert tableName="contacts">
+            <column name="tenant_id" valueNumeric="1"/>
+            <column name="email" value="contact1@example.com"/>
+            <column name="first_name" value="Alice"/>
+            <column name="last_name" value="Johnson"/>
+            <column name="phone" value="+1555000001"/>
+            <column name="status" value="ACTIVE"/>
+        </insert>
+
+        <insert tableName="contacts">
+            <column name="tenant_id" valueNumeric="1"/>
+            <column name="email" value="contact2@example.com"/>
+            <column name="first_name" value="Bob"/>
+            <column name="last_name" value="Williams"/>
+            <column name="phone" value="+1555000002"/>
+            <column name="status" value="ACTIVE"/>
+        </insert>
+
+        <insert tableName="contacts">
+            <column name="tenant_id" valueNumeric="1"/>
+            <column name="email" value="contact3@example.com"/>
+            <column name="first_name" value="Carol"/>
+            <column name="last_name" value="Brown"/>
+            <column name="phone" value="+1555000003"/>
+            <column name="status" value="ACTIVE"/>
+        </insert>
+
+        <insert tableName="contacts">
+            <column name="tenant_id" valueNumeric="1"/>
+            <column name="email" value="contact4@example.com"/>
+            <column name="first_name" value="David"/>
+            <column name="last_name" value="Miller"/>
+            <column name="status" value="UNSUBSCRIBED"/>
+        </insert>
+
+        <!-- Insert contact tags -->
+        <insert tableName="contact_tags">
+            <column name="contact_id" valueNumeric="1"/>
+            <column name="tag" value="VIP"/>
+        </insert>
+
+        <insert tableName="contact_tags">
+            <column name="contact_id" valueNumeric="1"/>
+            <column name="tag" value="Premium"/>
+        </insert>
+
+        <insert tableName="contact_tags">
+            <column name="contact_id" valueNumeric="2"/>
+            <column name="tag" value="New"/>
+        </insert>
+
+        <insert tableName="contact_tags">
+            <column name="contact_id" valueNumeric="3"/>
+            <column name="tag" value="Premium"/>
+        </insert>
+
+        <!-- Insert a test contact list -->
+        <insert tableName="contact_lists">
+            <column name="tenant_id" valueNumeric="1"/>
+            <column name="name" value="Newsletter Subscribers"/>
+            <column name="description" value="Main newsletter subscribers list"/>
+        </insert>
+
+        <insert tableName="contact_lists">
+            <column name="tenant_id" valueNumeric="1"/>
+            <column name="name" value="VIP Customers"/>
+            <column name="description" value="Premium and VIP customers"/>
+        </insert>
+
+        <!-- Add contacts to lists -->
+        <insert tableName="contact_list_contacts">
+            <column name="list_id" valueNumeric="1"/>
+            <column name="contact_id" valueNumeric="1"/>
+        </insert>
+
+        <insert tableName="contact_list_contacts">
+            <column name="list_id" valueNumeric="1"/>
+            <column name="contact_id" valueNumeric="2"/>
+        </insert>
+
+        <insert tableName="contact_list_contacts">
+            <column name="list_id" valueNumeric="1"/>
+            <column name="contact_id" valueNumeric="3"/>
+        </insert>
+
+        <insert tableName="contact_list_contacts">
+            <column name="list_id" valueNumeric="2"/>
+            <column name="contact_id" valueNumeric="1"/>
+        </insert>
+
+        <!-- Insert a test campaign -->
+        <insert tableName="campaigns">
+            <column name="tenant_id" valueNumeric="1"/>
+            <column name="name" value="Welcome Campaign"/>
+            <column name="subject" value="Welcome to Mailist!"/>
+            <column name="from_email" value="noreply@mailist.com"/>
+            <column name="from_name" value="Mailist Team"/>
+            <column name="reply_to" value="support@mailist.com"/>
+            <column name="content" value="&lt;h1&gt;Welcome!&lt;/h1&gt;&lt;p&gt;Thank you for subscribing to our newsletter.&lt;/p&gt;"/>
+            <column name="status" value="DRAFT"/>
+        </insert>
+
+        <insert tableName="campaigns">
+            <column name="tenant_id" valueNumeric="1"/>
+            <column name="name" value="Monthly Newsletter"/>
+            <column name="subject" value="Your Monthly Update"/>
+            <column name="from_email" value="noreply@mailist.com"/>
+            <column name="from_name" value="Mailist Team"/>
+            <column name="reply_to" value="support@mailist.com"/>
+            <column name="content" value="&lt;h1&gt;Monthly Update&lt;/h1&gt;&lt;p&gt;Here's what's new this month.&lt;/p&gt;"/>
+            <column name="status" value="SCHEDULED"/>
+            <column name="scheduled_at" valueDate="2025-12-01T10:00:00"/>
+        </insert>
+
+        <!-- Insert campaign recipients -->
+        <insert tableName="campaign_recipients">
+            <column name="campaign_id" valueNumeric="2"/>
+            <column name="contact_id" valueNumeric="1"/>
+            <column name="status" value="PENDING"/>
+        </insert>
+
+        <insert tableName="campaign_recipients">
+            <column name="campaign_id" valueNumeric="2"/>
+            <column name="contact_id" valueNumeric="2"/>
+            <column name="status" value="PENDING"/>
+        </insert>
+
+        <insert tableName="campaign_recipients">
+            <column name="campaign_id" valueNumeric="2"/>
+            <column name="contact_id" valueNumeric="3"/>
+            <column name="status" value="PENDING"/>
+        </insert>
+
+        <!-- Insert a test automation rule -->
+        <insert tableName="automation_rules">
+            <column name="tenant_id" valueNumeric="1"/>
+            <column name="name" value="Welcome Email Automation"/>
+            <column name="description" value="Send welcome email to new contacts"/>
+            <column name="trigger_type" value="CONTACT_CREATED"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+
+        <!-- Insert automation condition -->
+        <insert tableName="automation_conditions">
+            <column name="rule_id" valueNumeric="1"/>
+            <column name="field_name" value="status"/>
+            <column name="operator" value="EQUALS"/>
+            <column name="value" value="ACTIVE"/>
+            <column name="condition_order" valueNumeric="0"/>
+        </insert>
+
+        <!-- Insert automation action -->
+        <insert tableName="automation_actions">
+            <column name="rule_id" valueNumeric="1"/>
+            <column name="action_type" value="SEND_EMAIL"/>
+            <column name="action_config" value="{&quot;template&quot;:&quot;welcome&quot;,&quot;subject&quot;:&quot;Welcome!&quot;}"/>
+            <column name="action_order" valueNumeric="0"/>
+        </insert>
+
+    </changeSet>
+
+</databaseChangeLog>
