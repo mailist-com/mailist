@@ -114,22 +114,22 @@
         <!-- Insert contact tags -->
         <insert tableName="contact_tags">
             <column name="contact_id" valueNumeric="1"/>
-            <column name="tag" value="VIP"/>
+            <column name="tag_name" value="VIP"/>
         </insert>
 
         <insert tableName="contact_tags">
             <column name="contact_id" valueNumeric="1"/>
-            <column name="tag" value="Premium"/>
+            <column name="tag_name" value="Premium"/>
         </insert>
 
         <insert tableName="contact_tags">
             <column name="contact_id" valueNumeric="2"/>
-            <column name="tag" value="New"/>
+            <column name="tag_name" value="New"/>
         </insert>
 
         <insert tableName="contact_tags">
             <column name="contact_id" valueNumeric="3"/>
-            <column name="tag" value="Premium"/>
+            <column name="tag_name" value="Premium"/>
         </insert>
 
         <!-- Insert a test contact list -->

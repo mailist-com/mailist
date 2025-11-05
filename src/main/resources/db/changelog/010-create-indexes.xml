@@ -15,9 +15,6 @@
         <createIndex tableName="users" indexName="idx_users_created_at">
             <column name="created_at"/>
         </createIndex>
-        <createIndex tableName="users" indexName="idx_users_role">
-            <column name="role"/>
-        </createIndex>
 
         <!-- Refresh tokens indexes -->
         <createIndex tableName="refresh_tokens" indexName="idx_refresh_tokens_token">
@@ -48,8 +45,8 @@
         <createIndex tableName="contact_tags" indexName="idx_contact_tags_contact_id">
             <column name="contact_id"/>
         </createIndex>
-        <createIndex tableName="contact_tags" indexName="idx_contact_tags_tag">
-            <column name="tag"/>
+        <createIndex tableName="contact_tags" indexName="idx_contact_tags_tag_name">
+            <column name="tag_name"/>
         </createIndex>
 
         <!-- Contact lists indexes -->
