@@ -44,15 +44,23 @@ spring:
   profiles:
     active: dev
 
-# Email Gateway Configuration
+# Email Configuration - Separated by Type
 email:
-  gateway:
-    type: smtp  # smtp or emaillabs
-  from:
-    address: ${MAIL_FROM_ADDRESS:noreply@mailist.com}
-    name: ${MAIL_FROM_NAME:Mailist}
+  # Transactional emails (SMTP - OVH/Gmail)
+  # Used for: verification, password reset, welcome emails
+  transactional:
+    from:
+      address: ${MAIL_TRANSACTIONAL_FROM_ADDRESS:noreply@mailist.com}
+      name: ${MAIL_TRANSACTIONAL_FROM_NAME:Mailist}
 
-# EmailLabs Configuration (backup)
+  # Marketing emails (EmailLabs or other providers)
+  # Used for: campaigns, automation, newsletters
+  marketing:
+    from:
+      address: ${MAIL_MARKETING_FROM_ADDRESS:hello@mailist.com}
+      name: ${MAIL_MARKETING_FROM_NAME:Mailist Team}
+
+# EmailLabs Configuration for Marketing Emails
 emaillabs:
   api-base-url: https://api.emaillabs.net.pl/v1
   api-key: ${EMAILLABS_API_KEY:your-api-key-here}
