@@ -42,17 +42,16 @@ public class TenantFilter implements Filter {
             if (tenantInfo.organizationId != null) {
                 // Set tenant context
                 TenantContext.setOrganizationId(tenantInfo.organizationId);
-                TenantContext.setSubdomain(tenantInfo.subdomain);
-                
-                log.debug("Tenant context set - Organization ID: {}, Subdomain: {}", 
-                         tenantInfo.organizationId, tenantInfo.subdomain);
+
+                log.debug("Tenant context set - Organization ID: {}",
+                         tenantInfo.organizationId);
                 
                 // Continue with the request
                 chain.doFilter(request, response);
             } else {
                 // No valid tenant found
                 log.warn("No valid tenant found for request: {}", httpRequest.getRequestURI());
-                handleNoTenant(httpResponse, tenantInfo.subdomain);
+                handleNoTenant(httpResponse);
             }
             
         } finally {
@@ -72,88 +71,24 @@ public class TenantFilter implements Filter {
                 Long orgId = Long.parseLong(orgIdHeader);
                 Optional<Organization> org = organizationRepository.findById(orgId);
                 if (org.isPresent()) {
-                    return new TenantInfo(orgId, org.get().getSubdomain());
+                    return new TenantInfo(orgId);
                 }
             } catch (NumberFormatException e) {
                 log.warn("Invalid X-Organization-Id header: {}", orgIdHeader);
             }
         }
         
-        // Strategy 2: Check subdomain header
-        String subdomainHeader = request.getHeader("X-Subdomain");
-        if (subdomainHeader != null) {
-            Optional<Organization> org = organizationRepository.findBySubdomain(subdomainHeader);
-            if (org.isPresent()) {
-                return new TenantInfo(org.get().getId(), subdomainHeader);
-            }
-        }
-        
-        // Strategy 3: Extract from subdomain (e.g., company1.mailist.com)
-        String subdomain = extractSubdomainFromHost(request);
-        if (subdomain != null) {
-            Optional<Organization> org = organizationRepository.findBySubdomain(subdomain);
-            if (org.isPresent()) {
-                return new TenantInfo(org.get().getId(), subdomain);
-            }
-            return new TenantInfo(null, subdomain); // Subdomain found but no org
-        }
-        
-        // Strategy 4: Check if it's a test environment (localhost)
-        if (isTestEnvironment(request)) {
-            // For testing, use default organization or create one
-            Optional<Organization> defaultOrg = organizationRepository.findBySubdomain("default");
-            if (defaultOrg.isPresent()) {
-                return new TenantInfo(defaultOrg.get().getId(), "default");
-            }
-        }
-        
-        return new TenantInfo(null, null);
-    }
-    
-    /**
-     * Extract subdomain from Host header
-     */
-    private String extractSubdomainFromHost(HttpServletRequest request) {
-        String host = request.getHeader("Host");
-        if (host == null) {
-            return null;
-        }
-        
-        // Remove port if present
-        host = host.split(":")[0];
-        
-        // Check if it's a subdomain pattern (subdomain.domain.com)
-        String[] parts = host.split("\\.");
-        if (parts.length >= 3) {
-            String subdomain = parts[0];
-            
-            // Skip common prefixes
-            if (!subdomain.equals("www") && !subdomain.equals("api")) {
-                return subdomain;
-            }
-        }
-        
-        return null;
-    }
-    
-    /**
-     * Check if request is from test environment
-     */
-    private boolean isTestEnvironment(HttpServletRequest request) {
-        String host = request.getHeader("Host");
-        return host != null && (host.contains("localhost") || host.contains("127.0.0.1"));
+        return new TenantInfo(null);
     }
     
     /**
      * Handle request when no valid tenant is found
      */
-    private void handleNoTenant(HttpServletResponse response, String subdomain) throws IOException {
+    private void handleNoTenant(HttpServletResponse response) throws IOException {
         response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         response.setContentType("application/json");
         
-        String errorMessage = subdomain != null 
-            ? String.format("{\"error\": \"Organization not found\", \"subdomain\": \"%s\"}", subdomain)
-            : "{\"error\": \"No organization specified\"}";
+        String errorMessage = "{\"error\": \"No organization specified\"}";
             
         response.getWriter().write(errorMessage);
     }
@@ -163,11 +98,9 @@ public class TenantFilter implements Filter {
      */
     private static class TenantInfo {
         final Long organizationId;
-        final String subdomain;
-        
-        TenantInfo(Long organizationId, String subdomain) {
+
+        TenantInfo(Long organizationId) {
             this.organizationId = organizationId;
-            this.subdomain = subdomain;
         }
     }
 }

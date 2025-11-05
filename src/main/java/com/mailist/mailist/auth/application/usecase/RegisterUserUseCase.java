@@ -27,21 +27,28 @@ public class RegisterUserUseCase {
     
     public User execute(RegisterUserCommand command) {
         log.info("Starting user registration for email: {}", command.getEmail());
-        
+
+        // Validate password confirmation
+        if (!command.getPassword().equals(command.getConfirmPassword())) {
+            throw new IllegalArgumentException("Passwords do not match");
+        }
+
+        // Validate terms acceptance
+        if (command.getAcceptTerms() == null || !command.getAcceptTerms()) {
+            throw new IllegalArgumentException("You must accept the terms and conditions");
+        }
+
         // Check if user already exists
         if (userRepository.existsByEmail(command.getEmail())) {
             throw new IllegalArgumentException("User with email " + command.getEmail() + " already exists");
         }
-        
-        // Check if subdomain is available
-        if (organizationRepository.findBySubdomain(command.getSubdomain()).isPresent()) {
-            throw new IllegalArgumentException("Subdomain " + command.getSubdomain() + " is already taken");
-        }
-        
+
+        // Auto-generate organization name and subdomain
+        String organizationName = command.getFirstName() + " " + command.getLastName() + "'s Organization";
+
         // Create organization (tenant)
         Organization organization = Organization.builder()
-                .name(command.getOrganizationName())
-                .subdomain(command.getSubdomain())
+                .name(organizationName)
                 .ownerEmail(command.getEmail())
                 .plan(Organization.Plan.FREE)
                 .status(Organization.Status.ACTIVE)
@@ -49,9 +56,9 @@ public class RegisterUserUseCase {
                 .campaignLimit(Organization.Plan.FREE.getCampaignLimit())
                 .automationLimit(Organization.Plan.FREE.getAutomationLimit())
                 .build();
-        
+
         organization = organizationRepository.save(organization);
-        log.info("Created organization with ID: {} and subdomain: {}", organization.getId(), organization.getSubdomain());
+        log.info("Created organization with ID: {}", organization.getId());
         
         // Set tenant context for user creation
         TenantContext.setOrganizationId(organization.getId());

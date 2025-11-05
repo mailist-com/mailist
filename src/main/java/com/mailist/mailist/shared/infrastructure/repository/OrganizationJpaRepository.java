@@ -17,22 +17,10 @@ import java.util.Optional;
 public interface OrganizationJpaRepository extends JpaRepository<Organization, Long>, OrganizationRepository {
 
     /**
-     * Find organization by subdomain
-     */
-    @Override
-    Optional<Organization> findBySubdomain(String subdomain);
-
-    /**
      * Find organization by owner email
      */
     @Override
     Optional<Organization> findByOwnerEmail(String ownerEmail);
-
-    /**
-     * Check if subdomain exists
-     */
-    @Override
-    boolean existsBySubdomain(String subdomain);
 
     /**
      * Check if owner email exists

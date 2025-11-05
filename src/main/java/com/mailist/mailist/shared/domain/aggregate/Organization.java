@@ -25,13 +25,6 @@ public class Organization {
     private Long id;
     
     /**
-     * Unique subdomain for the organization (e.g., "company1", "startup2")
-     * Used for tenant identification in URLs like company1.mailist.com
-     */
-    @Column(nullable = false, unique = true, length = 50)
-    private String subdomain;
-    
-    /**
      * Display name of the organization
      */
     @Column(nullable = false)

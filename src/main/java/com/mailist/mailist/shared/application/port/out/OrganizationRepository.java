@@ -21,21 +21,12 @@ public interface OrganizationRepository {
      * Find organization by ID
      */
     Optional<Organization> findById(Long id);
-    
-    /**
-     * Find organization by subdomain
-     */
-    Optional<Organization> findBySubdomain(String subdomain);
+
     
     /**
      * Find organization by owner email
      */
     Optional<Organization> findByOwnerEmail(String ownerEmail);
-    
-    /**
-     * Check if subdomain exists
-     */
-    boolean existsBySubdomain(String subdomain);
     
     /**
      * Check if owner email exists

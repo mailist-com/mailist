@@ -12,8 +12,6 @@ import org.springframework.stereotype.Component;
 public class TenantContext {
     
     private static final ThreadLocal<Long> currentOrganizationId = new ThreadLocal<>();
-    private static final ThreadLocal<String> currentSubdomain = new ThreadLocal<>();
-    
     /**
      * Set the current organization ID for this thread
      */
@@ -32,22 +30,6 @@ public class TenantContext {
         }
         return orgId;
     }
-    
-    /**
-     * Set the current subdomain for this thread
-     */
-    public static void setSubdomain(String subdomain) {
-        log.debug("Setting subdomain to: {}", subdomain);
-        currentSubdomain.set(subdomain);
-    }
-    
-    /**
-     * Get the current subdomain for this thread
-     */
-    public static String getSubdomain() {
-        return currentSubdomain.get();
-    }
-    
     /**
      * Check if organization context is set
      */
@@ -62,24 +44,6 @@ public class TenantContext {
     public static void clear() {
         log.debug("Clearing tenant context");
         currentOrganizationId.remove();
-        currentSubdomain.remove();
-    }
-    
-    /**
-     * Execute a block of code with a specific organization context
-     */
-    public static <T> T executeWithOrganization(Long organizationId, TenantOperation<T> operation) {
-        Long previousOrgId = currentOrganizationId.get();
-        try {
-            setOrganizationId(organizationId);
-            return operation.execute();
-        } finally {
-            if (previousOrgId != null) {
-                setOrganizationId(previousOrgId);
-            } else {
-                clear();
-            }
-        }
     }
     
     @FunctionalInterface
