@@ -26,7 +26,4 @@
     <!-- 004: Create indexes for performance -->
     <include file="db/changelog/010-create-indexes.xml"/>
 
-    <!-- 005: Insert sample data (dev only) -->
-    <include file="db/changelog/011-insert-sample-data.xml"/>
-
 </databaseChangeLog>
