@@ -1,12 +1,12 @@
 package com.mailist.marketing.automation;
 
-import com.mailist.marketing.automation.application.usecase.CreateAutomationRuleUseCase;
-import com.mailist.marketing.automation.application.usecase.CreateAutomationRuleCommand;
-import com.mailist.marketing.automation.application.port.out.AutomationRuleRepository;
-import com.mailist.marketing.automation.domain.aggregate.AutomationRule;
-import com.mailist.marketing.automation.domain.valueobject.Action;
-import com.mailist.marketing.automation.domain.valueobject.Condition;
-import com.mailist.marketing.automation.domain.valueobject.TriggerType;
+import com.mailist.mailist.automation.application.usecase.CreateAutomationRuleUseCase;
+import com.mailist.mailist.automation.application.usecase.CreateAutomationRuleCommand;
+import com.mailist.mailist.automation.application.port.out.AutomationRuleRepository;
+import com.mailist.mailist.automation.domain.aggregate.AutomationRule;
+import com.mailist.mailist.automation.domain.valueobject.Action;
+import com.mailist.mailist.automation.domain.valueobject.Condition;
+import com.mailist.mailist.automation.domain.valueobject.TriggerType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mock;

@@ -1,0 +1,26 @@
+package com.mailist.mailist.analytics.interfaces.mapper;
+
+import com.mailist.mailist.analytics.application.usecase.GenerateReportCommand;
+import com.mailist.mailist.analytics.domain.aggregate.Report;
+import com.mailist.mailist.analytics.interfaces.dto.ReportDto;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.NullValuePropertyMappingStrategy;
+
+import java.util.List;
+
+@Mapper(
+    componentModel = "spring",
+    nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
+)
+public interface ReportMapper {
+    
+    @Mapping(target = "data", ignore = true)
+    @Mapping(target = "isExpired", expression = "java(false)")
+    @Mapping(target = "hasFile", expression = "java(false)")
+    ReportDto.Response toResponse(Report report);
+    
+    List<ReportDto.Response> toResponseList(List<Report> reports);
+    
+    GenerateReportCommand toGenerateCommand(ReportDto.GenerateRequest request, String generatedBy);
+}

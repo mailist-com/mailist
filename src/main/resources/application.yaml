@@ -3,9 +3,9 @@ spring:
     name: marketing-automation
   
   datasource:
-    url: jdbc:postgresql://localhost:5432/marketing_automation
+    url: jdbc:postgresql://localhost:5432/mailist
     username: postgres
-    password: postgres
+    password: Postgres123[];;
     driver-class-name: org.postgresql.Driver
   
   jpa:

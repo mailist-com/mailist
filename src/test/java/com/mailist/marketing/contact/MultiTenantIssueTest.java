@@ -1,9 +1,9 @@
 package com.mailist.marketing.contact;
 
-import com.mailist.marketing.contact.application.usecase.CreateContactUseCase;
-import com.mailist.marketing.contact.application.usecase.CreateContactCommand;
-import com.mailist.marketing.contact.application.port.out.ContactRepository;
-import com.mailist.marketing.contact.domain.aggregate.Contact;
+import com.mailist.mailist.contact.application.usecase.CreateContactUseCase;
+import com.mailist.mailist.contact.application.usecase.CreateContactCommand;
+import com.mailist.mailist.contact.application.port.out.ContactRepository;
+import com.mailist.mailist.contact.domain.aggregate.Contact;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mock;
