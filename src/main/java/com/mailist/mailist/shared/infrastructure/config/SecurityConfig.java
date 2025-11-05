@@ -2,7 +2,6 @@ package com.mailist.mailist.shared.infrastructure.config;
 
 import com.mailist.mailist.auth.infrastructure.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -17,7 +16,6 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
-import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -25,21 +23,7 @@ import java.util.List;
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-
-    @Value("${cors.allowed-origins}")
-    private List<String> allowedOrigins;
-
-    @Value("${cors.allowed-methods}")
-    private List<String> allowedMethods;
-
-    @Value("${cors.allowed-headers}")
-    private String allowedHeaders;
-
-    @Value("${cors.allow-credentials}")
-    private boolean allowCredentials;
-
-    @Value("${cors.max-age}")
-    private long maxAge;
+    private final CorsProperties corsProperties;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -51,20 +35,20 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         // Allow requests from configured origins
-        configuration.setAllowedOrigins(allowedOrigins);
+        configuration.setAllowedOrigins(corsProperties.getAllowedOrigins());
 
         // Allow configured HTTP methods
-        configuration.setAllowedMethods(allowedMethods);
+        configuration.setAllowedMethods(corsProperties.getAllowedMethods());
 
         // Allow all headers or specific ones
-        if ("*".equals(allowedHeaders)) {
+        if ("*".equals(corsProperties.getAllowedHeaders())) {
             configuration.setAllowedHeaders(Arrays.asList("*"));
         } else {
-            configuration.setAllowedHeaders(Arrays.asList(allowedHeaders.split(",")));
+            configuration.setAllowedHeaders(Arrays.asList(corsProperties.getAllowedHeaders().split(",")));
         }
 
         // Allow credentials (cookies, authorization headers)
-        configuration.setAllowCredentials(allowCredentials);
+        configuration.setAllowCredentials(corsProperties.isAllowCredentials());
 
         // Expose these headers to the client
         configuration.setExposedHeaders(Arrays.asList(
@@ -74,7 +58,7 @@ public class SecurityConfig {
         ));
 
         // Cache preflight response
-        configuration.setMaxAge(maxAge);
+        configuration.setMaxAge(corsProperties.getMaxAge());
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
