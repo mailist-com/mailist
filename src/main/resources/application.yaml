@@ -68,6 +68,12 @@ emaillabs:
   timeout-seconds: 30
   retry-attempts: 3
 
+# JWT Configuration
+jwt:
+  secret: ${JWT_SECRET:sAJDIBq1V7/b7GZlpX/W960BGHwCzRWPQTqp/PvUFg4=}
+  access-token-expiration: 3600000  # 1 hour in milliseconds
+  refresh-token-expiration: 604800000  # 7 days in milliseconds
+
 # Server Configuration
 server:
   port: 8080
