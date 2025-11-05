@@ -6,25 +6,11 @@
                         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
 
     <changeSet id="010-create-indexes" author="marketing-automation">
-        <comment>Create performance indexes for all tables</comment>
+        <comment>Create additional performance indexes (base indexes already exist in table creation migrations)</comment>
 
-        <!-- Users indexes -->
-        <createIndex tableName="users" indexName="idx_users_tenant_id">
-            <column name="tenant_id"/>
-        </createIndex>
+        <!-- Users additional indexes (base indexes already in 002-create-users.xml) -->
         <createIndex tableName="users" indexName="idx_users_created_at">
             <column name="created_at"/>
-        </createIndex>
-
-        <!-- Refresh tokens indexes -->
-        <createIndex tableName="refresh_tokens" indexName="idx_refresh_tokens_token">
-            <column name="token"/>
-        </createIndex>
-        <createIndex tableName="refresh_tokens" indexName="idx_refresh_tokens_user_id">
-            <column name="user_id"/>
-        </createIndex>
-        <createIndex tableName="refresh_tokens" indexName="idx_refresh_tokens_expires_at">
-            <column name="expires_at"/>
         </createIndex>
 
         <!-- Contacts indexes -->
@@ -79,13 +65,7 @@
             <column name="scheduled_at"/>
         </createIndex>
 
-        <!-- Campaign recipients indexes -->
-        <createIndex tableName="campaign_recipients" indexName="idx_campaign_recipients_campaign_id">
-            <column name="campaign_id"/>
-        </createIndex>
-        <createIndex tableName="campaign_recipients" indexName="idx_campaign_recipients_contact_id">
-            <column name="contact_id"/>
-        </createIndex>
+        <!-- Campaign recipients indexes (campaign_id already indexed by PK) -->
         <createIndex tableName="campaign_recipients" indexName="idx_campaign_recipients_status">
             <column name="status"/>
         </createIndex>
