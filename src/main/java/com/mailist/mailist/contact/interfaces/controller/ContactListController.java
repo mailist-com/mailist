@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/lists")
+@RequestMapping("/api/v1/lists")
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "Contact Lists", description = "Contact list management endpoints")
@@ -37,6 +37,7 @@ public class ContactListController {
     private final UnsubscribeContactsFromListUseCase unsubscribeContactsFromListUseCase;
     private final ImportContactsUseCase importContactsUseCase;
     private final ExportContactsUseCase exportContactsUseCase;
+    private final GetGlobalListStatisticsUseCase getGlobalListStatisticsUseCase;
     private final ContactListRepository contactListRepository;
     private final ContactListMapper contactListMapper;
     private final ObjectMapper objectMapper;
@@ -54,6 +55,27 @@ public class ContactListController {
         return ResponseEntity.ok(ApiResponse.<List<ContactListDto.Response>>builder()
                 .success(true)
                 .data(response)
+                .build());
+    }
+
+    @GetMapping("/statistics")
+    @Operation(summary = "Get global statistics for all contact lists")
+    public ResponseEntity<ApiResponse<ContactListDto.GlobalStatisticsResponse>> getGlobalStatistics() {
+        log.info("Fetching global list statistics");
+
+        GetGlobalListStatisticsUseCase.GlobalStatistics stats = getGlobalListStatisticsUseCase.execute();
+
+        ContactListDto.GlobalStatisticsResponse response = ContactListDto.GlobalStatisticsResponse.builder()
+                .totalLists(stats.getTotalLists())
+                .activeLists(stats.getActiveLists())
+                .totalSubscribers(stats.getTotalSubscribers())
+                .averageEngagement(stats.getAverageEngagement())
+                .build();
+
+        return ResponseEntity.ok(ApiResponse.<ContactListDto.GlobalStatisticsResponse>builder()
+                .success(true)
+                .data(response)
+                .message("Statistics retrieved successfully")
                 .build());
     }
 

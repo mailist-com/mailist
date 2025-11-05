@@ -88,4 +88,15 @@ public class ContactListDto {
         private Double growthRate;
         private Double avgEngagementScore;
     }
+
+    @Data
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class GlobalStatisticsResponse {
+        private Integer totalLists;
+        private Integer activeLists;
+        private Integer totalSubscribers;
+        private Double averageEngagement;
+    }
 }
