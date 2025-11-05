@@ -21,11 +21,38 @@ spring:
     change-log: classpath:db/changelog/db.changelog-master.xml
     contexts: dev
     drop-first: false
-  
+
+  # Mail Configuration (Gmail for development)
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME:your-email@gmail.com}
+    password: ${MAIL_PASSWORD:your-app-password}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          ssl:
+            trust: smtp.gmail.com
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+
   profiles:
     active: dev
 
-# EmailLabs Configuration
+# Email Gateway Configuration
+email:
+  gateway:
+    type: smtp  # smtp or emaillabs
+  from:
+    address: ${MAIL_FROM_ADDRESS:noreply@mailist.com}
+    name: ${MAIL_FROM_NAME:Mailist}
+
+# EmailLabs Configuration (backup)
 emaillabs:
   api-base-url: https://api.emaillabs.net.pl/v1
   api-key: ${EMAILLABS_API_KEY:your-api-key-here}
