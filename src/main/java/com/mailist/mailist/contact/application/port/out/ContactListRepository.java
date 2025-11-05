@@ -1,6 +1,7 @@
 package com.mailist.mailist.contact.application.port.out;
 
 import com.mailist.mailist.contact.domain.aggregate.ContactList;
+import com.mailist.mailist.contact.domain.model.ListStatistics;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -30,6 +31,8 @@ public interface ContactListRepository {
     boolean existsByName(String name);
     
     long count();
-    
+
     long countByIsActive(boolean isActive);
+
+    ListStatistics getGlobalStatistics();
 }

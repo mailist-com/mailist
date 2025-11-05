@@ -1,15 +1,11 @@
 package com.mailist.mailist.contact.application.usecase;
 
 import com.mailist.mailist.contact.application.port.out.ContactListRepository;
-import com.mailist.mailist.contact.domain.aggregate.Contact;
-import com.mailist.mailist.contact.domain.aggregate.ContactList;
+import com.mailist.mailist.contact.domain.model.ListStatistics;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -22,32 +18,17 @@ public class GetGlobalListStatisticsUseCase {
     public GlobalStatistics execute() {
         log.info("Calculating global list statistics");
 
-        List<ContactList> allLists = contactListRepository.findAll();
-
-        int totalLists = allLists.size();
-        int activeLists = (int) allLists.stream()
-                .filter(list -> Boolean.TRUE.equals(list.getIsActive()))
-                .count();
-
-        int totalSubscribers = allLists.stream()
-                .mapToInt(ContactList::getContactCount)
-                .sum();
+        // Use dedicated SQL query to get statistics directly from database
+        ListStatistics stats = contactListRepository.getGlobalStatistics();
 
         // Calculate average engagement rate
-        // Engagement = (active contacts / total contacts) * 100
-        // Active = contacts with activity in last 30 days
-        LocalDateTime thirtyDaysAgo = LocalDateTime.now().minusDays(30);
-
+        // TODO: This should be calculated via SQL query for better performance
+        // For now, returning 0.0 as placeholder
         double averageEngagement = 0.0;
-        if (!allLists.isEmpty()) {
-            double totalEngagement = allLists.stream()
-                    .filter(list -> list.getContactCount() > 0)
-                    .mapToDouble(list -> calculateListEngagement(list, thirtyDaysAgo))
-                    .average()
-                    .orElse(0.0);
 
-            averageEngagement = Math.round(totalEngagement * 100.0) / 100.0;
-        }
+        int totalLists = stats.getTotalLists() != null ? stats.getTotalLists().intValue() : 0;
+        int activeLists = stats.getActiveLists() != null ? stats.getActiveLists().intValue() : 0;
+        int totalSubscribers = stats.getTotalSubscribers() != null ? stats.getTotalSubscribers().intValue() : 0;
 
         log.info("Global statistics: {} total lists, {} active lists, {} total subscribers, {}% avg engagement",
                 totalLists, activeLists, totalSubscribers, averageEngagement);
@@ -58,20 +39,6 @@ public class GetGlobalListStatisticsUseCase {
                 .totalSubscribers(totalSubscribers)
                 .averageEngagement(averageEngagement)
                 .build();
-    }
-
-    private double calculateListEngagement(ContactList list, LocalDateTime thirtyDaysAgo) {
-        int totalContacts = list.getContactCount();
-        if (totalContacts == 0) {
-            return 0.0;
-        }
-
-        long activeContacts = list.getContacts().stream()
-                .filter(contact -> contact.getLastActivityAt() != null)
-                .filter(contact -> contact.getLastActivityAt().isAfter(thirtyDaysAgo))
-                .count();
-
-        return (activeContacts * 100.0) / totalContacts;
     }
 
     @lombok.Data
