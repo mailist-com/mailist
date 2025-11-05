@@ -1,6 +1,7 @@
 package com.mailist.mailist.analytics.domain.service;
 
 import com.mailist.mailist.analytics.domain.aggregate.Report;
+import com.mailist.mailist.analytics.domain.valueobject.ReportData;
 import com.mailist.mailist.analytics.domain.valueobject.ReportType;
 import org.springframework.stereotype.Service;
 
@@ -11,31 +12,43 @@ import java.util.Map;
 public class AnalyticsService {
     
     public Report generateCampaignReport(Long campaignId, LocalDateTime startDate, LocalDateTime endDate) {
+        ReportData reportData = new ReportData(
+                null, null, null, null, null, null, null, null, null,
+                null, null, null, null, null,
+                startDate, endDate, null
+        );
         return Report.builder()
                 .name("Campaign Performance Report")
                 .reportType(ReportType.CAMPAIGN)
                 .entityId(campaignId)
-                .periodStart(startDate)
-                .periodEnd(endDate)
+                .reportData(reportData)
                 .build();
     }
     
     public Report generateAutomationReport(Long automationId, LocalDateTime startDate, LocalDateTime endDate) {
+        ReportData reportData = new ReportData(
+                null, null, null, null, null, null, null, null, null,
+                null, null, null, null, null,
+                startDate, endDate, null
+        );
         return Report.builder()
                 .name("Automation Performance Report")
                 .reportType(ReportType.AUTOMATION)
                 .entityId(automationId)
-                .periodStart(startDate)
-                .periodEnd(endDate)
+                .reportData(reportData)
                 .build();
     }
     
     public Report generateContactEngagementReport(LocalDateTime startDate, LocalDateTime endDate) {
+        ReportData reportData = new ReportData(
+                null, null, null, null, null, null, null, null, null,
+                null, null, null, null, null,
+                startDate, endDate, null
+        );
         return Report.builder()
                 .name("Contact Engagement Report")
                 .reportType(ReportType.CONTACT)
-                .periodStart(startDate)
-                .periodEnd(endDate)
+                .reportData(reportData)
                 .build();
     }
     
