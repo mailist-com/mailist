@@ -41,4 +41,7 @@
     <!-- 009: Fix organization plan enum values -->
     <include file="db/changelog/015-fix-organization-plan-values.xml"/>
 
+    <!-- 010: Remove subdomain from organizations - not needed for internal multi-tenancy -->
+    <include file="db/changelog/016-remove-organization-subdomain.xml"/>
+
 </databaseChangeLog>

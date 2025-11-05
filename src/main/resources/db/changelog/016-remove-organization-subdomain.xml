@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="016-remove-organization-subdomain" author="system">
+        <comment>Remove subdomain from organizations - not needed for internal multi-tenancy</comment>
+
+        <!-- Drop index on subdomain -->
+        <dropIndex tableName="organizations" indexName="idx_organizations_subdomain"/>
+
+        <!-- Drop subdomain column -->
+        <dropColumn tableName="organizations" columnName="subdomain"/>
+
+    </changeSet>
+
+</databaseChangeLog>
