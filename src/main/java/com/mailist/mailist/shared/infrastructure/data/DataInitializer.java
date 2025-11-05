@@ -58,7 +58,6 @@ public class DataInitializer implements CommandLineRunner {
         log.info("Creating sample contacts...");
 
         Contact contact1 = Contact.builder()
-                .tenantId(organization.getId())
                 .organization(organization)
                 .firstName("Jan")
                 .lastName("Kowalski")
@@ -70,9 +69,9 @@ public class DataInitializer implements CommandLineRunner {
                         Tag.builder().name("Newsletter").color("#blue").description("Newsletter Subscriber").build()
                 )))
                 .build();
+        contact1.setTenantId(organization.getId());
 
         Contact contact2 = Contact.builder()
-                .tenantId(organization.getId())
                 .organization(organization)
                 .firstName("Anna")
                 .lastName("Nowak")
@@ -84,9 +83,9 @@ public class DataInitializer implements CommandLineRunner {
                         Tag.builder().name("Newsletter").color("#blue").description("Newsletter Subscriber").build()
                 )))
                 .build();
+        contact2.setTenantId(organization.getId());
 
         Contact contact3 = Contact.builder()
-                .tenantId(organization.getId())
                 .organization(organization)
                 .firstName("Piotr")
                 .lastName("Wiśniewski")
@@ -97,6 +96,7 @@ public class DataInitializer implements CommandLineRunner {
                         Tag.builder().name("High-Value").color("#red").description("High Value Customer").build()
                 )))
                 .build();
+        contact3.setTenantId(organization.getId());
 
         contactRepository.save(contact1);
         contactRepository.save(contact2);
@@ -109,21 +109,21 @@ public class DataInitializer implements CommandLineRunner {
         log.info("Creating sample contact lists...");
 
         ContactList newsletterList = ContactList.builder()
-                .tenantId(organization.getId())
                 .organization(organization)
                 .name("Newsletter Subscribers")
                 .description("All newsletter subscribers")
                 .isDynamic(false)
                 .build();
+        newsletterList.setTenantId(organization.getId());
 
         ContactList vipList = ContactList.builder()
-                .tenantId(organization.getId())
                 .organization(organization)
                 .name("VIP Customers")
                 .description("High-value VIP customers")
                 .isDynamic(true)
                 .segmentRule("leadScore > 80 AND hasTag('VIP')")
                 .build();
+        vipList.setTenantId(organization.getId());
 
         contactListRepository.save(newsletterList);
         contactListRepository.save(vipList);
@@ -141,13 +141,13 @@ public class DataInitializer implements CommandLineRunner {
                 .build();
 
         Campaign welcomeCampaign = Campaign.builder()
-                .tenantId(organization.getId())
                 .name("Welcome Campaign")
                 .subject("Witamy w Marketing Automation!")
                 .template(welcomeTemplate)
                 .status(Campaign.CampaignStatus.DRAFT)
                 .recipients(Set.of("jan.kowalski@example.com", "anna.nowak@example.com"))
                 .build();
+        welcomeCampaign.setTenantId(organization.getId());
 
         EmailTemplate promotionTemplate = EmailTemplate.builder()
                 .templateName("Promotion Email")
@@ -156,13 +156,13 @@ public class DataInitializer implements CommandLineRunner {
                 .build();
 
         Campaign promotionCampaign = Campaign.builder()
-                .tenantId(organization.getId())
                 .name("Monthly Promotion")
                 .subject("20% zniżki na wszystkie produkty!")
                 .template(promotionTemplate)
                 .status(Campaign.CampaignStatus.DRAFT)
                 .recipients(Set.of("piotr.wisniewski@example.com"))
                 .build();
+        promotionCampaign.setTenantId(organization.getId());
 
         campaignRepository.save(welcomeCampaign);
         campaignRepository.save(promotionCampaign);
@@ -174,12 +174,12 @@ public class DataInitializer implements CommandLineRunner {
         log.info("Creating sample automation rules...");
 
         AutomationRule welcomeRule = AutomationRule.builder()
-                .tenantId(organization.getId())
                 .name("Welcome Email Automation")
                 .description("Send welcome email when new contact is added")
                 .triggerType(TriggerType.TAG_ADDED)
                 .isActive(true)
                 .build();
+        welcomeRule.setTenantId(organization.getId());
 
         Condition newContactCondition = Condition.builder()
                 .field("tag")
@@ -205,12 +205,12 @@ public class DataInitializer implements CommandLineRunner {
         welcomeRule.addElseAction(addNewCustomerTag);
 
         AutomationRule engagementRule = AutomationRule.builder()
-                .tenantId(organization.getId())
                 .name("High Engagement Follow-up")
                 .description("Follow up with highly engaged contacts")
                 .triggerType(TriggerType.EMAIL_OPENED)
                 .isActive(true)
                 .build();
+        engagementRule.setTenantId(organization.getId());
 
         Condition highScoreCondition = Condition.builder()
                 .field("leadScore")
