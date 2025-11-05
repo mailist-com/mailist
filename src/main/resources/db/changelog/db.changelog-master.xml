@@ -32,4 +32,7 @@
     <!-- 006: Fix column names to match JPA entities -->
     <include file="db/changelog/012-fix-automation-columns.xml"/>
 
+    <!-- 007: Fix contacts and contact_lists tables -->
+    <include file="db/changelog/013-fix-contacts-and-lists.xml"/>
+
 </databaseChangeLog>
