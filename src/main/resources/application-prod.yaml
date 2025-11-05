@@ -18,13 +18,56 @@ spring:
     contexts: prod
     drop-first: false
 
-# EmailLabs Configuration
+  # Mail Configuration (OVH for production)
+  mail:
+    host: ${MAIL_HOST:ssl0.ovh.net}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          ssl:
+            trust: ${MAIL_HOST:ssl0.ovh.net}
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+
+# Email Gateway Configuration
+email:
+  gateway:
+    type: ${EMAIL_GATEWAY_TYPE:smtp}  # smtp or emaillabs
+  from:
+    address: ${MAIL_FROM_ADDRESS:noreply@mailist.com}
+    name: ${MAIL_FROM_NAME:Mailist}
+
+# EmailLabs Configuration (backup)
 emaillabs:
   api-base-url: https://api.emaillabs.net.pl/v1
   api-key: ${EMAILLABS_API_KEY}
   secret: ${EMAILLABS_SECRET}
   timeout-seconds: 30
   retry-attempts: 3
+
+# CORS Configuration for Production
+cors:
+  allowed-origins:
+    - ${FRONTEND_URL:https://app.mailist.com}
+    - ${FRONTEND_URL_ALT:https://www.mailist.com}
+  allowed-methods:
+    - GET
+    - POST
+    - PUT
+    - PATCH
+    - DELETE
+    - OPTIONS
+  allowed-headers: "*"
+  allow-credentials: true
+  max-age: 3600
 
 # Logging for production
 logging:

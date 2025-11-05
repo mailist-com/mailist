@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="012-fix-automation-columns" author="marketing-automation">
+        <comment>Fix column names in automation tables to match JPA entities</comment>
+
+        <!-- Fix automation_conditions table -->
+        <!-- Rename columns to match Condition entity -->
+        <renameColumn tableName="automation_conditions"
+                      oldColumnName="field_name"
+                      newColumnName="condition_field"
+                      columnDataType="VARCHAR(100)"/>
+
+        <renameColumn tableName="automation_conditions"
+                      oldColumnName="operator"
+                      newColumnName="condition_operator"
+                      columnDataType="VARCHAR(50)"/>
+
+        <renameColumn tableName="automation_conditions"
+                      oldColumnName="value"
+                      newColumnName="condition_value"
+                      columnDataType="VARCHAR(500)"/>
+
+        <!-- Add missing condition_type column -->
+        <addColumn tableName="automation_conditions">
+            <column name="condition_type" type="VARCHAR(50)"/>
+        </addColumn>
+
+        <!-- Drop condition_order column (not in entity) -->
+        <dropColumn tableName="automation_conditions" columnName="condition_order"/>
+
+        <!-- Fix automation_actions and automation_else_actions tables -->
+        <!-- Drop columns that are not in Action entity -->
+        <dropColumn tableName="automation_actions" columnName="action_config"/>
+        <dropColumn tableName="automation_actions" columnName="action_order"/>
+
+        <dropColumn tableName="automation_else_actions" columnName="action_config"/>
+        <dropColumn tableName="automation_else_actions" columnName="action_order"/>
+
+        <!-- Fix campaigns table - replace body with EmailTemplate fields -->
+        <dropColumn tableName="campaigns" columnName="body"/>
+
+        <addColumn tableName="campaigns">
+            <column name="html_content" type="TEXT"/>
+            <column name="text_content" type="TEXT"/>
+            <column name="template_name" type="VARCHAR(255)"/>
+            <column name="template_variables" type="TEXT"/>
+        </addColumn>
+
+        <!-- Fix campaign_recipients table - remove columns not in entity -->
+        <dropColumn tableName="campaign_recipients" columnName="status"/>
+        <dropColumn tableName="campaign_recipients" columnName="sent_at"/>
+        <dropColumn tableName="campaign_recipients" columnName="opened_at"/>
+        <dropColumn tableName="campaign_recipients" columnName="clicked_at"/>
+
+        <!-- Fix reports table - rename columns and add missing fields -->
+        <renameColumn tableName="reports"
+                      oldColumnName="type"
+                      newColumnName="report_type"
+                      columnDataType="VARCHAR(50)"/>
+
+        <renameColumn tableName="reports"
+                      oldColumnName="format"
+                      newColumnName="report_format"
+                      columnDataType="VARCHAR(20)"/>
+
+        <addColumn tableName="reports">
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="TEXT"/>
+            <column name="generated_by" type="VARCHAR(255)"/>
+            <column name="file_size" type="BIGINT"/>
+            <column name="expires_at" type="TIMESTAMP"/>
+            <column name="created_at" type="TIMESTAMP"/>
+
+            <!-- Add ReportData embedded fields -->
+            <column name="total_sent" type="BIGINT"/>
+            <column name="total_delivered" type="BIGINT"/>
+            <column name="total_opened" type="BIGINT"/>
+            <column name="total_clicked" type="BIGINT"/>
+            <column name="total_bounced" type="BIGINT"/>
+            <column name="total_unsubscribed" type="BIGINT"/>
+            <column name="total_contacts" type="BIGINT"/>
+            <column name="active_campaigns" type="BIGINT"/>
+            <column name="active_automations" type="BIGINT"/>
+            <column name="delivery_rate" type="DECIMAL(5,2)"/>
+            <column name="open_rate" type="DECIMAL(5,2)"/>
+            <column name="click_rate" type="DECIMAL(5,2)"/>
+            <column name="bounce_rate" type="DECIMAL(5,2)"/>
+            <column name="unsubscribe_rate" type="DECIMAL(5,2)"/>
+            <column name="period_start" type="TIMESTAMP"/>
+            <column name="period_end" type="TIMESTAMP"/>
+            <column name="additional_data" type="TEXT"/>
+        </addColumn>
+
+        <!-- Fix report_metrics table - change metric_value type to DOUBLE -->
+        <modifyDataType tableName="report_metrics"
+                        columnName="metric_value"
+                        newDataType="DOUBLE PRECISION"/>
+
+    </changeSet>
+
+</databaseChangeLog>

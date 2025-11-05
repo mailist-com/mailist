@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="013-fix-contacts-and-lists" author="marketing-automation">
+        <comment>Fix contacts and contact_lists tables to match JPA entities</comment>
+
+        <!-- Fix contacts table -->
+        <addColumn tableName="contacts">
+            <column name="organization_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+
+        <addForeignKeyConstraint
+            baseTableName="contacts"
+            baseColumnNames="organization_id"
+            referencedTableName="organizations"
+            referencedColumnNames="id"
+            constraintName="fk_contacts_organization"
+            onDelete="CASCADE"/>
+
+        <renameColumn tableName="contacts"
+                      oldColumnName="last_activity"
+                      newColumnName="last_activity_at"
+                      columnDataType="TIMESTAMP"/>
+
+        <!-- Remove columns not in Contact entity -->
+        <dropColumn tableName="contacts" columnName="company"/>
+        <dropColumn tableName="contacts" columnName="job_title"/>
+        <dropColumn tableName="contacts" columnName="status"/>
+
+        <!-- Fix contact_lists table -->
+        <addColumn tableName="contact_lists">
+            <column name="organization_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_active" type="BOOLEAN" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+
+        <addForeignKeyConstraint
+            baseTableName="contact_lists"
+            baseColumnNames="organization_id"
+            referencedTableName="organizations"
+            referencedColumnNames="id"
+            constraintName="fk_contact_lists_organization"
+            onDelete="CASCADE"/>
+
+        <renameColumn tableName="contact_lists"
+                      oldColumnName="dynamic_criteria"
+                      newColumnName="segment_rule"
+                      columnDataType="TEXT"/>
+
+        <!-- Fix contact_list_contacts junction table - remove added_at (not in entity) -->
+        <dropColumn tableName="contact_list_contacts" columnName="added_at"/>
+
+        <!-- Fix organizations table - add missing limit columns -->
+        <addColumn tableName="organizations">
+            <column name="contact_limit" type="INTEGER" defaultValueNumeric="1000">
+                <constraints nullable="false"/>
+            </column>
+            <column name="campaign_limit" type="INTEGER" defaultValueNumeric="10">
+                <constraints nullable="false"/>
+            </column>
+            <column name="automation_limit" type="INTEGER" defaultValueNumeric="5">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+
+    </changeSet>
+
+</databaseChangeLog>

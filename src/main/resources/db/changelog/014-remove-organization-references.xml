@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="014-remove-organization-references" author="marketing-automation">
+        <comment>Remove organization_id columns and foreign keys - using only tenant_id for multi-tenancy</comment>
+
+        <!-- Drop foreign key constraints first -->
+        <dropForeignKeyConstraint
+            baseTableName="users"
+            constraintName="fk_users_organization"/>
+
+        <dropForeignKeyConstraint
+            baseTableName="contacts"
+            constraintName="fk_contacts_organization"/>
+
+        <dropForeignKeyConstraint
+            baseTableName="contact_lists"
+            constraintName="fk_contact_lists_organization"/>
+
+        <!-- Drop indexes -->
+        <dropIndex tableName="users" indexName="idx_users_organization"/>
+
+        <!-- Drop organization_id columns -->
+        <dropColumn tableName="users" columnName="organization_id"/>
+        <dropColumn tableName="contacts" columnName="organization_id"/>
+        <dropColumn tableName="contact_lists" columnName="organization_id"/>
+
+    </changeSet>
+
+</databaseChangeLog>

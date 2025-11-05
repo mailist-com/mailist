@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="015-fix-organization-plan-values" author="marketing-automation">
+        <comment>Update organization plan values to match Plan enum (PROFESSIONAL -> PRO)</comment>
+
+        <!-- Update any PROFESSIONAL plans to PRO -->
+        <update tableName="organizations">
+            <column name="plan" value="PRO"/>
+            <where>plan = 'PROFESSIONAL'</where>
+        </update>
+
+    </changeSet>
+
+</databaseChangeLog>

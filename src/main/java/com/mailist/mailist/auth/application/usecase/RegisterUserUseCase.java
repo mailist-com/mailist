@@ -1,0 +1,105 @@
+package com.mailist.mailist.auth.application.usecase;
+
+import com.mailist.mailist.auth.application.port.out.EmailService;
+import com.mailist.mailist.auth.application.port.out.UserRepository;
+import com.mailist.mailist.auth.domain.aggregate.User;
+import com.mailist.mailist.shared.application.port.out.OrganizationRepository;
+import com.mailist.mailist.shared.domain.aggregate.Organization;
+import com.mailist.mailist.shared.infrastructure.tenant.TenantContext;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Set;
+
+@Service
+@RequiredArgsConstructor
+@Slf4j
+@Transactional
+public class RegisterUserUseCase {
+    
+    private final UserRepository userRepository;
+    private final OrganizationRepository organizationRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
+    
+    public User execute(RegisterUserCommand command) {
+        log.info("Starting user registration for email: {}", command.getEmail());
+
+        // Validate password confirmation
+        if (!command.getPassword().equals(command.getConfirmPassword())) {
+            throw new IllegalArgumentException("Passwords do not match");
+        }
+
+        // Validate terms acceptance
+        if (command.getAcceptTerms() == null || !command.getAcceptTerms()) {
+            throw new IllegalArgumentException("You must accept the terms and conditions");
+        }
+
+        // Check if user already exists
+        if (userRepository.existsByEmail(command.getEmail())) {
+            throw new IllegalArgumentException("User with email " + command.getEmail() + " already exists");
+        }
+
+        // Auto-generate organization name and subdomain
+        String organizationName = command.getFirstName() + " " + command.getLastName() + "'s Organization";
+
+        // Create organization (tenant)
+        Organization organization = Organization.builder()
+                .name(organizationName)
+                .ownerEmail(command.getEmail())
+                .plan(Organization.Plan.FREE)
+                .status(Organization.Status.ACTIVE)
+                .contactLimit(Organization.Plan.FREE.getContactLimit())
+                .campaignLimit(Organization.Plan.FREE.getCampaignLimit())
+                .automationLimit(Organization.Plan.FREE.getAutomationLimit())
+                .build();
+
+        organization = organizationRepository.save(organization);
+        log.info("Created organization with ID: {}", organization.getId());
+        
+        // Set tenant context for user creation
+        TenantContext.setOrganizationId(organization.getId());
+        
+        try {
+            // Generate verification token
+            String verificationToken = generateVerificationCode();
+            
+            // Create user as organization owner
+            User user = User.builder()
+                    .email(command.getEmail())
+                    .password(passwordEncoder.encode(command.getPassword()))
+                    .firstName(command.getFirstName())
+                    .lastName(command.getLastName())
+                    .roles(Set.of(User.Role.OWNER, User.Role.ADMIN))
+                    .status(User.Status.PENDING_VERIFICATION)
+                    .emailVerified(false)
+                    .build();
+
+            user.setTenantId(organization.getId());
+            user.setVerificationToken(verificationToken);
+            user = userRepository.save(user);
+            
+            // Send verification email
+            emailService.sendVerificationEmail(
+                user.getEmail(), 
+                verificationToken, 
+                user.getFirstName()
+            );
+            
+            log.info("Created user with ID: {} for organization: {} and sent verification email", 
+                    user.getId(), organization.getId());
+            
+            return user;
+        } finally {
+            TenantContext.clear();
+        }
+    }
+    
+    private String generateVerificationCode() {
+        // Generate 6-digit numeric code
+        return String.format("%06d", (int) (Math.random() * 1000000));
+    }
+}

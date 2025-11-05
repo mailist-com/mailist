@@ -1,14 +1,13 @@
 package com.mailist.marketing.campaign;
 
-import com.mailist.marketing.campaign.application.usecase.CreateCampaignUseCase;
-import com.mailist.marketing.campaign.application.usecase.CreateCampaignCommand;
-import com.mailist.marketing.campaign.application.usecase.SendCampaignUseCase;
-import com.mailist.marketing.campaign.application.usecase.SendCampaignCommand;
-import com.mailist.marketing.campaign.application.port.out.CampaignRepository;
-import com.mailist.marketing.campaign.domain.aggregate.Campaign;
-import com.mailist.marketing.campaign.domain.gateway.EmailGateway;
-import com.mailist.marketing.campaign.domain.valueobject.EmailTemplate;
-import com.mailist.marketing.shared.domain.model.EmailMessage;
+import com.mailist.mailist.campaign.application.usecase.CreateCampaignUseCase;
+import com.mailist.mailist.campaign.application.usecase.CreateCampaignCommand;
+import com.mailist.mailist.campaign.application.usecase.SendCampaignUseCase;
+import com.mailist.mailist.campaign.application.usecase.SendCampaignCommand;
+import com.mailist.mailist.campaign.application.port.out.CampaignRepository;
+import com.mailist.mailist.campaign.domain.aggregate.Campaign;
+import com.mailist.mailist.campaign.domain.valueobject.EmailTemplate;
+import com.mailist.mailist.shared.domain.model.EmailMessage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mock;

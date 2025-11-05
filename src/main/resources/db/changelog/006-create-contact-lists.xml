@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="006-create-contact-lists" author="marketing-automation">
+        <comment>Create contact_lists and related tables</comment>
+
+        <createTable tableName="contact_lists">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="tenant_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="TEXT"/>
+            <column name="is_dynamic" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="dynamic_criteria" type="TEXT"/>
+            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <!-- Add foreign key for tenant -->
+        <addForeignKeyConstraint
+            baseTableName="contact_lists"
+            baseColumnNames="tenant_id"
+            referencedTableName="organizations"
+            referencedColumnNames="id"
+            constraintName="fk_contact_lists_tenant"
+            onDelete="CASCADE"/>
+
+        <!-- Create junction table for contacts and lists (many-to-many) -->
+        <createTable tableName="contact_list_contacts">
+            <column name="list_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="contact_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="added_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <!-- Add primary key -->
+        <addPrimaryKey tableName="contact_list_contacts" columnNames="list_id,contact_id" constraintName="pk_contact_list_contacts"/>
+
+        <!-- Add foreign keys -->
+        <addForeignKeyConstraint
+            baseTableName="contact_list_contacts"
+            baseColumnNames="list_id"
+            referencedTableName="contact_lists"
+            referencedColumnNames="id"
+            constraintName="fk_contact_list_contacts_list"
+            onDelete="CASCADE"/>
+
+        <addForeignKeyConstraint
+            baseTableName="contact_list_contacts"
+            baseColumnNames="contact_id"
+            referencedTableName="contacts"
+            referencedColumnNames="id"
+            constraintName="fk_contact_list_contacts_contact"
+            onDelete="CASCADE"/>
+
+    </changeSet>
+
+</databaseChangeLog>

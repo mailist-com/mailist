@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="001-create-organizations" author="system">
+        <comment>Create organizations table for multi-tenancy</comment>
+
+        <createTable tableName="organizations">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="subdomain" type="VARCHAR(100)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="owner_email" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="plan" type="VARCHAR(50)" defaultValue="FREE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="VARCHAR(20)" defaultValue="ACTIVE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="settings" type="TEXT"/>
+            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <!-- Create indexes -->
+        <createIndex tableName="organizations" indexName="idx_organizations_subdomain">
+            <column name="subdomain"/>
+        </createIndex>
+
+        <createIndex tableName="organizations" indexName="idx_organizations_owner_email">
+            <column name="owner_email"/>
+        </createIndex>
+
+        <!-- Insert default organization for development -->
+        <insert tableName="organizations">
+            <column name="id" value="1"/>
+            <column name="name" value="Default Organization"/>
+            <column name="subdomain" value="default"/>
+            <column name="owner_email" value="admin@mailist.com"/>
+            <column name="plan" value="PROFESSIONAL"/>
+            <column name="status" value="ACTIVE"/>
+        </insert>
+
+    </changeSet>
+
+</databaseChangeLog>
