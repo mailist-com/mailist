@@ -59,6 +59,19 @@
         <!-- Fix contact_list_contacts junction table - remove added_at (not in entity) -->
         <dropColumn tableName="contact_list_contacts" columnName="added_at"/>
 
+        <!-- Fix organizations table - add missing limit columns -->
+        <addColumn tableName="organizations">
+            <column name="contact_limit" type="INTEGER" defaultValueNumeric="1000">
+                <constraints nullable="false"/>
+            </column>
+            <column name="campaign_limit" type="INTEGER" defaultValueNumeric="10">
+                <constraints nullable="false"/>
+            </column>
+            <column name="automation_limit" type="INTEGER" defaultValueNumeric="5">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+
     </changeSet>
 
 </databaseChangeLog>
