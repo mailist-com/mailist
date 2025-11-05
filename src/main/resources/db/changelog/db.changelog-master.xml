@@ -26,4 +26,7 @@
     <!-- 004: Create indexes for performance -->
     <include file="db/changelog/010-create-indexes.xml"/>
 
+    <!-- 005: Fix missing columns in automation tables -->
+    <include file="db/changelog/011-fix-automation-actions-columns.xml"/>
+
 </databaseChangeLog>
