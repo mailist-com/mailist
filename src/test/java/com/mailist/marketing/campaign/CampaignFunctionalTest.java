@@ -6,7 +6,6 @@ import com.mailist.mailist.campaign.application.usecase.SendCampaignUseCase;
 import com.mailist.mailist.campaign.application.usecase.SendCampaignCommand;
 import com.mailist.mailist.campaign.application.port.out.CampaignRepository;
 import com.mailist.mailist.campaign.domain.aggregate.Campaign;
-import com.mailist.mailist.campaign.domain.gateway.EmailGateway;
 import com.mailist.mailist.campaign.domain.valueobject.EmailTemplate;
 import com.mailist.mailist.shared.domain.model.EmailMessage;
 import org.junit.jupiter.api.Test;

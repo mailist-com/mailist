@@ -3,8 +3,8 @@ package com.mailist.mailist.campaign.infrastructure.gateway;
 import com.mailist.mailist.shared.domain.gateway.EmailGateway;
 import com.mailist.mailist.shared.domain.model.EmailMessage;
 import com.mailist.mailist.campaign.infrastructure.config.EmailLabsProperties;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -14,13 +14,13 @@ import java.util.Map;
 import java.util.HashMap;
 
 @Component
-@RequiredArgsConstructor
 @Slf4j
 public class EmailLabsEmailGateway implements EmailGateway {
     
     private final WebClient webClient;
     private final EmailLabsProperties properties;
-    
+
+    @Autowired
     public EmailLabsEmailGateway(WebClient.Builder webClientBuilder, EmailLabsProperties properties) {
         this.properties = properties;
         this.webClient = webClientBuilder

@@ -1,8 +1,8 @@
 package com.mailist.mailist.campaign.application.usecase;
 
 import com.mailist.mailist.campaign.domain.aggregate.Campaign;
+import com.mailist.mailist.shared.domain.gateway.EmailGateway;
 import com.mailist.mailist.shared.domain.model.EmailMessage;
-import com.mailist.mailist.campaign.domain.gateway.EmailGateway;
 import com.mailist.mailist.campaign.application.port.out.CampaignRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
