@@ -55,16 +55,16 @@ public class EmailServiceImpl implements EmailService {
     }
     
     @Override
-    public void sendWelcomeEmail(String email, String firstName, String organizationName) {
+    public void sendWelcomeEmail(String email, String firstName) {
         String subject = "Welcome to Mailist!";
-        String content = buildWelcomeEmailContent(firstName, organizationName);
-        
+        String content = buildWelcomeEmailContent(firstName);
+
         EmailMessage emailMessage = EmailMessage.builder()
                 .to(email)
                 .subject(subject)
                 .htmlContent(content)
                 .build();
-        
+
         try {
             emailGateway.sendEmail(emailMessage);
             log.info("Welcome email sent successfully to: {}", email);
@@ -108,24 +108,24 @@ public class EmailServiceImpl implements EmailService {
             """, firstName, resetCode);
     }
     
-    private String buildWelcomeEmailContent(String firstName, String organizationName) {
+    private String buildWelcomeEmailContent(String firstName) {
         return String.format("""
             Hi %s,
-            
-            Welcome to Mailist! Your account has been successfully verified and your organization "%s" is ready to use.
-            
+
+            Welcome to Mailist! Your account has been successfully verified and is ready to use.
+
             You can now start:
             • Creating and managing contact lists
             • Building email campaigns
             • Setting up marketing automation
             • Analyzing your campaign performance
-            
+
             Get started by logging into your account at https://app.mailist.com
-            
+
             If you have any questions, feel free to reach out to our support team.
-            
+
             Best regards,
             The Mailist Team
-            """, firstName, organizationName);
+            """, firstName);
     }
 }

@@ -1,7 +1,6 @@
 package com.mailist.mailist.auth.domain.aggregate;
 
 import com.mailist.mailist.shared.domain.aggregate.BaseTenantEntity;
-import com.mailist.mailist.shared.domain.aggregate.Organization;
 import lombok.Data;
 import lombok.Builder;
 import lombok.AllArgsConstructor;
@@ -64,10 +63,6 @@ public class User extends BaseTenantEntity {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private UserPreferences preferences;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "organization_id", nullable = false)
-    private Organization organization;
-    
     @Enumerated(EnumType.STRING)
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))

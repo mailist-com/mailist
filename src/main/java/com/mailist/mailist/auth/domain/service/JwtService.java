@@ -33,10 +33,10 @@ public class JwtService {
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", user.getId());
         claims.put("email", user.getEmail());
-        claims.put("organizationId", user.getOrganization().getId());
+        claims.put("organizationId", user.getTenantId()); // For backward compatibility
         claims.put("roles", user.getRoles());
         claims.put("tenantId", user.getTenantId());
-        
+
         return createToken(claims, user.getEmail(), accessTokenExpiration);
     }
     

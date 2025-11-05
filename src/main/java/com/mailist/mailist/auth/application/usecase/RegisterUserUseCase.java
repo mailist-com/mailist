@@ -66,12 +66,12 @@ public class RegisterUserUseCase {
                     .password(passwordEncoder.encode(command.getPassword()))
                     .firstName(command.getFirstName())
                     .lastName(command.getLastName())
-                    .organization(organization)
                     .roles(Set.of(User.Role.OWNER, User.Role.ADMIN))
                     .status(User.Status.PENDING_VERIFICATION)
                     .emailVerified(false)
                     .build();
-            
+
+            user.setTenantId(organization.getId());
             user.setVerificationToken(verificationToken);
             user = userRepository.save(user);
             

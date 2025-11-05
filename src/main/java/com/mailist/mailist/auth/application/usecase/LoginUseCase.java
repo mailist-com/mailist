@@ -57,7 +57,7 @@ public class LoginUseCase {
         }
         
         // Set tenant context
-        TenantContext.setOrganizationId(user.getOrganization().getId());
+        TenantContext.setOrganizationId(user.getTenantId());
         
         try {
             // Update last login and reset failed attempts

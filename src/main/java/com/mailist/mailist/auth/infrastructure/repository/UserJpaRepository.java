@@ -17,7 +17,7 @@ public interface UserJpaRepository extends JpaRepository<User, Long>, UserReposi
 
     @Query("SELECT u FROM User u WHERE u.email = :email AND u.tenantId = :tenantId")
     @Override
-    Optional<User> findByEmailAndOrganizationId(@Param("email") String email, @Param("tenantId") Long organizationId);
+    Optional<User> findByEmailAndTenantId(@Param("email") String email, @Param("tenantId") Long tenantId);
 
     @Override
     Optional<User> findByVerificationToken(String verificationToken);

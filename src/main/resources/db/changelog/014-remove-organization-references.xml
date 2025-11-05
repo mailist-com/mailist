@@ -10,6 +10,10 @@
 
         <!-- Drop foreign key constraints first -->
         <dropForeignKeyConstraint
+            baseTableName="users"
+            constraintName="fk_users_organization"/>
+
+        <dropForeignKeyConstraint
             baseTableName="contacts"
             constraintName="fk_contacts_organization"/>
 
@@ -17,7 +21,11 @@
             baseTableName="contact_lists"
             constraintName="fk_contact_lists_organization"/>
 
+        <!-- Drop indexes -->
+        <dropIndex tableName="users" indexName="idx_users_organization"/>
+
         <!-- Drop organization_id columns -->
+        <dropColumn tableName="users" columnName="organization_id"/>
         <dropColumn tableName="contacts" columnName="organization_id"/>
         <dropColumn tableName="contact_lists" columnName="organization_id"/>
 

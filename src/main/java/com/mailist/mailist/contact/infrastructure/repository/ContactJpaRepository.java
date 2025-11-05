@@ -15,42 +15,42 @@ public interface ContactJpaRepository extends JpaRepository<Contact, Long>, Cont
 
     // Multi-tenant aware methods
     @Override
-    Optional<Contact> findByIdAndOrganizationId(Long id, Long organizationId);
+    Optional<Contact> findByIdAndTenantId(Long id, Long tenantId);
 
     @Override
     Optional<Contact> findByEmail(String email);
 
     @Override
-    Optional<Contact> findByEmailAndOrganizationId(String email, Long organizationId);
+    Optional<Contact> findByEmailAndTenantId(String email, Long tenantId);
 
     @Override
     boolean existsByEmail(String email);
 
     @Override
-    boolean existsByEmailAndOrganizationId(String email, Long organizationId);
+    boolean existsByEmailAndTenantId(String email, Long tenantId);
 
-    // Organization-scoped queries
+    // Tenant-scoped queries
     @Override
-    List<Contact> findByOrganizationId(Long organizationId);
-
-    @Override
-    org.springframework.data.domain.Page<Contact> findByOrganizationId(Long organizationId, org.springframework.data.domain.Pageable pageable);
-
-    @Query("SELECT c FROM Contact c JOIN c.tags t WHERE t.name = :tagName AND c.organization.id = :organizationId")
-    @Override
-    List<Contact> findByTagsNameAndOrganizationId(@Param("tagName") String tagName, @Param("organizationId") Long organizationId);
+    List<Contact> findByTenantId(Long tenantId);
 
     @Override
-    List<Contact> findByLeadScoreBetweenAndOrganizationId(int minScore, int maxScore, Long organizationId);
+    org.springframework.data.domain.Page<Contact> findByTenantId(Long tenantId, org.springframework.data.domain.Pageable pageable);
+
+    @Query("SELECT c FROM Contact c JOIN c.tags t WHERE t.name = :tagName AND c.tenantId = :tenantId")
+    @Override
+    List<Contact> findByTagsNameAndTenantId(@Param("tagName") String tagName, @Param("tenantId") Long tenantId);
 
     @Override
-    long countByOrganizationId(Long organizationId);
+    List<Contact> findByLeadScoreBetweenAndTenantId(int minScore, int maxScore, Long tenantId);
 
-    @Query("SELECT c FROM Contact c WHERE c.leadScore >= :minScore AND c.organization.id = :organizationId")
-    List<Contact> findByLeadScoreGreaterThanEqualAndOrganizationId(@Param("minScore") int minScore, @Param("organizationId") Long organizationId);
+    @Override
+    long countByTenantId(Long tenantId);
 
-    @Query("SELECT c FROM Contact c WHERE c.lastActivityAt >= :date AND c.organization.id = :organizationId")
-    List<Contact> findByLastActivityAfterAndOrganizationId(@Param("date") java.time.LocalDateTime date, @Param("organizationId") Long organizationId);
+    @Query("SELECT c FROM Contact c WHERE c.leadScore >= :minScore AND c.tenantId = :tenantId")
+    List<Contact> findByLeadScoreGreaterThanEqualAndTenantId(@Param("minScore") int minScore, @Param("tenantId") Long tenantId);
+
+    @Query("SELECT c FROM Contact c WHERE c.lastActivityAt >= :date AND c.tenantId = :tenantId")
+    List<Contact> findByLastActivityAfterAndTenantId(@Param("date") java.time.LocalDateTime date, @Param("tenantId") Long tenantId);
 
     // Legacy methods (global - for backward compatibility)
     @Query("SELECT c FROM Contact c JOIN c.tags t WHERE t.name = :tagName")

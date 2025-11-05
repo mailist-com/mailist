@@ -10,21 +10,21 @@ import java.util.List;
 public interface ContactRepository {
     Contact save(Contact contact);
     Optional<Contact> findById(Long id);
-    
+
     // Multi-tenant aware methods
-    Optional<Contact> findByIdAndOrganizationId(Long id, Long organizationId);
+    Optional<Contact> findByIdAndTenantId(Long id, Long tenantId);
     Optional<Contact> findByEmail(String email);
-    Optional<Contact> findByEmailAndOrganizationId(String email, Long organizationId);
+    Optional<Contact> findByEmailAndTenantId(String email, Long tenantId);
     boolean existsByEmail(String email);
-    boolean existsByEmailAndOrganizationId(String email, Long organizationId);
-    
-    // Organization-scoped queries
-    List<Contact> findByOrganizationId(Long organizationId);
-    Page<Contact> findByOrganizationId(Long organizationId, Pageable pageable);
-    List<Contact> findByTagsNameAndOrganizationId(String tagName, Long organizationId);
-    List<Contact> findByLeadScoreBetweenAndOrganizationId(int minScore, int maxScore, Long organizationId);
-    long countByOrganizationId(Long organizationId);
-    
+    boolean existsByEmailAndTenantId(String email, Long tenantId);
+
+    // Tenant-scoped queries
+    List<Contact> findByTenantId(Long tenantId);
+    Page<Contact> findByTenantId(Long tenantId, Pageable pageable);
+    List<Contact> findByTagsNameAndTenantId(String tagName, Long tenantId);
+    List<Contact> findByLeadScoreBetweenAndTenantId(int minScore, int maxScore, Long tenantId);
+    long countByTenantId(Long tenantId);
+
     // Legacy methods (global - will be deprecated in favor of tenant-aware versions)
     Page<Contact> findAll(Pageable pageable);
     List<Contact> findByTagsName(String tagName);

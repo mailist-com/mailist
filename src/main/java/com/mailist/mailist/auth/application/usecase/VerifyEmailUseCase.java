@@ -44,8 +44,7 @@ public class VerifyEmailUseCase {
         // Send welcome email
         emailService.sendWelcomeEmail(
             user.getEmail(),
-            user.getFirstName(),
-            user.getOrganization().getName()
+            user.getFirstName()
         );
         
         log.info("Email verified successfully for user: {}", command.getEmail());
