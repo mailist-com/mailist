@@ -35,4 +35,7 @@
     <!-- 007: Fix contacts and contact_lists tables -->
     <include file="db/changelog/013-fix-contacts-and-lists.xml"/>
 
+    <!-- 008: Remove organization references, use only tenant_id -->
+    <include file="db/changelog/014-remove-organization-references.xml"/>
+
 </databaseChangeLog>

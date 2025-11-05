@@ -58,7 +58,6 @@ public class DataInitializer implements CommandLineRunner {
         log.info("Creating sample contacts...");
 
         Contact contact1 = Contact.builder()
-                .organization(organization)
                 .firstName("Jan")
                 .lastName("Kowalski")
                 .email("jan.kowalski@example.com")
@@ -72,7 +71,6 @@ public class DataInitializer implements CommandLineRunner {
         contact1.setTenantId(organization.getId());
 
         Contact contact2 = Contact.builder()
-                .organization(organization)
                 .firstName("Anna")
                 .lastName("Nowak")
                 .email("anna.nowak@example.com")
@@ -86,7 +84,6 @@ public class DataInitializer implements CommandLineRunner {
         contact2.setTenantId(organization.getId());
 
         Contact contact3 = Contact.builder()
-                .organization(organization)
                 .firstName("Piotr")
                 .lastName("Wiśniewski")
                 .email("piotr.wisniewski@example.com")
@@ -109,7 +106,6 @@ public class DataInitializer implements CommandLineRunner {
         log.info("Creating sample contact lists...");
 
         ContactList newsletterList = ContactList.builder()
-                .organization(organization)
                 .name("Newsletter Subscribers")
                 .description("All newsletter subscribers")
                 .isDynamic(false)
@@ -117,7 +113,6 @@ public class DataInitializer implements CommandLineRunner {
         newsletterList.setTenantId(organization.getId());
 
         ContactList vipList = ContactList.builder()
-                .organization(organization)
                 .name("VIP Customers")
                 .description("High-value VIP customers")
                 .isDynamic(true)

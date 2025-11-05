@@ -1,7 +1,6 @@
 package com.mailist.mailist.contact.domain.aggregate;
 
 import com.mailist.mailist.shared.domain.aggregate.BaseTenantEntity;
-import com.mailist.mailist.shared.domain.aggregate.Organization;
 import lombok.Data;
 import lombok.Builder;
 import lombok.AllArgsConstructor;
@@ -21,18 +20,11 @@ import java.util.HashSet;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ContactList extends BaseTenantEntity {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
-    /**
-     * Organization this contact list belongs to (tenant isolation)
-     */
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "organization_id", nullable = false)
-    private Organization organization;
-    
+
     @Column(nullable = false)
     private String name;
     
