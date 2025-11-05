@@ -4,6 +4,7 @@ import com.mailist.mailist.campaign.domain.aggregate.Campaign;
 import com.mailist.mailist.contact.domain.aggregate.Contact;
 import com.mailist.mailist.contact.domain.aggregate.ContactList;
 import com.mailist.mailist.automation.domain.aggregate.AutomationRule;
+import com.mailist.mailist.shared.domain.aggregate.Organization;
 import com.mailist.mailist.campaign.domain.valueobject.EmailTemplate;
 import com.mailist.mailist.contact.domain.valueobject.Tag;
 import com.mailist.mailist.automation.domain.valueobject.Condition;
@@ -13,6 +14,7 @@ import com.mailist.mailist.campaign.application.port.out.CampaignRepository;
 import com.mailist.mailist.contact.application.port.out.ContactRepository;
 import com.mailist.mailist.contact.application.port.out.ContactListRepository;
 import com.mailist.mailist.automation.application.port.out.AutomationRuleRepository;
+import com.mailist.mailist.shared.application.port.out.OrganizationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
@@ -26,30 +28,38 @@ import java.util.Arrays;
 @RequiredArgsConstructor
 @Slf4j
 public class DataInitializer implements CommandLineRunner {
-    
+
     private final ContactRepository contactRepository;
     private final ContactListRepository contactListRepository;
     private final CampaignRepository campaignRepository;
     private final AutomationRuleRepository automationRuleRepository;
+    private final OrganizationRepository organizationRepository;
     
     @Override
     public void run(String... args) throws Exception {
         if (contactRepository.count() == 0) {
             log.info("Initializing sample data...");
-            initializeContacts();
-            initializeContactLists();
-            initializeCampaigns();
-            initializeAutomationRules();
+
+            // Load default organization (created by migration 001)
+            Organization defaultOrg = organizationRepository.findById(1L)
+                    .orElseThrow(() -> new IllegalStateException("Default organization not found"));
+
+            initializeContacts(defaultOrg);
+            initializeContactLists(defaultOrg);
+            initializeCampaigns(defaultOrg);
+            initializeAutomationRules(defaultOrg);
             log.info("Sample data initialization completed.");
         } else {
             log.info("Data already exists, skipping initialization.");
         }
     }
     
-    private void initializeContacts() {
+    private void initializeContacts(Organization organization) {
         log.info("Creating sample contacts...");
-        
+
         Contact contact1 = Contact.builder()
+                .tenantId(organization.getId())
+                .organization(organization)
                 .firstName("Jan")
                 .lastName("Kowalski")
                 .email("jan.kowalski@example.com")
@@ -60,8 +70,10 @@ public class DataInitializer implements CommandLineRunner {
                         Tag.builder().name("Newsletter").color("#blue").description("Newsletter Subscriber").build()
                 )))
                 .build();
-        
+
         Contact contact2 = Contact.builder()
+                .tenantId(organization.getId())
+                .organization(organization)
                 .firstName("Anna")
                 .lastName("Nowak")
                 .email("anna.nowak@example.com")
@@ -72,8 +84,10 @@ public class DataInitializer implements CommandLineRunner {
                         Tag.builder().name("Newsletter").color("#blue").description("Newsletter Subscriber").build()
                 )))
                 .build();
-        
+
         Contact contact3 = Contact.builder()
+                .tenantId(organization.getId())
+                .organization(organization)
                 .firstName("Piotr")
                 .lastName("Wiśniewski")
                 .email("piotr.wisniewski@example.com")
@@ -83,139 +97,147 @@ public class DataInitializer implements CommandLineRunner {
                         Tag.builder().name("High-Value").color("#red").description("High Value Customer").build()
                 )))
                 .build();
-        
+
         contactRepository.save(contact1);
         contactRepository.save(contact2);
         contactRepository.save(contact3);
-        
+
         log.info("Created {} sample contacts", 3);
     }
     
-    private void initializeContactLists() {
+    private void initializeContactLists(Organization organization) {
         log.info("Creating sample contact lists...");
-        
+
         ContactList newsletterList = ContactList.builder()
+                .tenantId(organization.getId())
+                .organization(organization)
                 .name("Newsletter Subscribers")
                 .description("All newsletter subscribers")
                 .isDynamic(false)
                 .build();
-        
+
         ContactList vipList = ContactList.builder()
+                .tenantId(organization.getId())
+                .organization(organization)
                 .name("VIP Customers")
                 .description("High-value VIP customers")
                 .isDynamic(true)
                 .segmentRule("leadScore > 80 AND hasTag('VIP')")
                 .build();
-        
+
         contactListRepository.save(newsletterList);
         contactListRepository.save(vipList);
-        
+
         log.info("Created {} sample contact lists", 2);
     }
     
-    private void initializeCampaigns() {
+    private void initializeCampaigns(Organization organization) {
         log.info("Creating sample campaigns...");
-        
+
         EmailTemplate welcomeTemplate = EmailTemplate.builder()
                 .templateName("Welcome Email")
                 .htmlContent("<h1>Witamy w naszym serwisie!</h1><p>Dziękujemy za rejestrację.</p>")
                 .textContent("Witamy w naszym serwisie! Dziękujemy za rejestrację.")
                 .build();
-        
+
         Campaign welcomeCampaign = Campaign.builder()
+                .tenantId(organization.getId())
                 .name("Welcome Campaign")
                 .subject("Witamy w Marketing Automation!")
                 .template(welcomeTemplate)
                 .status(Campaign.CampaignStatus.DRAFT)
                 .recipients(Set.of("jan.kowalski@example.com", "anna.nowak@example.com"))
                 .build();
-        
+
         EmailTemplate promotionTemplate = EmailTemplate.builder()
                 .templateName("Promotion Email")
                 .htmlContent("<h1>Specjalna promocja!</h1><p>Skorzystaj z 20% zniżki na wszystkie produkty.</p>")
                 .textContent("Specjalna promocja! Skorzystaj z 20% zniżki na wszystkie produkty.")
                 .build();
-        
+
         Campaign promotionCampaign = Campaign.builder()
+                .tenantId(organization.getId())
                 .name("Monthly Promotion")
                 .subject("20% zniżki na wszystkie produkty!")
                 .template(promotionTemplate)
                 .status(Campaign.CampaignStatus.DRAFT)
                 .recipients(Set.of("piotr.wisniewski@example.com"))
                 .build();
-        
+
         campaignRepository.save(welcomeCampaign);
         campaignRepository.save(promotionCampaign);
-        
+
         log.info("Created {} sample campaigns", 2);
     }
     
-    private void initializeAutomationRules() {
+    private void initializeAutomationRules(Organization organization) {
         log.info("Creating sample automation rules...");
-        
+
         AutomationRule welcomeRule = AutomationRule.builder()
+                .tenantId(organization.getId())
                 .name("Welcome Email Automation")
                 .description("Send welcome email when new contact is added")
                 .triggerType(TriggerType.TAG_ADDED)
                 .isActive(true)
                 .build();
-        
+
         Condition newContactCondition = Condition.builder()
                 .field("tag")
                 .operator(Condition.ConditionOperator.HAS_TAG)
                 .value("Newsletter")
                 .type("contact")
                 .build();
-        
+
         Action sendWelcomeEmail = Action.builder()
                 .type(Action.ActionType.SEND_EMAIL)
                 .value("welcome-template")
                 .delayMinutes(0)
                 .build();
-        
+
         Action addNewCustomerTag = Action.builder()
                 .type(Action.ActionType.ADD_TAG)
                 .value("New Customer")
                 .delayMinutes(0)
                 .build();
-        
+
         welcomeRule.addCondition(newContactCondition);
         welcomeRule.addAction(sendWelcomeEmail);
         welcomeRule.addElseAction(addNewCustomerTag);
-        
+
         AutomationRule engagementRule = AutomationRule.builder()
+                .tenantId(organization.getId())
                 .name("High Engagement Follow-up")
                 .description("Follow up with highly engaged contacts")
                 .triggerType(TriggerType.EMAIL_OPENED)
                 .isActive(true)
                 .build();
-        
+
         Condition highScoreCondition = Condition.builder()
                 .field("leadScore")
                 .operator(Condition.ConditionOperator.GREATER_THAN)
                 .value("70")
                 .type("contact")
                 .build();
-        
+
         Action updateLeadScore = Action.builder()
                 .type(Action.ActionType.UPDATE_LEAD_SCORE)
                 .value("10")
                 .delayMinutes(0)
                 .build();
-        
+
         Action addVipTag = Action.builder()
                 .type(Action.ActionType.ADD_TAG)
                 .value("VIP")
                 .delayMinutes(1440) // 24 hours
                 .build();
-        
+
         engagementRule.addCondition(highScoreCondition);
         engagementRule.addAction(updateLeadScore);
         engagementRule.addAction(addVipTag);
-        
+
         automationRuleRepository.save(welcomeRule);
         automationRuleRepository.save(engagementRule);
-        
+
         log.info("Created {} sample automation rules", 2);
     }
 }
