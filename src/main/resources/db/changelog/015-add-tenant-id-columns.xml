@@ -7,36 +7,43 @@
 
     <changeSet id="015-add-tenant-id-columns" author="system">
         <!-- Add tenant_id column to all tenant-aware tables -->
-        
+
+        <!-- Step 1: Add columns as nullable first -->
         <addColumn tableName="contacts">
-            <column name="tenant_id" type="BIGINT">
-                <constraints nullable="false"/>
-            </column>
+            <column name="tenant_id" type="BIGINT"/>
         </addColumn>
-        
+
         <addColumn tableName="contact_lists">
-            <column name="tenant_id" type="BIGINT">
-                <constraints nullable="false"/>
-            </column>
+            <column name="tenant_id" type="BIGINT"/>
         </addColumn>
-        
+
         <addColumn tableName="campaigns">
-            <column name="tenant_id" type="BIGINT">
-                <constraints nullable="false"/>
-            </column>
+            <column name="tenant_id" type="BIGINT"/>
         </addColumn>
-        
+
         <addColumn tableName="automation_rules">
-            <column name="tenant_id" type="BIGINT">
-                <constraints nullable="false"/>
-            </column>
+            <column name="tenant_id" type="BIGINT"/>
         </addColumn>
-        
+
         <addColumn tableName="reports">
-            <column name="tenant_id" type="BIGINT">
-                <constraints nullable="false"/>
-            </column>
+            <column name="tenant_id" type="BIGINT"/>
         </addColumn>
+
+        <!-- Step 2: Update existing rows with default organization ID (1) -->
+        <sql>
+            UPDATE contacts SET tenant_id = 1 WHERE tenant_id IS NULL;
+            UPDATE contact_lists SET tenant_id = 1 WHERE tenant_id IS NULL;
+            UPDATE campaigns SET tenant_id = 1 WHERE tenant_id IS NULL;
+            UPDATE automation_rules SET tenant_id = 1 WHERE tenant_id IS NULL;
+            UPDATE reports SET tenant_id = 1 WHERE tenant_id IS NULL;
+        </sql>
+
+        <!-- Step 3: Now make columns NOT NULL -->
+        <addNotNullConstraint tableName="contacts" columnName="tenant_id" columnDataType="BIGINT"/>
+        <addNotNullConstraint tableName="contact_lists" columnName="tenant_id" columnDataType="BIGINT"/>
+        <addNotNullConstraint tableName="campaigns" columnName="tenant_id" columnDataType="BIGINT"/>
+        <addNotNullConstraint tableName="automation_rules" columnName="tenant_id" columnDataType="BIGINT"/>
+        <addNotNullConstraint tableName="reports" columnName="tenant_id" columnDataType="BIGINT"/>
         
         <!-- Add foreign key constraints -->
         <addForeignKeyConstraint

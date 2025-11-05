@@ -6,8 +6,9 @@
                         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
 
     <changeSet id="016-update-users-auth-fields" author="system">
-        <!-- Add new authentication fields to users table -->
+        <!-- Add new authentication and profile fields to users table -->
         <addColumn tableName="users">
+            <!-- Authentication fields -->
             <column name="verification_token" type="VARCHAR(255)"/>
             <column name="verification_token_expires_at" type="TIMESTAMP"/>
             <column name="password_reset_token" type="VARCHAR(255)"/>
@@ -19,6 +20,23 @@
                 <constraints nullable="false"/>
             </column>
             <column name="account_locked_until" type="TIMESTAMP"/>
+
+            <!-- Profile fields -->
+            <column name="avatar" type="VARCHAR(500)"/>
+            <column name="phone" type="VARCHAR(20)"/>
+            <column name="company" type="VARCHAR(255)"/>
+            <column name="timezone" type="VARCHAR(50)" defaultValue="UTC">
+                <constraints nullable="false"/>
+            </column>
+            <column name="language" type="VARCHAR(10)" defaultValue="en">
+                <constraints nullable="false"/>
+            </column>
+
+            <!-- Two-Factor Authentication -->
+            <column name="two_factor_enabled" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="two_factor_secret" type="VARCHAR(500)"/>
         </addColumn>
 
         <!-- Update status column to include new values -->
@@ -75,6 +93,51 @@
         
         <createIndex tableName="refresh_tokens" indexName="idx_refresh_tokens_expires_at">
             <column name="expires_at"/>
+        </createIndex>
+
+        <!-- Create user_preferences table -->
+        <createTable tableName="user_preferences">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="email_notifications" type="BOOLEAN" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="sms_notifications" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="weekly_report" type="BOOLEAN" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="marketing_emails" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="dark_mode" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <!-- Add foreign key constraint -->
+        <addForeignKeyConstraint
+            baseTableName="user_preferences"
+            baseColumnNames="user_id"
+            referencedTableName="users"
+            referencedColumnNames="id"
+            constraintName="fk_user_preferences_user"
+            onDelete="CASCADE"/>
+
+        <!-- Add index for user_id -->
+        <createIndex tableName="user_preferences" indexName="idx_user_preferences_user_id">
+            <column name="user_id"/>
         </createIndex>
 
     </changeSet>
