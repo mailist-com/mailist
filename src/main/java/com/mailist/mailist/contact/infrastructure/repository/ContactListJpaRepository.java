@@ -2,6 +2,7 @@ package com.mailist.mailist.contact.infrastructure.repository;
 
 import com.mailist.mailist.contact.application.port.out.ContactListRepository;
 import com.mailist.mailist.contact.domain.aggregate.ContactList;
+import com.mailist.mailist.contact.domain.model.ListStatistics;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -36,4 +37,16 @@ public interface ContactListJpaRepository extends JpaRepository<ContactList, Lon
 
     @Query("SELECT COUNT(c) FROM ContactList cl JOIN cl.contacts c WHERE cl.id = :listId")
     long countContactsInList(@Param("listId") Long listId);
+
+    @Override
+    @Query(value = """
+        SELECT
+            COUNT(*) as totalLists,
+            SUM(CASE WHEN is_active = true THEN 1 ELSE 0 END) as activeLists,
+            COALESCE(SUM(
+                (SELECT COUNT(*) FROM contact_list_contacts clc WHERE clc.list_id = cl.id)
+            ), 0) as totalSubscribers
+        FROM contact_lists cl
+        """, nativeQuery = true)
+    ListStatistics getGlobalStatistics();
 }

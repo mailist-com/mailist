@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="017-fix-sequence-after-inserts" author="system">
+        <comment>
+            Fix sequence values after manual inserts with explicit IDs.
+            This prevents "duplicate key value violates unique constraint" errors
+            when inserting new records after initial data.
+        </comment>
+
+        <!-- Fix organizations sequence -->
+        <sql>
+            SELECT setval('organizations_id_seq', (SELECT COALESCE(MAX(id), 1) FROM organizations));
+        </sql>
+
+        <!-- Fix users sequence if needed -->
+        <sql>
+            SELECT setval('users_id_seq', (SELECT COALESCE(MAX(id), 1) FROM users));
+        </sql>
+
+        <!-- Fix contacts sequence if needed -->
+        <sql>
+            SELECT setval('contacts_id_seq', (SELECT COALESCE(MAX(id), 1) FROM contacts));
+        </sql>
+
+        <!-- Fix campaigns sequence if needed -->
+        <sql>
+            SELECT setval('campaigns_id_seq', (SELECT COALESCE(MAX(id), 1) FROM campaigns));
+        </sql>
+
+        <!-- Fix automation_rules sequence if needed -->
+        <sql>
+            SELECT setval('automation_rules_id_seq', (SELECT COALESCE(MAX(id), 1) FROM automation_rules));
+        </sql>
+
+        <rollback>
+            <comment>No rollback needed - sequences will remain at current values</comment>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

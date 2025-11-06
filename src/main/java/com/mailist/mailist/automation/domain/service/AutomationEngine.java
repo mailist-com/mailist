@@ -4,18 +4,22 @@ import com.mailist.mailist.automation.domain.aggregate.AutomationRule;
 import com.mailist.mailist.contact.domain.aggregate.Contact;
 import com.mailist.mailist.automation.domain.valueobject.Condition;
 import com.mailist.mailist.automation.domain.valueobject.Action;
-import com.mailist.mailist.shared.domain.gateway.EmailGateway;
+import com.mailist.mailist.shared.domain.gateway.MarketingEmailGateway;
+import com.mailist.mailist.shared.domain.model.MarketingEmailMessage;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AutomationEngine {
-    
-    private final EmailGateway emailGateway;
+
+    private final MarketingEmailGateway marketingEmailGateway;
     
     public void executeRule(AutomationRule rule, Contact contact, Map<String, Object> context) {
         if (!rule.getIsActive()) {
@@ -77,7 +81,7 @@ public class AutomationEngine {
                 // Implementation would be handled by ContactService
                 break;
             case SEND_EMAIL:
-                // Implementation would use EmailGateway
+                sendAutomationEmail(action, contact, context);
                 break;
             case MOVE_TO_LIST:
                 // Implementation would be handled by ListService
@@ -165,6 +169,32 @@ public class AutomationEngine {
             }
         } catch (NumberFormatException e) {
             return false;
+        }
+    }
+
+    private void sendAutomationEmail(Action action, Contact contact, Map<String, Object> context) {
+        try {
+            // The action.value should contain email template content or template ID
+            // For now, we'll send a simple email with the value as content
+            String campaignId = context.containsKey("campaignId")
+                    ? String.valueOf(context.get("campaignId"))
+                    : null;
+
+            MarketingEmailMessage emailMessage = MarketingEmailMessage.builder()
+                    .to(contact.getEmail())
+                    .subject("Automated Email from Mailist")
+                    .htmlContent(action.getValue())
+                    .textContent(action.getValue())
+                    .campaignId(campaignId)
+                    .contactId(contact.getId().toString())
+                    .trackingId(UUID.randomUUID().toString())
+                    .build();
+
+            marketingEmailGateway.sendEmail(emailMessage);
+            log.info("Automation email sent successfully to contact: {}", contact.getEmail());
+        } catch (Exception e) {
+            log.error("Failed to send automation email to contact: {}", contact.getEmail(), e);
+            // Don't rethrow - continue with other actions
         }
     }
 }
