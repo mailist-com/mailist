@@ -7,7 +7,8 @@ import java.util.Set;
 
 @Data
 @Builder
-public class CreateContactListCommand {
+public class UpdateContactListCommand {
+    private Long id;
     private String name;
     private String description;
     private Boolean isSmartList;

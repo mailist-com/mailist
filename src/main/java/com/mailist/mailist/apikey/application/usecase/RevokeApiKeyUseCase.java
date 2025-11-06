@@ -21,11 +21,11 @@ public class RevokeApiKeyUseCase {
     private final ApiKeyActivityRepository activityRepository;
 
     @Transactional
-    public void execute(String apiKeyId) {
-        String organizationId = TenantContext.getCurrentTenant();
+    public void execute(Long apiKeyId) {
+        long organizationId = TenantContext.getOrganizationId();
 
         ApiKey apiKey = repository.findById(apiKeyId)
-                .filter(key -> key.getOrganizationId().equals(organizationId))
+                .filter(key -> key.getTenantId().equals(organizationId))
                 .orElseThrow(() -> new IllegalArgumentException("API key not found: " + apiKeyId));
 
         apiKey.revoke();
@@ -35,11 +35,11 @@ public class RevokeApiKeyUseCase {
     }
 
     @Transactional
-    public void delete(String apiKeyId) {
-        String organizationId = TenantContext.getCurrentTenant();
+    public void delete(Long apiKeyId) {
+        long organizationId = TenantContext.getOrganizationId();
 
         ApiKey apiKey = repository.findById(apiKeyId)
-                .filter(key -> key.getOrganizationId().equals(organizationId))
+                .filter(key -> key.getTenantId().equals(organizationId))
                 .orElseThrow(() -> new IllegalArgumentException("API key not found: " + apiKeyId));
 
         // Delete associated activities

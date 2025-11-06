@@ -8,8 +8,8 @@ import java.time.LocalDateTime;
  * DTO for API Key Activity.
  */
 public record ApiKeyActivityDto(
-        String id,
-        String apiKeyId,
+        Long id,
+        Long apiKeyId,
         String endpoint,
         String method,
         Integer statusCode,

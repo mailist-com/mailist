@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="018-create-api-keys" author="system">
+        <comment>Create API keys tables for external integrations</comment>
+
+        <!-- Create api_keys table -->
+        <createTable tableName="api_keys">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <!-- Tenant for multi-tenancy -->
+            <column name="tenant_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <!-- Basic Information -->
+            <column name="name" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="VARCHAR(500)"/>
+
+            <!-- Key Information (hashed) -->
+            <column name="key_hash" type="VARCHAR(64)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="key_prefix" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_four_chars" type="VARCHAR(4)">
+                <constraints nullable="false"/>
+            </column>
+
+            <!-- Status -->
+            <column name="status" type="VARCHAR(20)" defaultValue="ACTIVE">
+                <constraints nullable="false"/>
+            </column>
+
+            <!-- Creator -->
+            <column name="created_by" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+
+            <!-- Usage Tracking -->
+            <column name="last_used_at" type="TIMESTAMP"/>
+            <column name="last_used_ip_address" type="VARCHAR(45)"/>
+            <column name="total_calls" type="BIGINT" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+
+            <!-- Expiration -->
+            <column name="expires_at" type="TIMESTAMP"/>
+
+            <!-- Timestamps -->
+            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <!-- Create api_key_permissions table (ElementCollection) -->
+        <createTable tableName="api_key_permissions">
+            <column name="api_key_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="permission" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <!-- Create api_key_activities table -->
+        <createTable tableName="api_key_activities">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <!-- Tenant for multi-tenancy -->
+            <column name="tenant_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <!-- Reference to API key -->
+            <column name="api_key_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <!-- Request Information -->
+            <column name="endpoint" type="VARCHAR(500)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="method" type="VARCHAR(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status_code" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="response_time" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <!-- Client Information -->
+            <column name="ip_address" type="VARCHAR(45)"/>
+            <column name="user_agent" type="VARCHAR(500)"/>
+
+            <!-- Error Information -->
+            <column name="error_message" type="VARCHAR(1000)"/>
+
+            <!-- Timestamp -->
+            <column name="timestamp" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <!-- Add foreign keys -->
+        <addForeignKeyConstraint
+            baseTableName="api_keys"
+            baseColumnNames="tenant_id"
+            referencedTableName="organizations"
+            referencedColumnNames="id"
+            constraintName="fk_api_keys_organization"
+            onDelete="CASCADE"/>
+
+        <addForeignKeyConstraint
+            baseTableName="api_key_permissions"
+            baseColumnNames="api_key_id"
+            referencedTableName="api_keys"
+            referencedColumnNames="id"
+            constraintName="fk_api_key_permissions_key"
+            onDelete="CASCADE"/>
+
+        <addForeignKeyConstraint
+            baseTableName="api_key_activities"
+            baseColumnNames="tenant_id"
+            referencedTableName="organizations"
+            referencedColumnNames="id"
+            constraintName="fk_api_key_activities_organization"
+            onDelete="CASCADE"/>
+
+        <addForeignKeyConstraint
+            baseTableName="api_key_activities"
+            baseColumnNames="api_key_id"
+            referencedTableName="api_keys"
+            referencedColumnNames="id"
+            constraintName="fk_api_key_activities_key"
+            onDelete="CASCADE"/>
+
+        <!-- Create indexes for api_keys -->
+        <createIndex tableName="api_keys" indexName="idx_api_key_hash">
+            <column name="key_hash"/>
+        </createIndex>
+
+        <createIndex tableName="api_keys" indexName="idx_api_key_prefix">
+            <column name="key_prefix"/>
+        </createIndex>
+
+        <createIndex tableName="api_keys" indexName="idx_api_key_org">
+            <column name="tenant_id"/>
+        </createIndex>
+
+        <createIndex tableName="api_keys" indexName="idx_api_key_status">
+            <column name="tenant_id"/>
+            <column name="status"/>
+        </createIndex>
+
+        <!-- Create indexes for api_key_activities -->
+        <createIndex tableName="api_key_activities" indexName="idx_activity_key">
+            <column name="api_key_id"/>
+        </createIndex>
+
+        <createIndex tableName="api_key_activities" indexName="idx_activity_timestamp">
+            <column name="timestamp"/>
+        </createIndex>
+
+        <createIndex tableName="api_key_activities" indexName="idx_activity_org">
+            <column name="tenant_id"/>
+        </createIndex>
+
+        <createIndex tableName="api_key_activities" indexName="idx_activity_key_timestamp">
+            <column name="api_key_id"/>
+            <column name="timestamp"/>
+        </createIndex>
+
+    </changeSet>
+
+</databaseChangeLog>

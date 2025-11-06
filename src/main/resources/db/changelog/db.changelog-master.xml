@@ -47,4 +47,10 @@
     <!-- 011: Fix sequence values after manual inserts to prevent duplicate key errors -->
     <include file="db/changelog/017-fix-sequence-after-inserts.xml"/>
 
+    <!-- 012: Create API keys tables for external integrations -->
+    <include file="db/changelog/018-create-api-keys.xml"/>
+
+    <!-- 012: Add contact_list_tags table for storing tags associated with contact lists -->
+    <include file="db/changelog/018-add-contact-list-tags-table.xml"/>
+
 </databaseChangeLog>

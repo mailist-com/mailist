@@ -27,8 +27,8 @@ import java.util.Set;
 public class ApiKey extends BaseTenantEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(nullable = false, length = 100)
     private String name;
@@ -122,6 +122,32 @@ public class ApiKey extends BaseTenantEntity {
 
     public void revoke() {
         this.status = ApiKeyStatus.REVOKED;
+    }
+
+    public void activate() {
+        if (this.status == ApiKeyStatus.EXPIRED) {
+            throw new IllegalStateException("Cannot activate an expired API key");
+        }
+        this.status = ApiKeyStatus.ACTIVE;
+    }
+
+    public void toggleStatus() {
+        if (this.status == ApiKeyStatus.EXPIRED) {
+            throw new IllegalStateException("Cannot toggle status of an expired API key");
+        }
+        this.status = (this.status == ApiKeyStatus.ACTIVE) ? ApiKeyStatus.REVOKED : ApiKeyStatus.ACTIVE;
+    }
+
+    public void updateDetails(String name, String description) {
+        if (name != null && !name.isBlank()) {
+            this.name = name;
+        }
+        this.description = description;
+    }
+
+    public void updatePermissions(Set<String> newPermissions) {
+        this.permissions.clear();
+        this.permissions.addAll(newPermissions);
     }
 
     public void recordUsage(String ipAddress) {

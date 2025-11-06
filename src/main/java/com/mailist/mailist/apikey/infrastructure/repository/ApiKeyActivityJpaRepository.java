@@ -18,19 +18,19 @@ import java.util.List;
 @Repository
 public interface ApiKeyActivityJpaRepository extends JpaRepository<ApiKeyActivity, String> {
 
-    Page<ApiKeyActivity> findByApiKeyIdOrderByTimestampDesc(String apiKeyId, Pageable pageable);
+    Page<ApiKeyActivity> findByApiKeyIdOrderByTimestampDesc(Long apiKeyId, Pageable pageable);
 
     List<ApiKeyActivity> findByApiKeyIdAndTimestampBetweenOrderByTimestampDesc(
-            String apiKeyId,
+            Long apiKeyId,
             LocalDateTime startTime,
             LocalDateTime endTime
     );
 
-    long countByApiKeyIdAndTimestampAfter(String apiKeyId, LocalDateTime after);
+    long countByApiKeyIdAndTimestampAfter(Long apiKeyId, LocalDateTime after);
 
     @Modifying
     @Query("DELETE FROM ApiKeyActivity a WHERE a.apiKeyId = :apiKeyId")
-    void deleteByApiKeyId(@Param("apiKeyId") String apiKeyId);
+    void deleteByApiKeyId(@Param("apiKeyId") Long apiKeyId);
 
     @Modifying
     @Query("DELETE FROM ApiKeyActivity a WHERE a.timestamp < :timestamp")

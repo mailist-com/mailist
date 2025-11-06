@@ -29,6 +29,7 @@ public class CreateContactListUseCase {
                 .isDynamic(command.getIsSmartList() != null ? command.getIsSmartList() : false)
                 .isActive(true)
                 .segmentRule(command.getSegmentRule())
+                .tags(command.getTags() != null ? command.getTags() : new java.util.HashSet<>())
                 .build();
 
         ContactList savedList = contactListRepository.save(contactList);

@@ -26,13 +26,13 @@ public class ApiKeyActivityRepositoryImpl implements ApiKeyActivityRepository {
     }
 
     @Override
-    public Page<ApiKeyActivity> findByApiKeyId(String apiKeyId, Pageable pageable) {
+    public Page<ApiKeyActivity> findByApiKeyId(Long apiKeyId, Pageable pageable) {
         return jpaRepository.findByApiKeyIdOrderByTimestampDesc(apiKeyId, pageable);
     }
 
     @Override
     public List<ApiKeyActivity> findByApiKeyIdAndTimestampBetween(
-            String apiKeyId,
+            Long apiKeyId,
             LocalDateTime startTime,
             LocalDateTime endTime
     ) {
@@ -42,13 +42,13 @@ public class ApiKeyActivityRepositoryImpl implements ApiKeyActivityRepository {
     }
 
     @Override
-    public long countByApiKeyIdAndTimestampAfter(String apiKeyId, LocalDateTime after) {
+    public long countByApiKeyIdAndTimestampAfter(Long apiKeyId, LocalDateTime after) {
         return jpaRepository.countByApiKeyIdAndTimestampAfter(apiKeyId, after);
     }
 
     @Override
     @Transactional
-    public void deleteByApiKeyId(String apiKeyId) {
+    public void deleteByApiKeyId(Long apiKeyId) {
         jpaRepository.deleteByApiKeyId(apiKeyId);
     }
 

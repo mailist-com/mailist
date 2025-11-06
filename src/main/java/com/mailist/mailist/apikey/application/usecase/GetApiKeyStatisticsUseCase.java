@@ -22,8 +22,8 @@ public class GetApiKeyStatisticsUseCase {
 
     @Transactional(readOnly = true)
     public ApiKeyStatistics execute() {
-        String organizationId = TenantContext.getCurrentTenant();
-        List<ApiKey> allKeys = repository.findAllByOrganizationId(organizationId);
+        long organizationId = TenantContext.getOrganizationId();
+        List<ApiKey> allKeys = repository.findAllByTenantId(organizationId);
 
         long totalKeys = allKeys.size();
         long activeKeys = allKeys.stream().filter(ApiKey::isActive).count();

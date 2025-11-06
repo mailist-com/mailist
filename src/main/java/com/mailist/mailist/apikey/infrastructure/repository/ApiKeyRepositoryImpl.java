@@ -24,7 +24,7 @@ public class ApiKeyRepositoryImpl implements ApiKeyRepository {
     }
 
     @Override
-    public Optional<ApiKey> findById(String id) {
+    public Optional<ApiKey> findById(Long id) {
         return jpaRepository.findById(id);
     }
 
@@ -34,27 +34,27 @@ public class ApiKeyRepositoryImpl implements ApiKeyRepository {
     }
 
     @Override
-    public List<ApiKey> findAllByOrganizationId(String organizationId) {
-        return jpaRepository.findAllByOrganizationId(organizationId);
+    public List<ApiKey> findAllByTenantId(long tenantId) {
+        return jpaRepository.findAllByTenantId(tenantId);
     }
 
     @Override
-    public List<ApiKey> findByOrganizationIdAndStatus(String organizationId, ApiKeyStatus status) {
-        return jpaRepository.findByOrganizationIdAndStatus(organizationId, status);
+    public List<ApiKey> findByTenantIdAndStatus(long tenantId, ApiKeyStatus status) {
+        return jpaRepository.findByTenantIdAndStatus(tenantId, status);
     }
 
     @Override
-    public void deleteById(String id) {
+    public void deleteById(Long id) {
         jpaRepository.deleteById(id);
     }
 
     @Override
-    public boolean existsByOrganizationIdAndName(String organizationId, String name) {
-        return jpaRepository.existsByOrganizationIdAndName(organizationId, name);
+    public boolean existsByTenantIdAndName(long tenantId, String name) {
+        return jpaRepository.existsByTenantIdAndName(tenantId, name);
     }
 
     @Override
-    public long countByOrganizationId(String organizationId) {
-        return jpaRepository.countByOrganizationId(organizationId);
+    public long countByTenantId(long tenantId) {
+        return jpaRepository.countByTenantId(tenantId);
     }
 }

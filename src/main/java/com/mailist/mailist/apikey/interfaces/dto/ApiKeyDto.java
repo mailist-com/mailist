@@ -10,7 +10,7 @@ import java.util.Set;
  * DTO for API Key (without sensitive data).
  */
 public record ApiKeyDto(
-        String id,
+        Long id,
         String name,
         String description,
         String key, // Masked key for display (e.g., "ml_live_...abc123")

@@ -1,17 +1,14 @@
 package com.mailist.mailist.contact.application.usecase;
 
-import lombok.Data;
 import lombok.Builder;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+import lombok.Data;
 
 import java.util.Set;
 
 @Data
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class CreateContactCommand {
+public class UpdateContactCommand {
+    private Long id;
     private String firstName;
     private String lastName;
     private String email;

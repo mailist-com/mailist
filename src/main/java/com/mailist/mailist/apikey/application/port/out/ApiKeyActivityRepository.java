@@ -14,17 +14,17 @@ public interface ApiKeyActivityRepository {
 
     ApiKeyActivity save(ApiKeyActivity activity);
 
-    Page<ApiKeyActivity> findByApiKeyId(String apiKeyId, Pageable pageable);
+    Page<ApiKeyActivity> findByApiKeyId(Long apiKeyId, Pageable pageable);
 
     List<ApiKeyActivity> findByApiKeyIdAndTimestampBetween(
-            String apiKeyId,
+            Long apiKeyId,
             LocalDateTime startTime,
             LocalDateTime endTime
     );
 
-    long countByApiKeyIdAndTimestampAfter(String apiKeyId, LocalDateTime after);
+    long countByApiKeyIdAndTimestampAfter(Long apiKeyId, LocalDateTime after);
 
-    void deleteByApiKeyId(String apiKeyId);
+    void deleteByApiKeyId(Long apiKeyId);
 
     void deleteOlderThan(LocalDateTime timestamp);
 }

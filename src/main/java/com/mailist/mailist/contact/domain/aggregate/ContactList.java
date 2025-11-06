@@ -46,7 +46,12 @@ public class ContactList extends BaseTenantEntity {
     
     @Column(name = "segment_rule", columnDefinition = "TEXT")
     private String segmentRule;
-    
+
+    @ElementCollection
+    @CollectionTable(name = "contact_list_tags", joinColumns = @JoinColumn(name = "list_id"))
+    @Column(name = "tag")
+    private Set<String> tags = new HashSet<>();
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     
@@ -66,7 +71,7 @@ public class ContactList extends BaseTenantEntity {
             throw new IllegalStateException("Cannot manually add contacts to dynamic list");
         }
         this.contacts.add(contact);
-        contact.getLists().add(this);
+        contact.getContactLists().add(this);
     }
     
     public void removeContact(Contact contact) {
@@ -74,10 +79,10 @@ public class ContactList extends BaseTenantEntity {
             throw new IllegalStateException("Cannot manually remove contacts from dynamic list");
         }
         this.contacts.remove(contact);
-        contact.getLists().remove(this);
+        contact.getContactLists().remove(this);
     }
     
     public int getContactCount() {
-        return contacts.size();
+        return contacts != null ? contacts.size() : 0;
     }
 }

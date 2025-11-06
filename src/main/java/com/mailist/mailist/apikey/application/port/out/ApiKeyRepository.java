@@ -13,17 +13,17 @@ public interface ApiKeyRepository {
 
     ApiKey save(ApiKey apiKey);
 
-    Optional<ApiKey> findById(String id);
+    Optional<ApiKey> findById(Long id);
 
     Optional<ApiKey> findByKeyHash(String keyHash);
 
-    List<ApiKey> findAllByOrganizationId(String organizationId);
+    List<ApiKey> findAllByTenantId(long tenantId);
 
-    List<ApiKey> findByOrganizationIdAndStatus(String organizationId, ApiKeyStatus status);
+    List<ApiKey> findByTenantIdAndStatus(long tenantId, ApiKeyStatus status);
 
-    void deleteById(String id);
+    void deleteById(Long id);
 
-    boolean existsByOrganizationIdAndName(String organizationId, String name);
+    boolean existsByTenantIdAndName(long tenantId, String name);
 
-    long countByOrganizationId(String organizationId);
+    long countByTenantId(long tenantId);
 }

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="018-add-contact-list-tags-table" author="marketing-automation">
+        <comment>Create contact_list_tags table for storing tags associated with contact lists</comment>
+
+        <createTable tableName="contact_list_tags">
+            <column name="list_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="tag" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <!-- Add foreign key to contact_lists -->
+        <addForeignKeyConstraint
+            baseTableName="contact_list_tags"
+            baseColumnNames="list_id"
+            referencedTableName="contact_lists"
+            referencedColumnNames="id"
+            constraintName="fk_contact_list_tags_list"
+            onDelete="CASCADE"/>
+
+        <!-- Add index for faster lookups -->
+        <createIndex indexName="idx_contact_list_tags_list_id" tableName="contact_list_tags">
+            <column name="list_id"/>
+        </createIndex>
+
+    </changeSet>
+
+</databaseChangeLog>

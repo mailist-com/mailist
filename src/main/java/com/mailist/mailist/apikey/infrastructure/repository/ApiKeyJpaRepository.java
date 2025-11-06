@@ -12,15 +12,15 @@ import java.util.Optional;
  * JPA Repository for ApiKey.
  */
 @Repository
-public interface ApiKeyJpaRepository extends JpaRepository<ApiKey, String> {
+public interface ApiKeyJpaRepository extends JpaRepository<ApiKey, Long> {
 
     Optional<ApiKey> findByKeyHash(String keyHash);
 
-    List<ApiKey> findAllByOrganizationId(String organizationId);
+    List<ApiKey> findAllByTenantId(long tenantId);
 
-    List<ApiKey> findByOrganizationIdAndStatus(String organizationId, ApiKeyStatus status);
+    List<ApiKey> findByTenantIdAndStatus(long tenantId, ApiKeyStatus status);
 
-    boolean existsByOrganizationIdAndName(String organizationId, String name);
+    boolean existsByTenantIdAndName(long tenantId, String name);
 
-    long countByOrganizationId(String organizationId);
+    long countByTenantId(long tenantId);
 }

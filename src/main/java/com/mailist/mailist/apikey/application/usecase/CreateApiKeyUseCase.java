@@ -27,11 +27,11 @@ public class CreateApiKeyUseCase {
 
     @Transactional
     public CreatedApiKey execute(CreateApiKeyCommand command) {
-        String organizationId = TenantContext.getCurrentTenant();
+        long organizationId = TenantContext.getOrganizationId();
         String userId = SecurityUtils.getCurrentUserId();
 
         // Check if name already exists
-        if (repository.existsByOrganizationIdAndName(organizationId, command.name())) {
+        if (repository.existsByTenantIdAndName(organizationId, command.name())) {
             throw new IllegalArgumentException("API key with name '" + command.name() + "' already exists");
         }
 
@@ -51,7 +51,7 @@ public class CreateApiKeyUseCase {
                 .expiresAt(command.expiresAt())
                 .build();
 
-        apiKey.setOrganizationId(organizationId);
+        apiKey.setTenantId(organizationId);
 
         // Save
         ApiKey saved = repository.save(apiKey);

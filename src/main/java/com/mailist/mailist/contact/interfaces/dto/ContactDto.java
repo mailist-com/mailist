@@ -58,22 +58,49 @@ public class ContactDto {
         @Size(max = 100, message = "First name must not exceed 100 characters")
         @Schema(description = "First name", example = "John", required = true)
         private String firstName;
-        
+
         @NotBlank(message = "Last name is required")
         @Size(max = 100, message = "Last name must not exceed 100 characters")
         @Schema(description = "Last name", example = "Doe", required = true)
         private String lastName;
-        
+
         @NotBlank(message = "Email is required")
         @Email(message = "Email must be valid")
         @Schema(description = "Email address", example = "john.doe@example.com", required = true)
         private String email;
-        
+
         @Size(max = 20, message = "Phone number must not exceed 20 characters")
         @Schema(description = "Phone number", example = "+1234567890")
         private String phone;
+
+        @Schema(description = "List IDs to assign contact to")
+        private Set<Long> listIds;
     }
-    
+
+    @Data
+    @Builder
+    @Schema(description = "Update contact request")
+    public static class UpdateRequest {
+        @Size(max = 100, message = "First name must not exceed 100 characters")
+        @Schema(description = "First name", example = "John")
+        private String firstName;
+
+        @Size(max = 100, message = "Last name must not exceed 100 characters")
+        @Schema(description = "Last name", example = "Doe")
+        private String lastName;
+
+        @Email(message = "Email must be valid")
+        @Schema(description = "Email address", example = "john.doe@example.com")
+        private String email;
+
+        @Size(max = 20, message = "Phone number must not exceed 20 characters")
+        @Schema(description = "Phone number", example = "+1234567890")
+        private String phone;
+
+        @Schema(description = "List IDs to assign contact to")
+        private Set<Long> listIds;
+    }
+
     @Data
     @Builder
     @Schema(description = "Add tag to contact request")

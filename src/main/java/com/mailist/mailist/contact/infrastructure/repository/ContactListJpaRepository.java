@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public interface ContactListJpaRepository extends JpaRepository<ContactList, Long>, ContactListRepository {
@@ -25,6 +26,9 @@ public interface ContactListJpaRepository extends JpaRepository<ContactList, Lon
 
     @Override
     List<ContactList> findByIsDynamic(boolean isDynamic);
+
+    @Query("SELECT cl FROM ContactList cl WHERE cl.id in (:ids)")
+    List<ContactList> findAllByIds(Set<Long> ids);
 
     @Override
     long countByIsActive(boolean isActive);
