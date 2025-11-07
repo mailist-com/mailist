@@ -1,8 +1,8 @@
 package com.mailist.mailist.apikey.application.usecase;
 
-import com.mailist.mailist.apikey.application.port.out.ApiKeyRepository;
 import com.mailist.mailist.apikey.domain.aggregate.ApiKey;
 import com.mailist.mailist.apikey.domain.valueobject.ApiKeyStatus;
+import com.mailist.mailist.apikey.infrastructure.repository.ApiKeyRepository;
 import com.mailist.mailist.apikey.infrastructure.security.ApiKeyGenerator;
 import com.mailist.mailist.shared.infrastructure.security.SecurityUtils;
 import com.mailist.mailist.shared.infrastructure.tenant.TenantContext;

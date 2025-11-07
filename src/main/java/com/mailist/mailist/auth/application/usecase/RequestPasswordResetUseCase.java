@@ -1,33 +1,33 @@
 package com.mailist.mailist.auth.application.usecase;
 
 import com.mailist.mailist.auth.application.port.out.EmailService;
-import com.mailist.mailist.auth.application.port.out.UserRepository;
+import com.mailist.mailist.auth.application.usecase.command.RequestPasswordResetCommand;
 import com.mailist.mailist.auth.domain.aggregate.User;
+import com.mailist.mailist.auth.infrastructure.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-@Slf4j
-@Transactional
-public class RequestPasswordResetUseCase {
+final class RequestPasswordResetUseCase {
     
     private final UserRepository userRepository;
     private final EmailService emailService;
     
-    public void execute(RequestPasswordResetCommand command) {
+    public void execute(final RequestPasswordResetCommand command) {
         log.info("Password reset requested for email: {}", command.getEmail());
         
         // Find user by email (don't reveal if user doesn't exist for security)
         var userOptional = userRepository.findByEmail(command.getEmail());
         
         if (userOptional.isPresent()) {
-            User user = userOptional.get();
+            final User user = userOptional.get();
             
             // Generate reset code
-            String resetCode = generateResetCode();
+            final String resetCode = generateResetCode();
             user.setPasswordResetToken(resetCode);
             
             userRepository.save(user);

@@ -1,8 +1,8 @@
 package com.mailist.mailist.apikey.application.usecase;
 
-import com.mailist.mailist.apikey.application.port.out.ApiKeyActivityRepository;
-import com.mailist.mailist.apikey.application.port.out.ApiKeyRepository;
 import com.mailist.mailist.apikey.domain.aggregate.ApiKey;
+import com.mailist.mailist.apikey.infrastructure.repository.ApiKeyActivityRepository;
+import com.mailist.mailist.apikey.infrastructure.repository.ApiKeyRepository;
 import com.mailist.mailist.shared.infrastructure.tenant.TenantContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

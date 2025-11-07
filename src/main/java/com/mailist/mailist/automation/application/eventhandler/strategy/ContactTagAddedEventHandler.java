@@ -2,9 +2,9 @@ package com.mailist.mailist.automation.application.eventhandler.strategy;
 
 import com.mailist.mailist.automation.domain.valueobject.TriggerType;
 import com.mailist.mailist.automation.domain.service.AutomationEngine;
-import com.mailist.mailist.automation.application.port.out.AutomationRuleRepository;
+import com.mailist.mailist.automation.infrastructure.repository.AutomationRuleRepository;
 import com.mailist.mailist.contact.domain.event.ContactTagAddedEvent;
-import com.mailist.mailist.contact.application.port.out.ContactRepository;
+import com.mailist.mailist.contact.infrastructure.repository.ContactRepository;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
@@ -14,8 +14,8 @@ import java.util.Map;
 public class ContactTagAddedEventHandler extends AbstractEventHandler<ContactTagAddedEvent> {
     
     public ContactTagAddedEventHandler(AutomationRuleRepository automationRuleRepository,
-                                      ContactRepository contactRepository,
-                                      AutomationEngine automationEngine) {
+                                       ContactRepository contactRepository,
+                                       AutomationEngine automationEngine) {
         super(automationRuleRepository, contactRepository, automationEngine);
     }
     

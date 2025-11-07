@@ -1,25 +1,24 @@
 package com.mailist.mailist.contact.application.usecase;
 
-import com.mailist.mailist.contact.application.port.out.ContactListRepository;
+import com.mailist.mailist.contact.application.usecase.command.UpdateContactListCommand;
 import com.mailist.mailist.contact.domain.aggregate.ContactList;
+import com.mailist.mailist.contact.infrastructure.repository.ContactListRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-@Slf4j
-@Transactional
-public class UpdateContactListUseCase {
+final class UpdateContactListUseCase {
 
     private final ContactListRepository contactListRepository;
 
-    public ContactList execute(UpdateContactListCommand command) {
+    ContactList execute(final UpdateContactListCommand command) {
         log.info("Updating contact list with ID: {}", command.getId());
 
         // Find existing list
-        ContactList contactList = contactListRepository.findById(command.getId())
+        final ContactList contactList = contactListRepository.findById(command.getId())
                 .orElseThrow(() -> new IllegalArgumentException("List not found with ID: " + command.getId()));
 
         // Check if new name conflicts with existing list (excluding current list)
@@ -47,9 +46,9 @@ public class UpdateContactListUseCase {
             contactList.setTags(command.getTags());
         }
 
-        ContactList updatedList = contactListRepository.save(contactList);
-        log.info("Contact list updated successfully with ID: {}", updatedList.getId());
+        contactListRepository.save(contactList);
+        log.info("Contact list updated successfully with ID: {}", contactList.getId());
 
-        return updatedList;
+        return contactList;
     }
 }

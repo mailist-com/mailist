@@ -1,8 +1,7 @@
 package com.mailist.mailist.automation.interfaces.mapper;
 
-import com.mailist.mailist.automation.application.usecase.CreateAutomationRuleCommand;
-import com.mailist.mailist.automation.application.usecase.UpdateAutomationRuleCommand;
-import com.mailist.mailist.automation.application.usecase.*;
+import com.mailist.mailist.automation.application.usecase.command.CreateAutomationRuleCommand;
+import com.mailist.mailist.automation.application.usecase.command.UpdateAutomationRuleCommand;
 import com.mailist.mailist.automation.domain.aggregate.AutomationRule;
 import com.mailist.mailist.automation.domain.valueobject.Action;
 import com.mailist.mailist.automation.domain.valueobject.Condition;

@@ -1,13 +1,16 @@
 package com.mailist.mailist.automation.interfaces.controller;
 
 import com.mailist.mailist.automation.application.usecase.*;
+import com.mailist.mailist.automation.application.usecase.command.CreateAutomationRuleCommand;
+import com.mailist.mailist.automation.application.usecase.command.DeleteAutomationRuleCommand;
+import com.mailist.mailist.automation.application.usecase.command.ExecuteAutomationRuleCommand;
+import com.mailist.mailist.automation.application.usecase.command.UpdateAutomationRuleCommand;
 import com.mailist.mailist.automation.domain.aggregate.AutomationRule;
+import com.mailist.mailist.automation.infrastructure.repository.AutomationRuleRepository;
 import com.mailist.mailist.automation.interfaces.dto.AutomationRuleDto;
 import com.mailist.mailist.automation.interfaces.mapper.AutomationRuleMapper;
-import com.mailist.mailist.automation.application.port.out.AutomationRuleRepository;
 import com.mailist.mailist.shared.interfaces.dto.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;

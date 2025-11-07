@@ -1,8 +1,10 @@
 package com.mailist.mailist.auth.interfaces.controller;
 
-import com.mailist.mailist.auth.application.usecase.*;
-import com.mailist.mailist.auth.interfaces.dto.*;
-import com.mailist.mailist.auth.application.usecase.*;
+import com.mailist.mailist.auth.application.usecase.AuthApplicationService;
+import com.mailist.mailist.auth.application.usecase.command.*;
+import com.mailist.mailist.auth.application.usecase.dto.LoginResult;
+import com.mailist.mailist.auth.application.usecase.dto.RefreshTokenResult;
+import com.mailist.mailist.auth.application.usecase.dto.Verify2FAResult;
 import com.mailist.mailist.auth.interfaces.dto.*;
 import com.mailist.mailist.auth.interfaces.mapper.AuthMapper;
 import com.mailist.mailist.shared.interfaces.dto.ApiResponse;
@@ -17,32 +19,26 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 
-@RestController
-@RequestMapping("/api/v1/auth")
-@RequiredArgsConstructor
-@Validated
 @Slf4j
+@Validated
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/api/v1/auth")
 @Tag(name = "Authentication", description = "User authentication and registration")
-public class AuthController {
+class AuthController {
     
-    private final RegisterUserUseCase registerUserUseCase;
-    private final LoginUseCase loginUseCase;
-    private final VerifyEmailUseCase verifyEmailUseCase;
-    private final RequestPasswordResetUseCase requestPasswordResetUseCase;
-    private final ResetPasswordUseCase resetPasswordUseCase;
-    private final RefreshTokenUseCase refreshTokenUseCase;
-    private final LogoutUseCase logoutUseCase;
-    private final Verify2FAUseCase verify2FAUseCase;
+
+    private final AuthApplicationService authApplicationService;
     private final AuthMapper authMapper;
     
     @PostMapping("/register")
     @Operation(summary = "Register new user", description = "Register a new user and create their organization tenant")
-    public ResponseEntity<ApiResponse> register(@Valid @RequestBody RegisterRequestDto registerDto) {
+    ResponseEntity<ApiResponse> register(@Valid @RequestBody final RegisterRequestDto registerDto) {
         log.info("Received registration request for email: {}", registerDto.getEmail());
         
         try {
-            RegisterUserCommand command = authMapper.toCommand(registerDto);
-            registerUserUseCase.execute(command);
+            final RegisterUserCommand command = authMapper.toCommand(registerDto);
+            authApplicationService.register(command);
             
             log.info("Successfully registered user: {}", registerDto.getEmail());
             
@@ -62,12 +58,12 @@ public class AuthController {
     
     @PostMapping("/verify-email")
     @Operation(summary = "Verify email", description = "Verify user email with verification code")
-    public ResponseEntity<ApiResponse> verifyEmail(@Valid @RequestBody VerifyEmailRequestDto verifyDto) {
+    ResponseEntity<ApiResponse> verifyEmail(@Valid @RequestBody final VerifyEmailRequestDto verifyDto) {
         log.info("Email verification attempt for: {}", verifyDto.getEmail());
         
         try {
-            VerifyEmailCommand command = authMapper.toCommand(verifyDto);
-            verifyEmailUseCase.execute(command);
+            final VerifyEmailCommand command = authMapper.toCommand(verifyDto);
+            authApplicationService.verifyEmail(command);
             
             log.info("Email verified successfully for: {}", verifyDto.getEmail());
             
@@ -86,14 +82,14 @@ public class AuthController {
     
     @PostMapping("/login")
     @Operation(summary = "Login user", description = "Authenticate user and return JWT tokens")
-    public ResponseEntity<?> login(@Valid @RequestBody LoginRequestDto loginDto) {
+    ResponseEntity<?> login(@Valid @RequestBody final LoginRequestDto loginDto) {
         log.info("Login attempt for: {}", loginDto.getEmail());
         
         try {
-            LoginCommand command = authMapper.toCommand(loginDto);
-            LoginUseCase.LoginResult result = loginUseCase.execute(command);
+            final LoginCommand command = authMapper.toCommand(loginDto);
+            final LoginResult result = authApplicationService.login(command);
             
-            LoginResponseDto response = authMapper.toLoginResponse(result);
+            final LoginResponseDto response = authMapper.toLoginResponse(result);
             
             log.info("Successful login for: {}", loginDto.getEmail());
             
@@ -112,12 +108,12 @@ public class AuthController {
     
     @PostMapping("/request-password-reset")
     @Operation(summary = "Request password reset", description = "Send password reset code to user email")
-    public ResponseEntity<ApiResponse> requestPasswordReset(@Valid @RequestBody RequestPasswordResetDto requestDto) {
+    ResponseEntity<ApiResponse> requestPasswordReset(@Valid @RequestBody final RequestPasswordResetDto requestDto) {
         log.info("Password reset requested for: {}", requestDto.getEmail());
         
         try {
-            RequestPasswordResetCommand command = authMapper.toCommand(requestDto);
-            requestPasswordResetUseCase.execute(command);
+            final RequestPasswordResetCommand command = authMapper.toCommand(requestDto);
+            authApplicationService.requestPasswordReset(command);
             
             // Always return success for security (don't reveal if email exists)
             return ResponseEntity.ok(ApiResponse.success("If the email exists, a reset code has been sent."));
@@ -131,12 +127,12 @@ public class AuthController {
     
     @PostMapping("/reset-password")
     @Operation(summary = "Reset password", description = "Reset user password with reset code")
-    public ResponseEntity<ApiResponse> resetPassword(@Valid @RequestBody ResetPasswordRequestDto resetDto) {
+    ResponseEntity<ApiResponse> resetPassword(@Valid @RequestBody final ResetPasswordRequestDto resetDto) {
         log.info("Password reset attempt for: {}", resetDto.getEmail());
 
         try {
-            ResetPasswordCommand command = authMapper.toCommand(resetDto);
-            resetPasswordUseCase.execute(command);
+            final ResetPasswordCommand command = authMapper.toCommand(resetDto);
+            authApplicationService.resetPassword(command);
 
             log.info("Password reset successfully for: {}", resetDto.getEmail());
 
@@ -155,14 +151,14 @@ public class AuthController {
 
     @PostMapping("/refresh-token")
     @Operation(summary = "Refresh access token", description = "Generate new access token using refresh token")
-    public ResponseEntity<?> refreshToken(@Valid @RequestBody RefreshTokenRequestDto refreshDto) {
+    ResponseEntity<?> refreshToken(@Valid @RequestBody final RefreshTokenRequestDto refreshDto) {
         log.info("Refresh token request");
 
         try {
-            RefreshTokenCommand command = authMapper.toCommand(refreshDto);
-            RefreshTokenUseCase.RefreshTokenResult result = refreshTokenUseCase.execute(command);
+            final RefreshTokenCommand command = authMapper.toCommand(refreshDto);
+            final RefreshTokenResult result = authApplicationService.refreshToken(command);
 
-            RefreshTokenResponseDto response = RefreshTokenResponseDto.success(result.getToken());
+            final RefreshTokenResponseDto response = RefreshTokenResponseDto.success(result.token());
 
             log.info("Successfully refreshed token");
 
@@ -181,7 +177,7 @@ public class AuthController {
 
     @PostMapping("/logout")
     @Operation(summary = "Logout user", description = "Revoke all refresh tokens for the authenticated user")
-    public ResponseEntity<ApiResponse> logout(@RequestAttribute(value = "userId", required = false) Long userId) {
+    ResponseEntity<ApiResponse> logout(@RequestAttribute(value = "userId", required = false) final Long userId) {
         log.info("Logout request for user ID: {}", userId);
 
         try {
@@ -190,7 +186,7 @@ public class AuthController {
                         .body(ApiResponse.error("Authentication required"));
             }
 
-            logoutUseCase.execute(userId);
+            authApplicationService.logout(userId);
 
             log.info("Successfully logged out user ID: {}", userId);
 
@@ -209,14 +205,14 @@ public class AuthController {
 
     @PostMapping("/verify-2fa")
     @Operation(summary = "Verify 2FA code", description = "Verify two-factor authentication code")
-    public ResponseEntity<?> verify2FA(@Valid @RequestBody Verify2FARequestDto verify2FADto) {
+    ResponseEntity<?> verify2FA(@Valid @RequestBody final Verify2FARequestDto verify2FADto) {
         log.info("2FA verification request for user ID: {}", verify2FADto.getUserId());
 
         try {
-            Verify2FACommand command = authMapper.toCommand(verify2FADto);
-            Verify2FAUseCase.Verify2FAResult result = verify2FAUseCase.execute(command);
+            final Verify2FACommand command = authMapper.toCommand(verify2FADto);
+            final Verify2FAResult result = authApplicationService.verify2FA(command);
 
-            Verify2FAResponseDto response = Verify2FAResponseDto.success(result.isVerified());
+            final Verify2FAResponseDto response = Verify2FAResponseDto.success(result.verified());
 
             log.info("2FA verification successful for user ID: {}", verify2FADto.getUserId());
 

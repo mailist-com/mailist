@@ -1,0 +1,9 @@
+package com.mailist.mailist.automation.application.usecase.command;
+
+import lombok.Value;
+
+@Value
+public class ExecuteAutomationRuleCommand {
+    Long automationRuleId;
+    Long contactId;
+}

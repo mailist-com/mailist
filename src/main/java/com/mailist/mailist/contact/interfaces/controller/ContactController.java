@@ -1,13 +1,11 @@
 package com.mailist.mailist.contact.interfaces.controller;
 
-import com.mailist.mailist.contact.application.usecase.CreateContactUseCase;
-import com.mailist.mailist.contact.application.usecase.CreateContactCommand;
-import com.mailist.mailist.contact.application.usecase.UpdateContactUseCase;
-import com.mailist.mailist.contact.application.usecase.UpdateContactCommand;
-import com.mailist.mailist.contact.application.usecase.AddTagToContactUseCase;
-import com.mailist.mailist.contact.application.usecase.AddTagToContactCommand;
-import com.mailist.mailist.contact.application.port.out.ContactRepository;
+import com.mailist.mailist.contact.application.usecase.ContactApplicationService;
+import com.mailist.mailist.contact.application.usecase.command.CreateContactCommand;
+import com.mailist.mailist.contact.application.usecase.command.UpdateContactCommand;
+import com.mailist.mailist.contact.application.usecase.command.AddTagToContactCommand;
 import com.mailist.mailist.contact.domain.aggregate.Contact;
+import com.mailist.mailist.contact.infrastructure.repository.ContactRepository;
 import com.mailist.mailist.contact.interfaces.dto.ContactDto;
 import com.mailist.mailist.contact.interfaces.mapper.ContactMapper;
 import com.mailist.mailist.shared.interfaces.dto.ApiResponse;
@@ -23,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
+
 import java.util.Optional;
 
 @RestController
@@ -30,32 +29,29 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "Contact Management", description = "Contact CRUD operations and management")
-public class ContactController {
+class ContactController {
 
-    private final CreateContactUseCase createContactUseCase;
-    private final UpdateContactUseCase updateContactUseCase;
-    private final AddTagToContactUseCase addTagToContactUseCase;
+
+    private final ContactApplicationService contactApplicationService;
     private final ContactRepository contactRepository;
     private final ContactMapper contactMapper;
-    
+
     @PostMapping
     @Operation(summary = "Create a new contact")
-    public ResponseEntity<ApiResponse<ContactDto.Response>> createContact(
-            @Valid @RequestBody ContactDto.CreateRequest request) {
-
+    ResponseEntity<ApiResponse<ContactDto.Response>> createContact(
+            @Valid @RequestBody final ContactDto.CreateRequest request) {
         log.info("Creating new contact with email: {}", request.getEmail());
 
-        CreateContactCommand command = contactMapper.toCreateCommand(request);
-        Contact contact = createContactUseCase.execute(command);
-        ContactDto.Response response = contactMapper.toResponse(contact);
+        final CreateContactCommand command = contactMapper.toCreateCommand(request);
+        final Contact contact = contactApplicationService.create(command);
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.success(response, "Contact created successfully"));
+                .body(ApiResponse.success(contactMapper.toResponse(contact), "Contact created successfully"));
     }
-    
+
     @GetMapping("/statistics")
     @Operation(summary = "Get contact statistics")
-    public ResponseEntity<ApiResponse<java.util.Map<String, Long>>> getContactStatistics() {
+    ResponseEntity<ApiResponse<java.util.Map<String, Long>>> getContactStatistics() {
         log.info("Getting contact statistics");
 
         long total = contactRepository.count();
@@ -77,83 +73,75 @@ public class ContactController {
 
     @GetMapping
     @Operation(summary = "List all contacts with pagination")
-    public ResponseEntity<ApiResponse<PagedResponse<ContactDto.Response>>> listContacts(Pageable pageable) {
-
+    ResponseEntity<ApiResponse<PagedResponse<ContactDto.Response>>> listContacts(final Pageable pageable) {
         log.info("Listing contacts - page: {}, size: {}", pageable.getPageNumber(), pageable.getPageSize());
 
-        Page<Contact> contactsPage = contactRepository.findAll(pageable);
-        PagedResponse<ContactDto.Response> response = PagedResponse.of(contactsPage, contactMapper::toResponse);
+        final Page<Contact> contactsPage = contactRepository.findAll(pageable);
 
-        return ResponseEntity.ok(ApiResponse.success(response));
+        return ResponseEntity.ok(ApiResponse.success(PagedResponse.of(contactsPage, contactMapper::toResponse)));
     }
-    
+
     @GetMapping("/{id}")
     @Operation(summary = "Get contact by ID")
-    public ResponseEntity<ApiResponse<ContactDto.Response>> getContact(@PathVariable Long id) {
-
+    ResponseEntity<ApiResponse<ContactDto.Response>> getContact(@PathVariable final long id) {
         log.info("Getting contact with ID: {}", id);
 
-        Optional<Contact> contact = contactRepository.findById(id);
-        if (contact.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(ApiResponse.error("Contact not found"));
-        }
+        final Optional<Contact> contact = contactRepository.findById(id);
 
-        ContactDto.Response response = contactMapper.toResponse(contact.get());
-        return ResponseEntity.ok(ApiResponse.success(response));
+        return contact.map(value -> ResponseEntity.ok(ApiResponse.success(contactMapper.toResponse(value))))
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(ApiResponse.error("Contact not found")));
+
     }
-    
+
     @GetMapping("/email/{email}")
     @Operation(summary = "Get contact by email")
-    public ResponseEntity<ContactDto.Response> getContactByEmail(@PathVariable String email) {
-
+    ResponseEntity<ContactDto.Response> getContactByEmail(@PathVariable final String email) {
         log.info("Getting contact with email: {}", email);
 
-        Optional<Contact> contact = contactRepository.findByEmail(email);
-        if (contact.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
+        final Optional<Contact> contact = contactRepository.findByEmail(email);
 
-        ContactDto.Response response = contactMapper.toResponse(contact.get());
-        return ResponseEntity.ok(response);
+        return contact.map(value -> ResponseEntity.ok(contactMapper.toResponse(value)))
+                .orElseGet(() -> ResponseEntity.notFound().build());
+
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Update contact")
-    public ResponseEntity<ApiResponse<ContactDto.Response>> updateContact(
-            @PathVariable Long id,
-            @Valid @RequestBody ContactDto.UpdateRequest request) {
+    ResponseEntity<ApiResponse<ContactDto.Response>> updateContact(
+            @PathVariable final long id,
+            @Valid @RequestBody final ContactDto.UpdateRequest request) {
 
         log.info("Updating contact with ID: {}", id);
 
-        UpdateContactCommand command = contactMapper.toUpdateCommand(id, request);
-        Contact contact = updateContactUseCase.execute(command);
-        ContactDto.Response response = contactMapper.toResponse(contact);
+        final UpdateContactCommand command = contactMapper.toUpdateCommand(id, request);
+        final Contact contact = contactApplicationService.update(command);
+        final ContactDto.Response response = contactMapper.toResponse(contact);
 
         return ResponseEntity.ok(ApiResponse.success(response, "Contact updated successfully"));
     }
 
     @PostMapping("/{id}/tags")
     @Operation(summary = "Add tag to contact")
-    public ResponseEntity<ContactDto.Response> addTagToContact(
-            @PathVariable Long id,
-            @Valid @RequestBody ContactDto.AddTagRequest request) {
-        
+    ResponseEntity<ContactDto.Response> addTagToContact(
+            @PathVariable final long id,
+            @Valid @RequestBody final ContactDto.AddTagRequest request) {
+
         log.info("Adding tag to contact ID: {}", id);
-        
-        AddTagToContactCommand command = AddTagToContactCommand.builder()
+
+        final AddTagToContactCommand command = AddTagToContactCommand.builder()
                 .contactId(id)
                 .tagName(request.getTagName())
                 .tagColor(request.getTagColor())
                 .tagDescription(request.getTagDescription())
                 .build();
-        
-        Contact contact = addTagToContactUseCase.execute(command);
-        ContactDto.Response response = contactMapper.toResponse(contact);
-        
+
+        final Contact contact = contactApplicationService.addTagToContact(command);
+        final ContactDto.Response response = contactMapper.toResponse(contact);
+
         return ResponseEntity.ok(response);
     }
-    
+
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete contact")
     public ResponseEntity<ApiResponse<Void>> deleteContact(@PathVariable Long id) {

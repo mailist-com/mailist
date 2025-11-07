@@ -2,8 +2,8 @@ package com.mailist.mailist.campaign.interfaces.mapper;
 
 import com.mailist.mailist.campaign.domain.aggregate.Campaign;
 import com.mailist.mailist.campaign.interfaces.dto.CampaignDto;
-import com.mailist.mailist.campaign.application.usecase.CreateCampaignCommand;
-import com.mailist.mailist.campaign.application.usecase.SendCampaignCommand;
+import com.mailist.mailist.campaign.application.usecase.command.CreateCampaignCommand;
+import com.mailist.mailist.campaign.application.usecase.command.SendCampaignCommand;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

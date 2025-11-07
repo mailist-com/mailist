@@ -1,29 +1,29 @@
 package com.mailist.mailist.auth.application.usecase;
 
-import com.mailist.mailist.auth.application.port.out.RefreshTokenRepository;
-import com.mailist.mailist.auth.application.port.out.UserRepository;
+import com.mailist.mailist.auth.application.usecase.command.ResetPasswordCommand;
 import com.mailist.mailist.auth.domain.aggregate.User;
+import com.mailist.mailist.auth.infrastructure.repository.RefreshTokenRepository;
+import com.mailist.mailist.auth.infrastructure.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-@Slf4j
-@Transactional
-public class ResetPasswordUseCase {
+final class ResetPasswordUseCase {
     
     private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordEncoder passwordEncoder;
     
-    public void execute(ResetPasswordCommand command) {
+    void execute(final ResetPasswordCommand command) {
         log.info("Password reset attempt for email: {}", command.getEmail());
         
         // Find user by reset token
-        User user = userRepository.findByPasswordResetToken(command.getResetCode())
+        final User user = userRepository.findByPasswordResetToken(command.getResetCode())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid reset code"));
         
         // Check if email matches
@@ -40,7 +40,7 @@ public class ResetPasswordUseCase {
         }
         
         // Reset password
-        String encodedPassword = passwordEncoder.encode(command.getNewPassword());
+        final String encodedPassword = passwordEncoder.encode(command.getNewPassword());
         user.resetPassword(encodedPassword);
         userRepository.save(user);
         

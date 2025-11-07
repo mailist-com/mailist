@@ -1,10 +1,9 @@
 package com.mailist.mailist.auth.interfaces.mapper;
 
-import com.mailist.mailist.auth.application.usecase.*;
+import com.mailist.mailist.auth.application.usecase.command.*;
+import com.mailist.mailist.auth.application.usecase.dto.LoginResult;
 import com.mailist.mailist.auth.interfaces.dto.*;
-import com.mailist.mailist.auth.application.usecase.*;
 import com.mailist.mailist.auth.domain.aggregate.User;
-import com.mailist.mailist.auth.interfaces.dto.*;
 import org.mapstruct.Mapper;
 import org.mapstruct.Named;
 
@@ -23,8 +22,8 @@ public interface AuthMapper {
     Verify2FACommand toCommand(Verify2FARequestDto dto);
     
     // Response mappings
-    default LoginResponseDto toLoginResponse(LoginUseCase.LoginResult loginResult) {
-        User user = loginResult.getUser();
+    default LoginResponseDto toLoginResponse(LoginResult loginResult) {
+        User user = loginResult.user();
 
         LoginResponseDto.UserDto userDto = LoginResponseDto.UserDto.builder()
                 .id(user.getId() != null ? user.getId().toString() : null)
@@ -37,8 +36,8 @@ public interface AuthMapper {
 
         return LoginResponseDto.success(
                 userDto,
-                loginResult.getAccessToken(),
-                loginResult.getRefreshToken(),
+                loginResult.accessToken(),
+                loginResult.refreshToken(),
                 "Login successful"
         );
     }

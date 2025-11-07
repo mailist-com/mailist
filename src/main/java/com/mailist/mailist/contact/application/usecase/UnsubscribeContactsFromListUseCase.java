@@ -1,30 +1,30 @@
 package com.mailist.mailist.contact.application.usecase;
 
-import com.mailist.mailist.contact.application.port.out.ContactListRepository;
-import com.mailist.mailist.contact.application.port.out.ContactRepository;
+import com.mailist.mailist.contact.application.usecase.command.SubscribeContactsCommand;
+import com.mailist.mailist.contact.application.usecase.dto.SubscribeResult;
 import com.mailist.mailist.contact.domain.aggregate.Contact;
 import com.mailist.mailist.contact.domain.aggregate.ContactList;
 import com.mailist.mailist.contact.domain.service.ListService;
+import com.mailist.mailist.contact.infrastructure.repository.ContactListRepository;
+import com.mailist.mailist.contact.infrastructure.repository.ContactRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-@Slf4j
-@Transactional
-public class UnsubscribeContactsFromListUseCase {
+final class UnsubscribeContactsFromListUseCase {
 
     private final ContactListRepository contactListRepository;
     private final ContactRepository contactRepository;
     private final ListService listService;
 
-    public SubscribeResult execute(SubscribeContactsCommand command) {
+    SubscribeResult execute(final SubscribeContactsCommand command) {
         log.info("Unsubscribing {} contacts from list ID: {}",
                 command.getContactIds().size(), command.getListId());
 
-        ContactList contactList = contactListRepository.findById(command.getListId())
+        final ContactList contactList = contactListRepository.findById(command.getListId())
                 .orElseThrow(() -> new IllegalArgumentException("Contact list not found"));
 
         if (contactList.getIsDynamic()) {
@@ -36,7 +36,7 @@ public class UnsubscribeContactsFromListUseCase {
 
         for (Long contactId : command.getContactIds()) {
             try {
-                Contact contact = contactRepository.findById(contactId)
+                final Contact contact = contactRepository.findById(contactId)
                         .orElseThrow(() -> new IllegalArgumentException("Contact not found: " + contactId));
 
                 listService.removeContactFromList(contactList, contact);

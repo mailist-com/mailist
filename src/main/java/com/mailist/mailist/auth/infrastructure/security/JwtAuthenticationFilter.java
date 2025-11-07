@@ -1,8 +1,8 @@
 package com.mailist.mailist.auth.infrastructure.security;
 
-import com.mailist.mailist.auth.application.port.out.UserRepository;
 import com.mailist.mailist.auth.domain.aggregate.User;
 import com.mailist.mailist.auth.domain.service.JwtService;
+import com.mailist.mailist.auth.infrastructure.repository.UserRepository;
 import com.mailist.mailist.shared.infrastructure.tenant.TenantContext;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;

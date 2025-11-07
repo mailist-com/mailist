@@ -1,28 +1,24 @@
 package com.mailist.mailist.contact.application.usecase;
 
+import com.mailist.mailist.contact.application.usecase.command.CreateContactCommand;
 import com.mailist.mailist.contact.domain.aggregate.Contact;
 import com.mailist.mailist.contact.domain.aggregate.ContactList;
-import com.mailist.mailist.contact.application.port.out.ContactRepository;
-import com.mailist.mailist.contact.application.port.out.ContactListRepository;
+import com.mailist.mailist.contact.infrastructure.repository.ContactListRepository;
+import com.mailist.mailist.contact.infrastructure.repository.ContactRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
-public class CreateContactUseCase {
+final class CreateContactUseCase {
 
     private final ContactRepository contactRepository;
     private final ContactListRepository contactListRepository;
 
-    public Contact execute(CreateContactCommand command) {
+    Contact execute(final CreateContactCommand command) {
         if (contactRepository.existsByEmail(command.getEmail())) {
             throw new IllegalArgumentException("Contact with this email already exists");
         }
@@ -36,7 +32,7 @@ public class CreateContactUseCase {
                 .build();
 
         if (CollectionUtils.isNotEmpty(command.getListIds())) {
-            List<ContactList> contactLists = contactListRepository.findAllByIds(command.getListIds());
+            final List<ContactList> contactLists = contactListRepository.findAllByIds(command.getListIds());
 
             // Add contact to lists (owning side of relationship)
             for (ContactList list : contactLists) {

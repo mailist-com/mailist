@@ -1,32 +1,31 @@
 package com.mailist.mailist.contact.application.usecase;
 
-import com.mailist.mailist.contact.application.port.out.ContactRepository;
-import com.mailist.mailist.contact.application.port.out.ContactListRepository;
+import com.mailist.mailist.contact.application.usecase.command.UpdateContactCommand;
 import com.mailist.mailist.contact.domain.aggregate.Contact;
 import com.mailist.mailist.contact.domain.aggregate.ContactList;
+import com.mailist.mailist.contact.infrastructure.repository.ContactListRepository;
+import com.mailist.mailist.contact.infrastructure.repository.ContactRepository;
 import com.mailist.mailist.shared.infrastructure.exception.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.Set;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-@Slf4j
-@Transactional
-public class UpdateContactUseCase {
+final class UpdateContactUseCase {
 
     private final ContactRepository contactRepository;
     private final ContactListRepository contactListRepository;
 
-    public Contact execute(UpdateContactCommand command) {
+    Contact execute(final UpdateContactCommand command) {
         log.info("Updating contact with ID: {}", command.getId());
 
         // Find existing contact
-        Contact contact = contactRepository.findById(command.getId())
+        final Contact contact = contactRepository.findById(command.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Contact", command.getId()));
 
         // Update fields if provided
@@ -56,22 +55,22 @@ public class UpdateContactUseCase {
         // Update list associations if provided
         if (command.getListIds() != null) {
             // Clear existing lists
-            Set<ContactList> currentLists = new HashSet<>(contact.getContactLists());
+            final Set<ContactList> currentLists = new HashSet<>(contact.getContactLists());
             for (ContactList list : currentLists) {
                 list.removeContact(contact);
             }
 
             // Add new lists
             for (Long listId : command.getListIds()) {
-                ContactList contactList = contactListRepository.findById(listId)
+                final ContactList contactList = contactListRepository.findById(listId)
                         .orElseThrow(() -> new IllegalArgumentException("Contact list not found with id: " + listId));
                 contactList.addContact(contact);
             }
         }
 
-        Contact updatedContact = contactRepository.save(contact);
-        log.info("Contact updated successfully with ID: {}", updatedContact.getId());
+        contactRepository.save(contact);
+        log.info("Contact updated successfully with ID: {}", contact.getId());
 
-        return updatedContact;
+        return contact;
     }
 }

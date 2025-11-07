@@ -1,33 +1,33 @@
 package com.mailist.mailist.auth.application.usecase;
 
-import com.mailist.mailist.auth.application.port.out.RefreshTokenRepository;
-import com.mailist.mailist.auth.application.port.out.UserRepository;
+import com.mailist.mailist.auth.application.usecase.command.LoginCommand;
+import com.mailist.mailist.auth.application.usecase.dto.LoginResult;
 import com.mailist.mailist.auth.domain.aggregate.RefreshToken;
 import com.mailist.mailist.auth.domain.aggregate.User;
 import com.mailist.mailist.auth.domain.service.JwtService;
+import com.mailist.mailist.auth.infrastructure.repository.RefreshTokenRepository;
+import com.mailist.mailist.auth.infrastructure.repository.UserRepository;
 import com.mailist.mailist.shared.infrastructure.tenant.TenantContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-@Slf4j
-@Transactional
-public class LoginUseCase {
+final class LoginUseCase {
     
     private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     
-    public LoginResult execute(LoginCommand command) {
+    LoginResult execute(final LoginCommand command) {
         log.info("Login attempt for email: {}", command.getEmail());
         
         // Find user by email
-        User user = userRepository.findByEmail(command.getEmail())
+        final User user = userRepository.findByEmail(command.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid email or password"));
         
         // Check if account is locked
@@ -65,11 +65,11 @@ public class LoginUseCase {
             userRepository.save(user);
             
             // Generate tokens
-            String accessToken = jwtService.generateAccessToken(user);
-            String refreshTokenValue = jwtService.generateRefreshToken(user);
+            final String accessToken = jwtService.generateAccessToken(user);
+            final String refreshTokenValue = jwtService.generateRefreshToken(user);
             
             // Save refresh token
-            RefreshToken refreshToken = RefreshToken.builder()
+            final RefreshToken refreshToken = RefreshToken.builder()
                     .token(refreshTokenValue)
                     .user(user)
                     .expiresAt(jwtService.getRefreshTokenExpiration())
@@ -89,14 +89,5 @@ public class LoginUseCase {
         } finally {
             TenantContext.clear();
         }
-    }
-    
-    @lombok.Data
-    @lombok.Builder
-    public static class LoginResult {
-        private String accessToken;
-        private String refreshToken;
-        private User user;
-        private java.time.LocalDateTime expiresAt;
     }
 }

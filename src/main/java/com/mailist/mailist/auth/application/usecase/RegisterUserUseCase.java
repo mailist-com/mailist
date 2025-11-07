@@ -1,8 +1,9 @@
 package com.mailist.mailist.auth.application.usecase;
 
 import com.mailist.mailist.auth.application.port.out.EmailService;
-import com.mailist.mailist.auth.application.port.out.UserRepository;
+import com.mailist.mailist.auth.application.usecase.command.RegisterUserCommand;
 import com.mailist.mailist.auth.domain.aggregate.User;
+import com.mailist.mailist.auth.infrastructure.repository.UserRepository;
 import com.mailist.mailist.shared.application.port.out.OrganizationRepository;
 import com.mailist.mailist.shared.domain.aggregate.Organization;
 import com.mailist.mailist.shared.infrastructure.tenant.TenantContext;
@@ -10,22 +11,20 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-@Slf4j
-@Transactional
-public class RegisterUserUseCase {
+final class RegisterUserUseCase {
     
     private final UserRepository userRepository;
     private final OrganizationRepository organizationRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
     
-    public User execute(RegisterUserCommand command) {
+    public User execute(final RegisterUserCommand command) {
         log.info("Starting user registration for email: {}", command.getEmail());
 
         // Validate password confirmation
@@ -44,10 +43,10 @@ public class RegisterUserUseCase {
         }
 
         // Auto-generate organization name and subdomain
-        String organizationName = command.getFirstName() + " " + command.getLastName() + "'s Organization";
+        final String organizationName = command.getFirstName() + " " + command.getLastName() + "'s Organization";
 
         // Create organization (tenant)
-        Organization organization = Organization.builder()
+        final Organization organization = Organization.builder()
                 .name(organizationName)
                 .ownerEmail(command.getEmail())
                 .plan(Organization.Plan.FREE)
@@ -57,7 +56,7 @@ public class RegisterUserUseCase {
                 .automationLimit(Organization.Plan.FREE.getAutomationLimit())
                 .build();
 
-        organization = organizationRepository.save(organization);
+        organizationRepository.save(organization);
         log.info("Created organization with ID: {}", organization.getId());
         
         // Set tenant context for user creation
@@ -65,10 +64,10 @@ public class RegisterUserUseCase {
         
         try {
             // Generate verification token
-            String verificationToken = generateVerificationCode();
+            final String verificationToken = generateVerificationCode();
             
             // Create user as organization owner
-            User user = User.builder()
+            final User user = User.builder()
                     .email(command.getEmail())
                     .password(passwordEncoder.encode(command.getPassword()))
                     .firstName(command.getFirstName())
@@ -80,8 +79,7 @@ public class RegisterUserUseCase {
 
             user.setTenantId(organization.getId());
             user.setVerificationToken(verificationToken);
-            user = userRepository.save(user);
-            
+
             // Send verification email
             emailService.sendVerificationEmail(
                 user.getEmail(), 

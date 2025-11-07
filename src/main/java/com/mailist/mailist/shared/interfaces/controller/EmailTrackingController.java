@@ -1,9 +1,9 @@
 package com.mailist.mailist.shared.interfaces.controller;
 
-import com.mailist.mailist.contact.application.port.out.ContactRepository;
 import com.mailist.mailist.contact.domain.aggregate.Contact;
 import com.mailist.mailist.automation.domain.event.EmailOpenedEvent;
 import com.mailist.mailist.automation.domain.event.EmailClickedEvent;
+import com.mailist.mailist.contact.infrastructure.repository.ContactRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

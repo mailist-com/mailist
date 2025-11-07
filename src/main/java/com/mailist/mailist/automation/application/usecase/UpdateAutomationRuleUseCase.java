@@ -1,7 +1,8 @@
 package com.mailist.mailist.automation.application.usecase;
 
-import com.mailist.mailist.automation.application.port.out.AutomationRuleRepository;
+import com.mailist.mailist.automation.application.usecase.command.UpdateAutomationRuleCommand;
 import com.mailist.mailist.automation.domain.aggregate.AutomationRule;
+import com.mailist.mailist.automation.infrastructure.repository.AutomationRuleRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

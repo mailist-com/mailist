@@ -1,7 +1,7 @@
 package com.mailist.mailist.automation.application.usecase;
 
-import com.mailist.mailist.automation.application.port.out.AutomationRuleRepository;
 import com.mailist.mailist.automation.domain.aggregate.AutomationRule;
+import com.mailist.mailist.automation.infrastructure.repository.AutomationRuleRepository;
 import com.mailist.mailist.shared.infrastructure.tenant.TenantContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

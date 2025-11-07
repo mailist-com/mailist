@@ -1,28 +1,27 @@
 package com.mailist.mailist.campaign.application.usecase;
 
+import com.mailist.mailist.campaign.application.usecase.command.SendCampaignCommand;
 import com.mailist.mailist.campaign.domain.aggregate.Campaign;
+import com.mailist.mailist.campaign.infrastructure.repository.CampaignRepository;
 import com.mailist.mailist.shared.domain.gateway.MarketingEmailGateway;
 import com.mailist.mailist.shared.domain.model.MarketingEmailMessage;
-import com.mailist.mailist.campaign.application.port.out.CampaignRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-@Transactional
-@Slf4j
-public class SendCampaignUseCase {
+class SendCampaignUseCase {
 
     private final CampaignRepository campaignRepository;
     private final MarketingEmailGateway marketingEmailGateway;
     
-    public Campaign execute(SendCampaignCommand command) {
-        Campaign campaign = campaignRepository.findById(command.getCampaignId())
+    Campaign execute(final SendCampaignCommand command) {
+        final Campaign campaign = campaignRepository.findById(command.campaignId())
                 .orElseThrow(() -> new IllegalArgumentException("Campaign not found"));
         
         if (campaign.getRecipients().isEmpty()) {
@@ -34,8 +33,8 @@ public class SendCampaignUseCase {
         }
         
         for (String recipient : campaign.getRecipients()) {
-            MarketingEmailMessage emailMessage = MarketingEmailMessage.builder()
-                    .from(command.getSenderEmail())
+            final MarketingEmailMessage emailMessage = MarketingEmailMessage.builder()
+                    .from(command.senderEmail())
                     .to(recipient)
                     .subject(campaign.getSubject())
                     .htmlContent(campaign.getTemplate().getHtmlContent())

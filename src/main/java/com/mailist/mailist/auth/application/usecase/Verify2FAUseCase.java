@@ -1,8 +1,10 @@
 package com.mailist.mailist.auth.application.usecase;
 
-import com.mailist.mailist.auth.application.port.out.UserRepository;
+import com.mailist.mailist.auth.application.usecase.command.Verify2FACommand;
+import com.mailist.mailist.auth.application.usecase.dto.Verify2FAResult;
 import com.mailist.mailist.auth.domain.aggregate.User;
 import com.mailist.mailist.auth.domain.service.TwoFactorAuthService;
+import com.mailist.mailist.auth.infrastructure.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,17 +16,16 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class Verify2FAUseCase {
+final class Verify2FAUseCase {
 
     private final UserRepository userRepository;
     private final TwoFactorAuthService twoFactorAuthService;
 
-    @Transactional
-    public Verify2FAResult execute(Verify2FACommand command) {
+    Verify2FAResult execute(final Verify2FACommand command) {
         log.info("Executing 2FA verification for user ID: {}", command.getUserId());
 
         // Find user
-        User user = userRepository.findById(command.getUserId())
+        final User user = userRepository.findById(command.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         // Check if 2FA is enabled for this user
@@ -34,7 +35,7 @@ public class Verify2FAUseCase {
         }
 
         // Verify the code
-        boolean isValid = twoFactorAuthService.verifyCode(user, command.getCode());
+        final boolean isValid = twoFactorAuthService.verifyCode(user, command.getCode());
 
         if (!isValid) {
             log.warn("Invalid 2FA code for user: {}", user.getEmail());
@@ -46,12 +47,5 @@ public class Verify2FAUseCase {
         return Verify2FAResult.builder()
                 .verified(true)
                 .build();
-    }
-
-    @Data
-    @Builder
-    @AllArgsConstructor
-    public static class Verify2FAResult {
-        private boolean verified;
     }
 }

@@ -1,27 +1,27 @@
 package com.mailist.mailist.auth.application.usecase;
 
 import com.mailist.mailist.auth.application.port.out.EmailService;
-import com.mailist.mailist.auth.application.port.out.UserRepository;
+import com.mailist.mailist.auth.application.usecase.command.VerifyEmailCommand;
 import com.mailist.mailist.auth.domain.aggregate.User;
+import com.mailist.mailist.auth.infrastructure.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-@Slf4j
-@Transactional
-public class VerifyEmailUseCase {
+final class VerifyEmailUseCase {
     
     private final UserRepository userRepository;
     private final EmailService emailService;
     
-    public void execute(VerifyEmailCommand command) {
+    void execute(final VerifyEmailCommand command) {
         log.info("Email verification attempt for: {}", command.getEmail());
         
         // Find user by verification token
-        User user = userRepository.findByVerificationToken(command.getVerificationCode())
+        final User user = userRepository.findByVerificationToken(command.getVerificationCode())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid verification code"));
         
         // Check if email matches

@@ -1,39 +1,38 @@
 package com.mailist.mailist.campaign.application.usecase;
 
+import com.mailist.mailist.campaign.application.usecase.command.CreateCampaignCommand;
 import com.mailist.mailist.campaign.domain.aggregate.Campaign;
 import com.mailist.mailist.campaign.domain.valueobject.EmailTemplate;
-import com.mailist.mailist.campaign.application.port.out.CampaignRepository;
+import com.mailist.mailist.campaign.infrastructure.repository.CampaignRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
-public class CreateCampaignUseCase {
+final class CreateCampaignUseCase {
     
     private final CampaignRepository campaignRepository;
     
-    public Campaign execute(CreateCampaignCommand command) {
-        EmailTemplate template = EmailTemplate.builder()
-                .htmlContent(command.getHtmlContent())
-                .textContent(command.getTextContent())
-                .templateName(command.getTemplateName())
+    Campaign execute(final CreateCampaignCommand command) {
+        final EmailTemplate template = EmailTemplate.builder()
+                .htmlContent(command.htmlContent())
+                .textContent(command.textContent())
+                .templateName(command.templateName())
                 .build();
         
         if (!template.isValid()) {
             throw new IllegalArgumentException("Campaign must have either HTML or text content");
         }
         
-        Campaign campaign = Campaign.builder()
-                .name(command.getName())
-                .subject(command.getSubject())
+        final Campaign campaign = Campaign.builder()
+                .name(command.name())
+                .subject(command.subject())
                 .template(template)
                 .status(Campaign.CampaignStatus.DRAFT)
                 .build();
         
-        if (command.getRecipients() != null) {
-            command.getRecipients().forEach(campaign::addRecipient);
+        if (command.recipients() != null) {
+            command.recipients().forEach(campaign::addRecipient);
         }
         
         return campaignRepository.save(campaign);

@@ -1,7 +1,7 @@
 package com.mailist.mailist.contact.interfaces.mapper;
 
-import com.mailist.mailist.contact.application.usecase.CreateContactCommand;
-import com.mailist.mailist.contact.application.usecase.UpdateContactCommand;
+import com.mailist.mailist.contact.application.usecase.command.CreateContactCommand;
+import com.mailist.mailist.contact.application.usecase.command.UpdateContactCommand;
 import com.mailist.mailist.contact.domain.aggregate.Contact;
 import com.mailist.mailist.contact.domain.aggregate.ContactList;
 import com.mailist.mailist.contact.domain.valueobject.Tag;
