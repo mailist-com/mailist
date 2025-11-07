@@ -47,4 +47,16 @@
     <!-- 011: Fix sequence values after manual inserts to prevent duplicate key errors -->
     <include file="db/changelog/017-fix-sequence-after-inserts.xml"/>
 
+    <!-- 012: Create API keys tables for external integrations -->
+    <include file="db/changelog/018-create-api-keys.xml"/>
+
+    <!-- 012: Add contact_list_tags table for storing tags associated with contact lists -->
+    <include file="db/changelog/018-add-contact-list-tags-table.xml"/>
+
+    <!-- 013: Fix automation condition type enum values to match Java enum (uppercase) -->
+    <include file="db/changelog/019-fix-automation-condition-type-enum.xml"/>
+
+    <!-- 014: Add flow_json column to automation_rules for storing complete flow definition -->
+    <include file="db/changelog/020-add-flow-json-to-automation-rules.xml"/>
+
 </databaseChangeLog>

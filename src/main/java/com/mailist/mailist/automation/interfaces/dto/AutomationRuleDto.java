@@ -40,10 +40,13 @@ public class AutomationRuleDto {
         
         @Schema(description = "Rule actions")
         List<ActionDto.Response> actions;
-        
+
+        @Schema(description = "Flow JSON definition with all nodes and connections")
+        String flowJson;
+
         @Schema(description = "Creation timestamp")
         LocalDateTime createdAt;
-        
+
         @Schema(description = "Last update timestamp")
         LocalDateTime updatedAt;
     }
@@ -65,16 +68,9 @@ public class AutomationRuleDto {
         
         @Schema(description = "Whether rule is active", example = "true")
         Boolean isActive;
-        
-        @NotEmpty(message = "At least one condition is required")
-        @Valid
-        @Schema(description = "Rule conditions", required = true)
-        List<ConditionDto.CreateRequest> conditions;
-        
-        @NotEmpty(message = "At least one action is required")
-        @Valid
-        @Schema(description = "Rule actions", required = true)
-        List<ActionDto.CreateRequest> actions;
+
+        @Schema(description = "Flow JSON definition with all nodes and connections")
+        String flowJson;
     }
     
     @Value
@@ -97,6 +93,9 @@ public class AutomationRuleDto {
         @Valid
         @Schema(description = "Rule actions")
         List<ActionDto.UpdateRequest> actions;
+
+        @Schema(description = "Flow JSON definition with all nodes and connections")
+        String flowJson;
     }
     
     public static class ConditionDto {

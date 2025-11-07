@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="020-add-flow-json-to-automation-rules" author="system">
+        <comment>Add flow_json column to automation_rules table to store complete automation flow definition</comment>
+
+        <!-- Add flow_json column to store the complete flow state -->
+        <addColumn tableName="automation_rules">
+            <column name="flow_json" type="jsonb">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+
+        <rollback>
+            <dropColumn tableName="automation_rules" columnName="flow_json"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

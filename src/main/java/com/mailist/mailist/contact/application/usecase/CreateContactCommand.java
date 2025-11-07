@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
+import java.util.Set;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -14,4 +16,5 @@ public class CreateContactCommand {
     private String lastName;
     private String email;
     private String phone;
+    private Set<Long> listIds;
 }

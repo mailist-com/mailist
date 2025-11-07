@@ -10,6 +10,7 @@ import lombok.EqualsAndHashCode;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 import java.util.HashSet;
 
@@ -45,10 +46,10 @@ public class Contact extends BaseTenantEntity {
     @CollectionTable(name = "contact_tags", joinColumns = @JoinColumn(name = "contact_id"))
     @Builder.Default
     private Set<Tag> tags = new HashSet<>();
-    
+
     @ManyToMany(mappedBy = "contacts", fetch = FetchType.LAZY)
     @Builder.Default
-    private Set<ContactList> lists = new HashSet<>();
+    private Set<ContactList> contactLists = new HashSet<>();
     
     @Column(name = "lead_score")
     @Builder.Default
@@ -94,5 +95,4 @@ public class Contact extends BaseTenantEntity {
         this.lastActivityAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
-    
 }

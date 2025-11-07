@@ -27,8 +27,9 @@ public class Condition {
     @Column(name = "condition_value")
     private String value;
     
+    @Enumerated(EnumType.STRING)
     @Column(name = "condition_type")
-    private String type;
+    private ConditionType type;
     
     public enum ConditionOperator {
         EQUALS,

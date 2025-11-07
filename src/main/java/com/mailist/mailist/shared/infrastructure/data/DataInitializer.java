@@ -8,6 +8,7 @@ import com.mailist.mailist.shared.domain.aggregate.Organization;
 import com.mailist.mailist.campaign.domain.valueobject.EmailTemplate;
 import com.mailist.mailist.contact.domain.valueobject.Tag;
 import com.mailist.mailist.automation.domain.valueobject.Condition;
+import com.mailist.mailist.automation.domain.valueobject.ConditionType;
 import com.mailist.mailist.automation.domain.valueobject.Action;
 import com.mailist.mailist.automation.domain.valueobject.TriggerType;
 import com.mailist.mailist.campaign.application.port.out.CampaignRepository;
@@ -182,7 +183,7 @@ public class DataInitializer implements CommandLineRunner {
                 .field("tag")
                 .operator(Condition.ConditionOperator.HAS_TAG)
                 .value("Newsletter")
-                .type("contact")
+                .type(ConditionType.CONTACT)
                 .build();
 
         Action sendWelcomeEmail = Action.builder()
@@ -213,7 +214,7 @@ public class DataInitializer implements CommandLineRunner {
                 .field("leadScore")
                 .operator(Condition.ConditionOperator.GREATER_THAN)
                 .value("70")
-                .type("contact")
+                .type(ConditionType.CONTACT)
                 .build();
 
         Action updateLeadScore = Action.builder()

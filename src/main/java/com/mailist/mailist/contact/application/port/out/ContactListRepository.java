@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface ContactListRepository {
     
@@ -17,6 +18,8 @@ public interface ContactListRepository {
     Optional<ContactList> findByName(String name);
     
     List<ContactList> findByIsActive(boolean isActive);
+
+    List<ContactList> findAllByIds(Set<Long> ids);
     
     List<ContactList> findByIsDynamic(boolean isDynamic);
     

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mailist.mailist.contact.application.usecase.CreateContactListCommand;
+import com.mailist.mailist.contact.application.usecase.UpdateContactListCommand;
 import com.mailist.mailist.contact.domain.aggregate.Contact;
 import com.mailist.mailist.contact.domain.aggregate.ContactList;
 import com.mailist.mailist.contact.interfaces.dto.ContactListDto;
@@ -49,6 +50,7 @@ public class ContactListMapper {
                 .isSmartList(list.getIsDynamic())
                 .subscriberCount(list.getContactCount())
                 .conditions(conditions)
+                .tags(list.getTags() != null ? new ArrayList<>(list.getTags()) : new ArrayList<>())
                 .createdAt(list.getCreatedAt())
                 .updatedAt(list.getUpdatedAt())
                 .build();
@@ -63,6 +65,7 @@ public class ContactListMapper {
                 .description(request.getDescription())
                 .isSmartList(Boolean.FALSE)
                 .segmentRule(null)
+                .tags(request.getTags() != null ? new java.util.HashSet<>(request.getTags()) : null)
                 .build();
     }
 
@@ -87,6 +90,20 @@ public class ContactListMapper {
                 .description(request.getDescription())
                 .isSmartList(Boolean.TRUE)
                 .segmentRule(segmentRule)
+                .build();
+    }
+
+    /**
+     * Maps UpdateRequest to UpdateContactListCommand
+     */
+    public UpdateContactListCommand toUpdateCommand(Long id, ContactListDto.UpdateRequest request) {
+        return UpdateContactListCommand.builder()
+                .id(id)
+                .name(request.getName())
+                .description(request.getDescription())
+                .isSmartList(request.getIsSmartList())
+                .segmentRule(null) // For now, we don't update segment rules
+                .tags(request.getTags() != null ? new java.util.HashSet<>(request.getTags()) : null)
                 .build();
     }
 

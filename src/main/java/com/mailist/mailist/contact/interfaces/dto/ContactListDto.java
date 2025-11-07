@@ -23,6 +23,7 @@ public class ContactListDto {
         private Integer subscriberCount;
         private Boolean isSmartList;
         private List<SmartListCondition> conditions;
+        private List<String> tags;
         private LocalDateTime createdAt;
         private LocalDateTime updatedAt;
     }
@@ -37,6 +38,7 @@ public class ContactListDto {
         private String description;
         private String type; // "standard" or "smart"
         private Boolean isSmartList;
+        private List<String> tags;
     }
 
     @Data
@@ -48,6 +50,18 @@ public class ContactListDto {
         private String name;
         private String description;
         private List<SmartListCondition> conditions;
+    }
+
+    @Data
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class UpdateRequest {
+        private String name;
+        private String description;
+        private String type; // "standard" or "smart"
+        private Boolean isSmartList;
+        private List<String> tags;
     }
 
     @Data

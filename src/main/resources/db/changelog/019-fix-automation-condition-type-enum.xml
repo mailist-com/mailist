@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="019-fix-automation-condition-type-enum" author="system">
+        <comment>Fix automation_conditions table to use proper enum values (uppercase)</comment>
+
+        <!-- Update lowercase 'contact' to uppercase 'CONTACT' to match Java enum -->
+        <update tableName="automation_conditions">
+            <column name="condition_type" value="CONTACT"/>
+            <where>condition_type = 'contact'</where>
+        </update>
+
+    </changeSet>
+
+</databaseChangeLog>

@@ -7,6 +7,7 @@ import com.mailist.mailist.contact.application.usecase.*;
 import com.mailist.mailist.contact.domain.aggregate.ContactList;
 import com.mailist.mailist.contact.interfaces.dto.ContactListDto;
 import com.mailist.mailist.contact.interfaces.mapper.ContactListMapper;
+import com.mailist.mailist.shared.infrastructure.exception.EntityNotFoundException;
 import com.mailist.mailist.shared.interfaces.dto.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -33,6 +34,7 @@ import java.util.stream.Collectors;
 public class ContactListController {
 
     private final CreateContactListUseCase createContactListUseCase;
+    private final UpdateContactListUseCase updateContactListUseCase;
     private final SubscribeContactsToListUseCase subscribeContactsToListUseCase;
     private final UnsubscribeContactsFromListUseCase unsubscribeContactsFromListUseCase;
     private final ImportContactsUseCase importContactsUseCase;
@@ -85,7 +87,7 @@ public class ContactListController {
         log.info("Fetching contact list with ID: {}", id);
 
         ContactList list = contactListRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("List not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Contact list", id));
 
         ContactListDto.Response response = contactListMapper.toResponse(list);
 
@@ -103,8 +105,9 @@ public class ContactListController {
         log.info("Creating new contact list: {}", request.getName());
 
         CreateContactListCommand command = contactListMapper.toCreateCommand(request);
-        ContactList list = createContactListUseCase.execute(command);
-        ContactListDto.Response response = contactListMapper.toResponse(list);
+        ContactList createdList = createContactListUseCase.execute(command);
+
+        ContactListDto.Response response = contactListMapper.toResponse(createdList);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.<ContactListDto.Response>builder()
@@ -122,8 +125,9 @@ public class ContactListController {
         log.info("Creating smart list: {}", request.getName());
 
         CreateContactListCommand command = contactListMapper.toCreateSmartListCommand(request);
-        ContactList list = createContactListUseCase.execute(command);
-        ContactListDto.Response response = contactListMapper.toResponse(list);
+        ContactList createdList = createContactListUseCase.execute(command);
+
+        ContactListDto.Response response = contactListMapper.toResponse(createdList);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.<ContactListDto.Response>builder()
@@ -131,6 +135,26 @@ public class ContactListController {
                         .data(response)
                         .message("Smart list created successfully")
                         .build());
+    }
+
+    @PutMapping("/{id}")
+    @Operation(summary = "Update a contact list")
+    public ResponseEntity<ApiResponse<ContactListDto.Response>> updateList(
+            @PathVariable Long id,
+            @Valid @RequestBody ContactListDto.UpdateRequest request) {
+
+        log.info("Updating contact list with ID: {}", id);
+
+        UpdateContactListCommand command = contactListMapper.toUpdateCommand(id, request);
+        ContactList updatedList = updateContactListUseCase.execute(command);
+
+        ContactListDto.Response response = contactListMapper.toResponse(updatedList);
+
+        return ResponseEntity.ok(ApiResponse.<ContactListDto.Response>builder()
+                .success(true)
+                .data(response)
+                .message("List updated successfully")
+                .build());
     }
 
     @PostMapping("/{listId}/subscribe")
@@ -191,7 +215,7 @@ public class ContactListController {
         log.info("Deleting contact list with ID: {}", id);
 
         ContactList list = contactListRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("List not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Contact list", id));
 
         contactListRepository.delete(list);
 
@@ -209,7 +233,7 @@ public class ContactListController {
         log.info("Fetching statistics for list ID: {}", listId);
 
         ContactList list = contactListRepository.findById(listId)
-                .orElseThrow(() -> new IllegalArgumentException("List not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Contact list", listId));
 
         ContactListDto.StatisticsResponse statistics = contactListMapper.toStatistics(list);
 

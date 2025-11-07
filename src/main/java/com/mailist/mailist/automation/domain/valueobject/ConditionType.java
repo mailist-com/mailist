@@ -1,6 +1,7 @@
 package com.mailist.mailist.automation.domain.valueobject;
 
 public enum ConditionType {
+    CONTACT("Contact"),
     HAS_TAG("Has Tag"),
     NOT_HAS_TAG("Does Not Have Tag"),
     IN_LIST("In List"),

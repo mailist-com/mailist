@@ -55,7 +55,10 @@ public class AutomationRule extends BaseTenantEntity {
     @Column(name = "is_active")
     @Builder.Default
     private Boolean isActive = true;
-    
+
+    @Column(name = "flow_json", columnDefinition = "jsonb")
+    private String flowJson;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     
