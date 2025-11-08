@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="022-add-campaign-columns" author="marketing-automation">
+        <comment>Add new columns to campaigns table for enhanced campaign management</comment>
+
+        <!-- Add preheader column -->
+        <addColumn tableName="campaigns">
+            <column name="preheader" type="VARCHAR(255)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+
+        <!-- Add from_name column -->
+        <addColumn tableName="campaigns">
+            <column name="from_name" type="VARCHAR(255)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+
+        <!-- Add from_email column -->
+        <addColumn tableName="campaigns">
+            <column name="from_email" type="VARCHAR(255)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+
+        <!-- Add reply_to column -->
+        <addColumn tableName="campaigns">
+            <column name="reply_to" type="VARCHAR(255)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+
+        <!-- Add campaign_type column with default value -->
+        <addColumn tableName="campaigns">
+            <column name="campaign_type" type="VARCHAR(50)" defaultValue="regular">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+
+        <!-- Note: html_content and text_content already exist from migration 012 -->
+        <!-- Note: status column already allows VARCHAR(50) from migration 007 -->
+
+    </changeSet>
+
+</databaseChangeLog>

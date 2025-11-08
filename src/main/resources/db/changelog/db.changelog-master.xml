@@ -62,4 +62,7 @@
     <!-- 015: Create email_events table for dashboard analytics and email tracking -->
     <include file="db/changelog/021-create-email-events.xml"/>
 
+    <!-- 016: Add new columns to campaigns table for enhanced campaign management -->
+    <include file="db/changelog/022-add-campaign-columns.xml"/>
+
 </databaseChangeLog>

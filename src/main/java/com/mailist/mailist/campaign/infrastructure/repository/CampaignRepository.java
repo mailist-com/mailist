@@ -15,4 +15,6 @@ public interface CampaignRepository extends JpaRepository<Campaign, Long> {
     Page<Campaign> findByStatus(Campaign.CampaignStatus status, Pageable pageable);
 
     List<Campaign> findByStatusAndScheduledAtBefore(Campaign.CampaignStatus status, LocalDateTime dateTime);
+
+    long countByStatus(Campaign.CampaignStatus status);
 }

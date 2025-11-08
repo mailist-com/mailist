@@ -49,35 +49,58 @@ public class CampaignDto {
         public void setSenderEmail(String senderEmail) { this.senderEmail = senderEmail; }
     }
     
+    @Data
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class Response {
         private Long id;
         private String name;
         private String subject;
+        private String preheader;
+        private String fromName;
+        private String fromEmail;
+        private String replyTo;
         private String status;
+        private String type;
+        private String htmlContent;
+        private String textContent;
         private Integer recipientCount;
         private LocalDateTime scheduledAt;
         private LocalDateTime sentAt;
         private LocalDateTime createdAt;
         private LocalDateTime updatedAt;
-        
-        // Getters and setters
-        public Long getId() { return id; }
-        public void setId(Long id) { this.id = id; }
-        public String getName() { return name; }
-        public void setName(String name) { this.name = name; }
-        public String getSubject() { return subject; }
-        public void setSubject(String subject) { this.subject = subject; }
-        public String getStatus() { return status; }
-        public void setStatus(String status) { this.status = status; }
-        public Integer getRecipientCount() { return recipientCount; }
-        public void setRecipientCount(Integer recipientCount) { this.recipientCount = recipientCount; }
-        public LocalDateTime getScheduledAt() { return scheduledAt; }
-        public void setScheduledAt(LocalDateTime scheduledAt) { this.scheduledAt = scheduledAt; }
-        public LocalDateTime getSentAt() { return sentAt; }
-        public void setSentAt(LocalDateTime sentAt) { this.sentAt = sentAt; }
-        public LocalDateTime getCreatedAt() { return createdAt; }
-        public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
-        public LocalDateTime getUpdatedAt() { return updatedAt; }
-        public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+        private Statistics statistics;
+
+        @Data
+        @Builder
+        @AllArgsConstructor
+        @NoArgsConstructor
+        public static class Statistics {
+            private Integer sent;
+            private Integer delivered;
+            private Integer opens;
+            private Integer uniqueOpens;
+            private Integer clicks;
+            private Integer uniqueClicks;
+            private Integer bounces;
+            private Integer softBounces;
+            private Integer hardBounces;
+            private Integer unsubscribes;
+            private Integer complaints;
+            private Performance performance;
+
+            @Data
+            @Builder
+            @AllArgsConstructor
+            @NoArgsConstructor
+            public static class Performance {
+                private Double openRate;
+                private Double clickRate;
+                private Double clickToOpenRate;
+                private Double bounceRate;
+                private Double unsubscribeRate;
+            }
+        }
     }
 }

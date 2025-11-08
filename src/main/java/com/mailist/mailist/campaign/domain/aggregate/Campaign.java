@@ -31,7 +31,22 @@ public class Campaign extends BaseTenantEntity {
     
     @Column(nullable = false)
     private String subject;
-    
+
+    private String preheader;
+
+    @Column(name = "from_name")
+    private String fromName;
+
+    @Column(name = "from_email")
+    private String fromEmail;
+
+    @Column(name = "reply_to")
+    private String replyTo;
+
+    @Column(name = "campaign_type")
+    @Builder.Default
+    private String type = "regular";
+
     @Embedded
     private EmailTemplate template;
     
@@ -85,7 +100,28 @@ public class Campaign extends BaseTenantEntity {
         this.recipients.add(email);
     }
     
+    public void pause() {
+        if (this.status != CampaignStatus.SENDING && this.status != CampaignStatus.SCHEDULED) {
+            throw new IllegalStateException("Campaign can only be paused from SENDING or SCHEDULED status");
+        }
+        this.status = CampaignStatus.PAUSED;
+    }
+
+    public void resume() {
+        if (this.status != CampaignStatus.PAUSED) {
+            throw new IllegalStateException("Campaign can only be resumed from PAUSED status");
+        }
+        this.status = CampaignStatus.SENDING;
+    }
+
+    public void cancel() {
+        if (this.status == CampaignStatus.SENT) {
+            throw new IllegalStateException("Cannot cancel a sent campaign");
+        }
+        this.status = CampaignStatus.CANCELLED;
+    }
+
     public enum CampaignStatus {
-        DRAFT, SCHEDULED, SENT, FAILED
+        DRAFT, SCHEDULED, SENDING, SENT, PAUSED, CANCELLED, FAILED
     }
 }

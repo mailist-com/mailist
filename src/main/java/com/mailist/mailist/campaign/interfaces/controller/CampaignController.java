@@ -21,7 +21,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/campaigns")
+@RequestMapping("/api/v1/campaigns")
 @Tag(name = "Campaigns", description = "Email campaign management")
 class CampaignController {
     
@@ -53,15 +53,94 @@ class CampaignController {
         return ResponseEntity.ok(response);
     }
     
+    @GetMapping("/{id}")
+    @Operation(summary = "Get campaign by ID")
+    ResponseEntity<CampaignDto.Response> getCampaignById(@PathVariable final long id) {
+        final Campaign campaign = campaignRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Campaign not found"));
+
+        return ResponseEntity.ok(campaignMapper.toResponse(campaign));
+    }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Delete a campaign")
+    ResponseEntity<Void> deleteCampaign(@PathVariable final long id) {
+        campaignRepository.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
+
     @PostMapping("/{id}/send")
     @Operation(summary = "Send a campaign immediately")
     ResponseEntity<CampaignDto.Response> sendCampaign(
             @PathVariable final long id,
             @Valid @RequestBody final CampaignDto.SendRequest request) {
-        
+
         final SendCampaignCommand command = campaignMapper.toSendCommand(id, request);
         final Campaign campaign = campaignApplicationService.sendCampaing(command);
 
         return ResponseEntity.ok(campaignMapper.toResponse(campaign));
+    }
+
+    @PostMapping("/{id}/duplicate")
+    @Operation(summary = "Duplicate a campaign")
+    ResponseEntity<CampaignDto.Response> duplicateCampaign(@PathVariable final long id) {
+        final Campaign original = campaignRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Campaign not found"));
+
+        final Campaign duplicate = Campaign.builder()
+                .name(original.getName() + " (kopia)")
+                .subject(original.getSubject())
+                .preheader(original.getPreheader())
+                .fromName(original.getFromName())
+                .fromEmail(original.getFromEmail())
+                .replyTo(original.getReplyTo())
+                .type(original.getType())
+                .template(original.getTemplate())
+                .status(Campaign.CampaignStatus.DRAFT)
+                .build();
+
+        final Campaign saved = campaignRepository.save(duplicate);
+        return ResponseEntity.status(HttpStatus.CREATED).body(campaignMapper.toResponse(saved));
+    }
+
+    @PostMapping("/{id}/pause")
+    @Operation(summary = "Pause a campaign")
+    ResponseEntity<CampaignDto.Response> pauseCampaign(@PathVariable final long id) {
+        final Campaign campaign = campaignRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Campaign not found"));
+
+        campaign.pause();
+        final Campaign saved = campaignRepository.save(campaign);
+
+        return ResponseEntity.ok(campaignMapper.toResponse(saved));
+    }
+
+    @PostMapping("/{id}/resume")
+    @Operation(summary = "Resume a paused campaign")
+    ResponseEntity<CampaignDto.Response> resumeCampaign(@PathVariable final long id) {
+        final Campaign campaign = campaignRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Campaign not found"));
+
+        campaign.resume();
+        final Campaign saved = campaignRepository.save(campaign);
+
+        return ResponseEntity.ok(campaignMapper.toResponse(saved));
+    }
+
+    @GetMapping("/statistics")
+    @Operation(summary = "Get campaign statistics")
+    ResponseEntity<java.util.Map<String, Object>> getCampaignStatistics() {
+        final long total = campaignRepository.count();
+        final long draft = campaignRepository.countByStatus(Campaign.CampaignStatus.DRAFT);
+        final long scheduled = campaignRepository.countByStatus(Campaign.CampaignStatus.SCHEDULED);
+        final long sent = campaignRepository.countByStatus(Campaign.CampaignStatus.SENT);
+
+        final java.util.Map<String, Object> stats = new java.util.HashMap<>();
+        stats.put("total", total);
+        stats.put("draft", draft);
+        stats.put("scheduled", scheduled);
+        stats.put("sent", sent);
+
+        return ResponseEntity.ok(stats);
     }
 }
