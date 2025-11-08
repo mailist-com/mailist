@@ -59,4 +59,7 @@
     <!-- 014: Add flow_json column to automation_rules for storing complete flow definition -->
     <include file="db/changelog/020-add-flow-json-to-automation-rules.xml"/>
 
+    <!-- 015: Create email_events table for dashboard analytics and email tracking -->
+    <include file="db/changelog/021-create-email-events.xml"/>
+
 </databaseChangeLog>

@@ -49,4 +49,19 @@ public interface ContactRepository extends JpaRepository<Contact, Long> {
 
     @Query("SELECT c FROM Contact c WHERE c.lastActivityAt >= :date")
     List<Contact> findByLastActivityAfter(@Param("date") java.time.LocalDateTime date);
+
+    @Query("SELECT COUNT(c) FROM Contact c WHERE c.createdAt >= :date AND c.tenantId = :tenantId")
+    Long countByCreatedAtAfterAndTenantId(@Param("date") java.time.LocalDateTime date, @Param("tenantId") Long tenantId);
+
+    Long countByCreatedAtAfter(java.time.LocalDateTime date);
+
+    Long countByCreatedAtBefore(java.time.LocalDateTime date);
+
+    @Query("SELECT EXTRACT(MONTH FROM c.createdAt) as month, COUNT(c) " +
+           "FROM Contact c " +
+           "WHERE EXTRACT(YEAR FROM c.createdAt) = :year " +
+           "AND c.tenantId = :tenantId " +
+           "GROUP BY EXTRACT(MONTH FROM c.createdAt) " +
+           "ORDER BY month")
+    List<Object[]> countByMonth(@Param("tenantId") Long tenantId, @Param("year") int year);
 }

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="021-create-email-events" author="dashboard-analytics">
+        <comment>Create email_events table for tracking email interactions (opens, clicks, etc.) for dashboard analytics</comment>
+
+        <createTable tableName="email_events">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="tenant_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="campaign_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="message_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="contact_email" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="contact_id" type="BIGINT"/>
+            <column name="event_type" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="clicked_url" type="VARCHAR(2048)"/>
+            <column name="user_agent" type="VARCHAR(512)"/>
+            <column name="ip_address" type="VARCHAR(45)"/>
+            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <!-- Add foreign key for tenant -->
+        <addForeignKeyConstraint
+            baseTableName="email_events"
+            baseColumnNames="tenant_id"
+            referencedTableName="organizations"
+            referencedColumnNames="id"
+            constraintName="fk_email_events_tenant"
+            onDelete="CASCADE"/>
+
+        <!-- Add foreign key for contact (nullable, as contact might not exist) -->
+        <addForeignKeyConstraint
+            baseTableName="email_events"
+            baseColumnNames="contact_id"
+            referencedTableName="contacts"
+            referencedColumnNames="id"
+            constraintName="fk_email_events_contact"
+            onDelete="SET NULL"/>
+
+        <!-- Create indexes for performance optimization -->
+        <createIndex tableName="email_events" indexName="idx_email_events_campaign_id">
+            <column name="campaign_id"/>
+        </createIndex>
+
+        <createIndex tableName="email_events" indexName="idx_email_events_contact_email">
+            <column name="contact_email"/>
+        </createIndex>
+
+        <createIndex tableName="email_events" indexName="idx_email_events_event_type">
+            <column name="event_type"/>
+        </createIndex>
+
+        <createIndex tableName="email_events" indexName="idx_email_events_created_at">
+            <column name="created_at"/>
+        </createIndex>
+
+        <createIndex tableName="email_events" indexName="idx_email_events_tenant_campaign">
+            <column name="tenant_id"/>
+            <column name="campaign_id"/>
+        </createIndex>
+
+        <createIndex tableName="email_events" indexName="idx_email_events_tenant_created">
+            <column name="tenant_id"/>
+            <column name="created_at"/>
+        </createIndex>
+
+    </changeSet>
+
+</databaseChangeLog>
