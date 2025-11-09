@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="023-1" author="system">
+        <comment>Create automation_steps table for storing parsed automation flow steps</comment>
+        <createTable tableName="automation_steps">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="automation_rule_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="step_id" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="step_type" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="step_order" type="int"/>
+            <column name="position_x" type="double precision"/>
+            <column name="position_y" type="double precision"/>
+            <column name="input_connection_id" type="varchar(255)"/>
+            <column name="output_connections" type="jsonb"/>
+            <column name="settings" type="jsonb"/>
+            <column name="title" type="varchar(255)"/>
+            <column name="description" type="text"/>
+            <column name="is_expanded" type="boolean" defaultValueBoolean="false"/>
+            <column name="tenant_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="timestamp"/>
+            <column name="updated_at" type="timestamp"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="023-2" author="system">
+        <comment>Add foreign key constraint from automation_steps to automation_rules</comment>
+        <addForeignKeyConstraint
+                baseTableName="automation_steps"
+                baseColumnNames="automation_rule_id"
+                constraintName="fk_automation_steps_rule"
+                referencedTableName="automation_rules"
+                referencedColumnNames="id"
+                onDelete="CASCADE"/>
+    </changeSet>
+
+    <changeSet id="023-3" author="system">
+        <comment>Create indexes for automation_steps table</comment>
+        <createIndex indexName="idx_automation_steps_rule_id" tableName="automation_steps">
+            <column name="automation_rule_id"/>
+        </createIndex>
+        <createIndex indexName="idx_automation_steps_tenant_id" tableName="automation_steps">
+            <column name="tenant_id"/>
+        </createIndex>
+        <createIndex indexName="idx_automation_steps_step_type" tableName="automation_steps">
+            <column name="step_type"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>

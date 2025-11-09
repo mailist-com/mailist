@@ -25,14 +25,12 @@ public class AutomationEngine {
         if (!rule.getIsActive()) {
             return;
         }
-        
-        boolean conditionsMet = evaluateConditions(rule.getConditions(), contact, context);
-        
-        List<Action> actionsToExecute = conditionsMet ? rule.getActions() : rule.getElseActions();
-        
-        for (Action action : actionsToExecute) {
-            executeAction(action, contact, context);
-        }
+
+        // TODO: Refactor to use AutomationStep entities instead of deprecated conditions/actions
+        // The automation logic should now be executed based on the flow defined in automation_steps table
+        // This requires parsing the flow and executing steps in the correct order
+
+        log.warn("AutomationEngine.executeRule is using deprecated logic - needs refactoring to use AutomationStep entities");
     }
     
     private boolean evaluateConditions(List<Condition> conditions, Contact contact, Map<String, Object> context) {

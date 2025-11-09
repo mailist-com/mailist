@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="024-1" author="system">
+        <comment>Drop old automation_conditions table - data now stored in automation_steps</comment>
+        <dropTable tableName="automation_conditions" cascadeConstraints="true"/>
+    </changeSet>
+
+    <changeSet id="024-2" author="system">
+        <comment>Drop old automation_actions table - data now stored in automation_steps</comment>
+        <dropTable tableName="automation_actions" cascadeConstraints="true"/>
+    </changeSet>
+
+    <changeSet id="024-3" author="system">
+        <comment>Drop old automation_else_actions table - data now stored in automation_steps</comment>
+        <dropTable tableName="automation_else_actions" cascadeConstraints="true"/>
+    </changeSet>
+
+</databaseChangeLog>

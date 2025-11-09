@@ -27,9 +27,7 @@ public class DuplicateAutomationRuleUseCase {
                 .name(original.getName() + " (kopia)")
                 .description(original.getDescription())
                 .triggerType(original.getTriggerType())
-                .conditions(original.getConditions())
-                .actions(original.getActions())
-                .elseActions(original.getElseActions())
+                .flowJson(original.getFlowJson())
                 .isActive(false)  // Start duplicates as inactive
                 .build();
 
@@ -39,6 +37,9 @@ public class DuplicateAutomationRuleUseCase {
 
         log.info("Duplicated automation rule: {} to new ID: {} for organization: {}",
                 automationRuleId, saved.getId(), organizationId);
+
+        // TODO: Duplicate automation steps as well
+        // Need to parse flowJson and create new AutomationStep records for the duplicate
 
         return saved;
     }

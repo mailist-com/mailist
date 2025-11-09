@@ -65,4 +65,10 @@
     <!-- 016: Add new columns to campaigns table for enhanced campaign management -->
     <include file="db/changelog/022-add-campaign-columns.xml"/>
 
+    <!-- 017: Create automation_steps table for storing parsed automation flow steps -->
+    <include file="db/changelog/023-create-automation-steps.xml"/>
+
+    <!-- 018: Cleanup old automation columns - data now in automation_steps -->
+    <include file="db/changelog/024-cleanup-old-automation-columns.xml"/>
+
 </databaseChangeLog>
