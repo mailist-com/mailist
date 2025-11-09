@@ -71,4 +71,7 @@
     <!-- 018: Cleanup old automation columns - data now in automation_steps -->
     <include file="db/changelog/024-cleanup-old-automation-columns.xml"/>
 
+    <!-- 019: Add new user preference fields for enhanced profile settings -->
+    <include file="db/changelog/025-add-user-preferences-fields.xml"/>
+
 </databaseChangeLog>

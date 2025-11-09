@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="025-add-user-preferences-fields" author="system">
+        <comment>Add new notification and email preference fields to user_preferences table</comment>
+
+        <!-- Add new notification preference fields -->
+        <addColumn tableName="user_preferences">
+            <column name="campaign_updates" type="BOOLEAN" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+
+        <addColumn tableName="user_preferences">
+            <column name="automation_alerts" type="BOOLEAN" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+
+        <addColumn tableName="user_preferences">
+            <column name="monthly_reports" type="BOOLEAN" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+
+        <addColumn tableName="user_preferences">
+            <column name="system_updates" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+
+        <!-- Add email preference fields -->
+        <addColumn tableName="user_preferences">
+            <column name="default_from_name" type="VARCHAR(100)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+
+        <addColumn tableName="user_preferences">
+            <column name="default_from_email" type="VARCHAR(100)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+
+        <addColumn tableName="user_preferences">
+            <column name="email_signature" type="VARCHAR(1000)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+
+        <!-- Add display preference fields -->
+        <addColumn tableName="user_preferences">
+            <column name="date_format" type="VARCHAR(20)" defaultValue="DD.MM.YYYY">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+
+        <addColumn tableName="user_preferences">
+            <column name="time_format" type="VARCHAR(5)" defaultValue="24h">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+
+    </changeSet>
+
+</databaseChangeLog>

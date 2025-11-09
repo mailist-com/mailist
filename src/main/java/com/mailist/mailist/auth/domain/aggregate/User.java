@@ -184,9 +184,12 @@ public class User extends BaseTenantEntity {
             this.preferences = UserPreferences.builder()
                     .user(this)
                     .emailNotifications(true)
-                    .smsNotifications(false)
-                    .weeklyReport(true)
-                    .marketingEmails(false)
+                    .campaignUpdates(true)
+                    .automationAlerts(true)
+                    .monthlyReports(true)
+                    .systemUpdates(false)
+                    .dateFormat("DD.MM.YYYY")
+                    .timeFormat("24h")
                     .darkMode(false)
                     .build();
         }

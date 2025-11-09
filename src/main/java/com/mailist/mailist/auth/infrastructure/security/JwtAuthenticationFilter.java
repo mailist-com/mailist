@@ -80,7 +80,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     );
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
-                    
+
+                    // Set userId as request attribute for controllers
+                    request.setAttribute("userId", user.getId());
+
                     log.debug("Authenticated user: {} with tenant: {}", userEmail, tenantId);
                 }
             }
