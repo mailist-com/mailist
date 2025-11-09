@@ -62,6 +62,11 @@ jwt:
   access-token-expiration: 3600000  # 1 hour in milliseconds
   refresh-token-expiration: 604800000  # 7 days in milliseconds
 
+# Application Configuration
+app:
+  frontend:
+    url: ${FRONTEND_URL:http://localhost:4200}
+
 # Server Configuration
 server:
   port: 8080

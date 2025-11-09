@@ -7,4 +7,6 @@ public interface EmailService {
     void sendPasswordResetEmail(String email, String resetCode, String firstName);
 
     void sendWelcomeEmail(String email, String firstName);
+
+    void sendTeamInvitationEmail(String email, String firstName, String inviterName, String organizationName, String setPasswordUrl);
 }

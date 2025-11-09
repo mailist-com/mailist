@@ -149,6 +149,30 @@ class AuthController {
         }
     }
 
+    @PostMapping("/set-password")
+    @Operation(summary = "Set password", description = "Set password for invited team member using verification token")
+    ResponseEntity<ApiResponse> setPassword(@Valid @RequestBody final SetPasswordRequestDto setPasswordDto) {
+        log.info("Set password attempt with token");
+
+        try {
+            final SetPasswordCommand command = authMapper.toCommand(setPasswordDto);
+            authApplicationService.setPassword(command);
+
+            log.info("Password set successfully");
+
+            return ResponseEntity.ok(ApiResponse.success("Password set successfully. You can now login."));
+
+        } catch (IllegalArgumentException e) {
+            log.warn("Set password failed: {}", e.getMessage());
+            return ResponseEntity.badRequest()
+                    .body(ApiResponse.error(e.getMessage()));
+        } catch (Exception e) {
+            log.error("Unexpected error during set password", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponse.error("Failed to set password. Please try again."));
+        }
+    }
+
     @PostMapping("/refresh-token")
     @Operation(summary = "Refresh access token", description = "Generate new access token using refresh token")
     ResponseEntity<?> refreshToken(@Valid @RequestBody final RefreshTokenRequestDto refreshDto) {

@@ -76,6 +76,27 @@ public class EmailServiceImpl implements EmailService {
             // Don't throw exception for welcome email failure
         }
     }
+
+    @Override
+    public void sendTeamInvitationEmail(String email, String firstName, String inviterName, String organizationName, String setPasswordUrl) {
+        String subject = "You've been invited to join " + organizationName + " on Mailist";
+        String content = buildTeamInvitationEmailContent(firstName, inviterName, organizationName, setPasswordUrl);
+
+        TransactionalEmailMessage emailMessage = TransactionalEmailMessage.builder()
+                .to(email)
+                .subject(subject)
+                .htmlContent(content)
+                .type(TransactionalEmailMessage.TransactionalEmailType.ACCOUNT_NOTIFICATION)
+                .build();
+
+        try {
+            transactionalEmailGateway.sendEmail(emailMessage);
+            log.info("Team invitation email sent successfully to: {}", email);
+        } catch (Exception e) {
+            log.error("Failed to send team invitation email to: {}", email, e);
+            throw new RuntimeException("Failed to send team invitation email", e);
+        }
+    }
     
     private String buildVerificationEmailContent(String firstName, String verificationCode) {
         return String.format("""
@@ -272,5 +293,79 @@ public class EmailServiceImpl implements EmailService {
             </body>
             </html>
             """, firstName);
+    }
+
+    private String buildTeamInvitationEmailContent(String firstName, String inviterName, String organizationName, String setPasswordUrl) {
+        return String.format("""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <style>
+                    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f4f4f4; }
+                    .container { max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+                    .header { background: linear-gradient(135deg, #667eea 0%%, #764ba2 100%%); padding: 50px 20px; text-align: center; color: white; }
+                    .header h1 { margin: 0; font-size: 32px; font-weight: 600; }
+                    .header p { margin: 10px 0 0 0; font-size: 18px; opacity: 0.9; }
+                    .content { padding: 40px 30px; }
+                    .greeting { font-size: 20px; font-weight: 500; margin-bottom: 20px; color: #333; }
+                    .message { font-size: 16px; color: #555; margin-bottom: 30px; line-height: 1.8; }
+                    .invitation-box { background-color: #f8f9fa; border-radius: 8px; padding: 25px; margin: 30px 0; border-left: 4px solid #667eea; }
+                    .invitation-detail { font-size: 15px; color: #666; margin: 10px 0; }
+                    .invitation-detail strong { color: #333; }
+                    .cta-container { text-align: center; margin: 35px 0; }
+                    .cta-button { display: inline-block; background: linear-gradient(135deg, #667eea 0%%, #764ba2 100%%); color: white; padding: 16px 45px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px; }
+                    .cta-button:hover { opacity: 0.9; }
+                    .expiry { font-size: 14px; color: #888; margin-top: 30px; padding: 15px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px; }
+                    .footer { padding: 30px; text-align: center; color: #888; font-size: 14px; background-color: #f8f9fa; border-top: 1px solid #e9ecef; }
+                    .footer p { margin: 5px 0; }
+                    .security-note { font-size: 13px; color: #666; margin-top: 20px; padding: 15px; background-color: #e7f5ff; border-radius: 4px; }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="header">
+                        <h1>👥 Team Invitation</h1>
+                        <p>You've been invited to collaborate</p>
+                    </div>
+                    <div class="content">
+                        <div class="greeting">Hi %s! 👋</div>
+                        <div class="message">
+                            <strong>%s</strong> has invited you to join their team on <strong>Mailist</strong>.
+                            <br><br>
+                            You'll be collaborating together to build amazing email marketing campaigns and grow your audience.
+                        </div>
+
+                        <div class="invitation-box">
+                            <div class="invitation-detail"><strong>Organization:</strong> %s</div>
+                            <div class="invitation-detail"><strong>Invited by:</strong> %s</div>
+                            <div class="invitation-detail"><strong>Platform:</strong> Mailist Email Marketing</div>
+                        </div>
+
+                        <div class="message">
+                            To get started, you'll need to set up your password for your new account:
+                        </div>
+
+                        <div class="cta-container">
+                            <a href="%s" class="cta-button">Set Up Your Password →</a>
+                        </div>
+
+                        <div class="expiry">
+                            ⏱️ <strong>Important:</strong> This invitation link will expire in 7 days for security reasons.
+                        </div>
+
+                        <div class="security-note">
+                            🔒 <strong>Security Note:</strong> If you weren't expecting this invitation or don't know %s, you can safely ignore this email.
+                        </div>
+                    </div>
+                    <div class="footer">
+                        <p><strong>The Mailist Team</strong></p>
+                        <p>Building better email experiences, together.</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            """, firstName, inviterName, organizationName, inviterName, setPasswordUrl, inviterName);
     }
 }

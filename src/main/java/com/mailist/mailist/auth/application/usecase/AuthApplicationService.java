@@ -21,6 +21,7 @@ public class AuthApplicationService {
     private final RefreshTokenUseCase refreshTokenUseCase;
     private final LogoutUseCase logoutUseCase;
     private final Verify2FAUseCase verify2FAUseCase;
+    private final SetPasswordUseCase setPasswordUseCase;
 
     public void register(final RegisterUserCommand command) {
         registerUserUseCase.execute(command);
@@ -52,5 +53,9 @@ public class AuthApplicationService {
 
     public Verify2FAResult verify2FA(final Verify2FACommand command) {
         return verify2FAUseCase.execute(command);
+    }
+
+    public void setPassword(final SetPasswordCommand command) {
+        setPasswordUseCase.execute(command);
     }
 }

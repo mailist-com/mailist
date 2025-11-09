@@ -11,7 +11,7 @@ import java.util.Set;
 
 @Mapper(componentModel = "spring")
 public interface AuthMapper {
-    
+
     // Command mappings
     RegisterUserCommand toCommand(RegisterRequestDto dto);
     LoginCommand toCommand(LoginRequestDto dto);
@@ -20,6 +20,7 @@ public interface AuthMapper {
     ResetPasswordCommand toCommand(ResetPasswordRequestDto dto);
     RefreshTokenCommand toCommand(RefreshTokenRequestDto dto);
     Verify2FACommand toCommand(Verify2FARequestDto dto);
+    SetPasswordCommand toCommand(SetPasswordRequestDto dto);
     
     // Response mappings
     default LoginResponseDto toLoginResponse(LoginResult loginResult) {
