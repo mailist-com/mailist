@@ -53,4 +53,18 @@ public class DashboardController {
         DashboardDto.ActivityFeed activityFeed = dashboardService.getActivityFeed(limit);
         return ResponseEntity.ok(activityFeed);
     }
+
+    @GetMapping("/usage-statistics")
+    @Operation(summary = "Get usage statistics for current organization")
+    public ResponseEntity<DashboardDto.UsageStatistics> getUsageStatistics() {
+        DashboardDto.UsageStatistics usageStats = dashboardService.getUsageStatistics();
+        return ResponseEntity.ok(usageStats);
+    }
+
+    @GetMapping("/usage-alerts")
+    @Operation(summary = "Get usage alerts for current organization")
+    public ResponseEntity<DashboardDto.UsageAlerts> getUsageAlerts() {
+        DashboardDto.UsageAlerts usageAlerts = dashboardService.getUsageAlerts();
+        return ResponseEntity.ok(usageAlerts);
+    }
 }
