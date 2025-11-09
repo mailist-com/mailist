@@ -74,4 +74,7 @@
     <!-- 019: Add new user preference fields for enhanced profile settings -->
     <include file="db/changelog/025-add-user-preferences-fields.xml"/>
 
+    <!-- 020: Create notifications table for user notifications system -->
+    <include file="db/changelog/026-create-notifications.xml"/>
+
 </databaseChangeLog>

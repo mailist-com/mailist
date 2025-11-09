@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="026-create-notifications-table" author="claude">
+        <comment>Create notifications table for user notifications</comment>
+
+        <createTable tableName="notifications">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="tenant_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="type" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="category" type="VARCHAR(30)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="title" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="message" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="contact_email" type="VARCHAR(255)"/>
+
+            <column name="list_name" type="VARCHAR(255)"/>
+
+            <column name="action_url" type="VARCHAR(500)"/>
+
+            <column name="action_text" type="VARCHAR(100)"/>
+
+            <column name="is_read" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="read_at" type="TIMESTAMP"/>
+
+            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="metadata" type="TEXT"/>
+        </createTable>
+
+        <!-- Add foreign key to users table -->
+        <addForeignKeyConstraint
+            baseTableName="notifications"
+            baseColumnNames="user_id"
+            constraintName="fk_notifications_user"
+            referencedTableName="users"
+            referencedColumnNames="id"
+            onDelete="CASCADE"/>
+
+        <!-- Add foreign key to organizations table (tenant) -->
+        <addForeignKeyConstraint
+            baseTableName="notifications"
+            baseColumnNames="tenant_id"
+            constraintName="fk_notifications_tenant"
+            referencedTableName="organizations"
+            referencedColumnNames="id"
+            onDelete="CASCADE"/>
+
+        <!-- Create indexes for better performance -->
+        <createIndex indexName="idx_notifications_user_created" tableName="notifications">
+            <column name="user_id"/>
+            <column name="created_at" descending="true"/>
+        </createIndex>
+
+        <createIndex indexName="idx_notifications_tenant_user" tableName="notifications">
+            <column name="tenant_id"/>
+            <column name="user_id"/>
+        </createIndex>
+
+        <createIndex indexName="idx_notifications_is_read" tableName="notifications">
+            <column name="is_read"/>
+        </createIndex>
+
+        <createIndex indexName="idx_notifications_category" tableName="notifications">
+            <column name="category"/>
+        </createIndex>
+
+        <rollback>
+            <dropTable tableName="notifications"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>
