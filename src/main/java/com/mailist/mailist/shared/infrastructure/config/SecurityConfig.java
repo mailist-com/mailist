@@ -1,5 +1,6 @@
 package com.mailist.mailist.shared.infrastructure.config;
 
+import com.mailist.mailist.apikey.infrastructure.security.ApiKeyAuthenticationFilter;
 import com.mailist.mailist.auth.infrastructure.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -23,6 +24,7 @@ import java.util.Arrays;
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final ApiKeyAuthenticationFilter apiKeyAuthenticationFilter;
     private final CorsProperties corsProperties;
 
     @Bean
@@ -74,11 +76,13 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(authz -> authz
                 .requestMatchers("/api/v1/auth/**").permitAll()  // Auth endpoints (versioned)
+                .requestMatchers("/api/v1/external/**").permitAll()  // External API endpoints (authenticated by API key)
                 .requestMatchers("/api/tracking/**").permitAll()  // Email tracking endpoints
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 .requestMatchers("/actuator/**").permitAll()
                 .anyRequest().authenticated()
             )
+            .addFilterBefore(apiKeyAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

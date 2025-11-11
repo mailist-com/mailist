@@ -1,11 +1,7 @@
 package com.mailist.mailist.contact.domain.aggregate;
 
 import com.mailist.mailist.shared.domain.aggregate.BaseTenantEntity;
-import lombok.Data;
-import lombok.Builder;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
@@ -14,8 +10,8 @@ import java.util.HashSet;
 
 @Entity
 @Table(name = "contact_lists")
-@Data
-@EqualsAndHashCode(callSuper = true)
+@Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor

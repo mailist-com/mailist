@@ -88,7 +88,7 @@ class NotificationController {
     ResponseEntity<NotificationDto> createNotification(
         @Valid @RequestBody CreateNotificationRequest request
     ) {
-        log.info("Creating notification for user {}", request.getUserId());
+        log.info("Creating notification for request: {}", request);
 
         NotificationDto notification = notificationService.createNotification(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(notification);

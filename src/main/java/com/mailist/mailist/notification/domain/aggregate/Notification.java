@@ -95,6 +95,7 @@ public class Notification extends BaseTenantEntity {
 
     public enum NotificationCategory {
         CONTACT_ADDED,
+        CONTACT_UPDATED,
         CONTACT_REMOVED,
         CAMPAIGN_SENT,
         AUTOMATION_TRIGGERED,

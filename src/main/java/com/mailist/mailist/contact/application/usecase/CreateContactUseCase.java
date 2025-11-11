@@ -46,10 +46,8 @@ final class CreateContactUseCase {
         }
         contactRepository.save(contact);
 
-        String currentUserId = SecurityUtils.getCurrentUserId();
         notificationService.createNotification(
                 CreateNotificationRequest.builder()
-                        .userId(Long.valueOf(currentUserId))
                         .type(Notification.NotificationType.SUCCESS)
                         .category(Notification.NotificationCategory.CONTACT_ADDED)
                         .title("Nowy kontakt")
