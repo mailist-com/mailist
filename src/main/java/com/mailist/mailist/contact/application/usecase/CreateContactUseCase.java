@@ -5,6 +5,10 @@ import com.mailist.mailist.contact.domain.aggregate.Contact;
 import com.mailist.mailist.contact.domain.aggregate.ContactList;
 import com.mailist.mailist.contact.infrastructure.repository.ContactListRepository;
 import com.mailist.mailist.contact.infrastructure.repository.ContactRepository;
+import com.mailist.mailist.notification.application.usecase.NotificationService;
+import com.mailist.mailist.notification.application.usecase.dto.CreateNotificationRequest;
+import com.mailist.mailist.notification.domain.aggregate.Notification;
+import com.mailist.mailist.shared.infrastructure.security.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
@@ -17,6 +21,7 @@ final class CreateContactUseCase {
 
     private final ContactRepository contactRepository;
     private final ContactListRepository contactListRepository;
+    private final NotificationService notificationService;
 
     Contact execute(final CreateContactCommand command) {
         if (contactRepository.existsByEmail(command.getEmail())) {
@@ -40,6 +45,17 @@ final class CreateContactUseCase {
             }
         }
         contactRepository.save(contact);
+
+        String currentUserId = SecurityUtils.getCurrentUserId();
+        notificationService.createNotification(
+                CreateNotificationRequest.builder()
+                        .userId(Long.valueOf(currentUserId))
+                        .type(Notification.NotificationType.SUCCESS)
+                        .category(Notification.NotificationCategory.CONTACT_ADDED)
+                        .title("Nowy kontakt")
+                        .message("Kontakt <b>" + contact.getEmail() + "</b> dodany do listy")
+                        .actionUrl("/contacts/view/" + contact.getId())
+                        .build());
 
         return contact;
     }
