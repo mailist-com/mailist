@@ -1,11 +1,14 @@
 package com.mailist.mailist.notification.application.usecase;
 
+import com.mailist.mailist.auth.domain.aggregate.User;
+import com.mailist.mailist.auth.infrastructure.repository.UserRepository;
 import com.mailist.mailist.notification.application.usecase.dto.CreateNotificationRequest;
 import com.mailist.mailist.notification.application.usecase.dto.NotificationDto;
 import com.mailist.mailist.notification.application.usecase.dto.NotificationStatsDto;
 import com.mailist.mailist.notification.domain.aggregate.Notification;
 import com.mailist.mailist.notification.domain.aggregate.Notification.NotificationCategory;
 import com.mailist.mailist.notification.domain.repository.NotificationRepository;
+import com.mailist.mailist.shared.infrastructure.security.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -24,11 +27,15 @@ import java.util.Map;
 public class NotificationService {
 
     private final NotificationRepository notificationRepository;
+    private final UserRepository userRepository;
 
     @Transactional
     public NotificationDto createNotification(CreateNotificationRequest request) {
+        String currentUserId = SecurityUtils.getCurrentUserId();
+        User user = userRepository.findByEmail(currentUserId).orElseThrow();
+
         Notification notification = Notification.builder()
-            .userId(request.getUserId())
+            .userId(user.getId())
             .type(request.getType())
             .category(request.getCategory())
             .title(request.getTitle())

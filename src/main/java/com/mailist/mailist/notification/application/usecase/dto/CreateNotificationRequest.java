@@ -16,9 +16,6 @@ import java.util.Map;
 @AllArgsConstructor
 public class CreateNotificationRequest {
 
-    @NotNull(message = "User ID is required")
-    private Long userId;
-
     @NotNull(message = "Type is required")
     private Notification.NotificationType type;
 
