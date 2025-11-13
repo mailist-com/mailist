@@ -8,6 +8,7 @@ import com.mailist.mailist.automation.infrastructure.repository.AutomationExecut
 import com.mailist.mailist.automation.infrastructure.repository.AutomationStepExecutionRepository;
 import com.mailist.mailist.automation.infrastructure.repository.AutomationStepRepository;
 import com.mailist.mailist.contact.domain.aggregate.Contact;
+import com.mailist.mailist.contact.domain.valueobject.Tag;
 import com.mailist.mailist.contact.infrastructure.repository.ContactRepository;
 import com.mailist.mailist.notification.application.usecase.NotificationService;
 import com.mailist.mailist.notification.application.usecase.dto.CreateNotificationRequest;
@@ -49,6 +50,15 @@ public class AutomationExecutionService {
         // Sprawdź czy kontakt istnieje
         Contact contact = contactRepository.findById(contactId)
                 .orElseThrow(() -> new IllegalArgumentException("Contact not found: " + contactId));
+
+        // CRITICAL SECURITY: Validate tenant isolation
+        // Ensure automation rule and contact belong to the same tenant
+        if (!automationRule.getTenantId().equals(contact.getTenantId())) {
+            log.error("SECURITY VIOLATION: Attempted to execute automation {} (tenant {}) on contact {} (tenant {})",
+                    automationRule.getId(), automationRule.getTenantId(),
+                    contact.getId(), contact.getTenantId());
+            throw new SecurityException("Automation rule and contact must belong to the same tenant");
+        }
 
         // Sprawdź czy nie ma już aktywnego wykonania dla tej automatyzacji i kontaktu
         List<AutomationExecution> activeExecutions = executionRepository.findActiveExecutions(
@@ -269,8 +279,8 @@ public class AutomationExecutionService {
     }
 
     private void executeSendEmail(AutomationStepExecution stepExecution,
-                                   Map<String, Object> settings,
-                                   AutomationExecution execution) {
+                                  Map<String, Object> settings,
+                                  AutomationExecution execution) {
         String subject = (String) settings.get("subject");
         String content = (String) settings.get("content");
         String htmlContent = (String) settings.get("htmlContent");
@@ -300,8 +310,8 @@ public class AutomationExecutionService {
     }
 
     private void executeAddTag(AutomationStepExecution stepExecution,
-                                Map<String, Object> settings,
-                                AutomationExecution execution) {
+                               Map<String, Object> settings,
+                               AutomationExecution execution) {
         String tagName = (String) settings.get("tagName");
         if (tagName == null || tagName.trim().isEmpty()) {
             throw new IllegalArgumentException("Tag name is required");
@@ -310,14 +320,16 @@ public class AutomationExecutionService {
         Contact contact = contactRepository.findById(execution.getContactId())
                 .orElseThrow(() -> new IllegalArgumentException("Contact not found"));
 
-        contact.addTag(tagName, null, null);
+        contact.addTag(Tag.builder()
+                .name(tagName)
+                .build());
         contactRepository.save(contact);
         log.info("Added tag {} to contact {}", tagName, contact.getEmail());
     }
 
     private void executeRemoveTag(AutomationStepExecution stepExecution,
-                                   Map<String, Object> settings,
-                                   AutomationExecution execution) {
+                                  Map<String, Object> settings,
+                                  AutomationExecution execution) {
         String tagName = (String) settings.get("tagName");
         if (tagName == null || tagName.trim().isEmpty()) {
             throw new IllegalArgumentException("Tag name is required");
@@ -326,7 +338,9 @@ public class AutomationExecutionService {
         Contact contact = contactRepository.findById(execution.getContactId())
                 .orElseThrow(() -> new IllegalArgumentException("Contact not found"));
 
-        contact.removeTag(tagName);
+        contact.removeTag(Tag.builder()
+                .name(tagName)
+                .build());
         contactRepository.save(contact);
         log.info("Removed tag {} from contact {}", tagName, contact.getEmail());
     }

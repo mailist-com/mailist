@@ -80,6 +80,8 @@ final class RegisterUserUseCase {
             user.setTenantId(organization.getId());
             user.setVerificationToken(verificationToken);
 
+            userRepository.save(user);
+
             // Send verification email
             emailService.sendVerificationEmail(
                 user.getEmail(), 

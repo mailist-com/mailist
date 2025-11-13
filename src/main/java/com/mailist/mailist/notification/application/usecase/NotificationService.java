@@ -9,6 +9,7 @@ import com.mailist.mailist.notification.domain.aggregate.Notification;
 import com.mailist.mailist.notification.domain.aggregate.Notification.NotificationCategory;
 import com.mailist.mailist.notification.domain.repository.NotificationRepository;
 import com.mailist.mailist.shared.infrastructure.security.SecurityUtils;
+import com.mailist.mailist.shared.infrastructure.tenant.TenantContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -21,18 +22,17 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-@Service
-@RequiredArgsConstructor
 @Slf4j
+@Service
+@Transactional
+@RequiredArgsConstructor
 public class NotificationService {
 
     private final NotificationRepository notificationRepository;
     private final UserRepository userRepository;
 
-    @Transactional
     public NotificationDto createNotification(CreateNotificationRequest request) {
-        String currentUserId = SecurityUtils.getCurrentUserId();
-        User user = userRepository.findByEmail(currentUserId).orElseThrow();
+        User user = getUser();
 
         Notification notification = Notification.builder()
             .userId(user.getId())
@@ -53,51 +53,51 @@ public class NotificationService {
         return NotificationDto.fromEntity(saved);
     }
 
-    @Transactional(readOnly = true)
-    public Page<NotificationDto> getUserNotifications(Long userId, Pageable pageable) {
-        return notificationRepository.findByUserIdOrderByCreatedAtDesc(userId, pageable)
+    public User getUser() {
+        String currentUserId = SecurityUtils.getCurrentUserId();
+        Long organizationId = TenantContext.getOrganizationId();
+        User user = userRepository.findByEmail(currentUserId).orElseThrow();
+        return user;
+    }
+
+    public Page<NotificationDto> getUserNotifications(Pageable pageable) {
+        User user = getUser();
+        return notificationRepository.findByUserIdOrderByCreatedAtDesc(user.getId(), pageable)
             .map(NotificationDto::fromEntity);
     }
 
-    @Transactional(readOnly = true)
-    public Page<NotificationDto> getUnreadNotifications(Long userId, Pageable pageable) {
-        return notificationRepository.findByUserIdAndIsReadFalseOrderByCreatedAtDesc(userId, pageable)
+    public Page<NotificationDto> getUnreadNotifications(Pageable pageable) {
+        User user = getUser();
+        return notificationRepository.findByUserIdAndIsReadFalseOrderByCreatedAtDesc(user.getId(), pageable)
             .map(NotificationDto::fromEntity);
     }
 
-    @Transactional(readOnly = true)
-    public Page<NotificationDto> getNotificationsByCategory(
-        Long userId,
-        NotificationCategory category,
-        Pageable pageable
-    ) {
-        return notificationRepository.findByUserIdAndCategoryOrderByCreatedAtDesc(userId, category, pageable)
+    public Page<NotificationDto> getNotificationsByCategory(NotificationCategory category, Pageable pageable) {
+        User user = getUser();
+        return notificationRepository.findByUserIdAndCategoryOrderByCreatedAtDesc(user.getId(), category, pageable)
             .map(NotificationDto::fromEntity);
     }
 
-    @Transactional(readOnly = true)
-    public Page<NotificationDto> getNotificationsByCategoryAndReadStatus(
-        Long userId,
-        NotificationCategory category,
-        Boolean isRead,
-        Pageable pageable
-    ) {
-        return notificationRepository.findByUserIdAndIsReadAndCategoryOrderByCreatedAtDesc(
-            userId, isRead, category, pageable
-        ).map(NotificationDto::fromEntity);
+    public Page<NotificationDto> getNotificationsByCategoryAndReadStatus(NotificationCategory category, Boolean isRead, Pageable pageable) {
+        User user = getUser();
+
+        return notificationRepository.findByUserIdAndIsReadAndCategoryOrderByCreatedAtDesc(user.getId(), isRead, category, pageable)
+                .map(NotificationDto::fromEntity);
     }
 
-    @Transactional(readOnly = true)
-    public NotificationDto getNotificationById(Long id, Long userId) {
-        Notification notification = notificationRepository.findByIdAndUserId(id, userId)
+    public NotificationDto getNotificationById(Long id) {
+        User user = getUser();
+
+        Notification notification = notificationRepository.findByIdAndUserId(id, user.getId())
             .orElseThrow(() -> new RuntimeException("Notification not found"));
 
         return NotificationDto.fromEntity(notification);
     }
 
-    @Transactional
-    public NotificationDto markAsRead(Long id, Long userId) {
-        Notification notification = notificationRepository.findByIdAndUserId(id, userId)
+    public NotificationDto markAsRead(Long id) {
+        User user = getUser();
+
+        Notification notification = notificationRepository.findByIdAndUserId(id, user.getId())
             .orElseThrow(() -> new RuntimeException("Notification not found"));
 
         notification.markAsRead();
@@ -106,9 +106,10 @@ public class NotificationService {
         return NotificationDto.fromEntity(updated);
     }
 
-    @Transactional
-    public NotificationDto markAsUnread(Long id, Long userId) {
-        Notification notification = notificationRepository.findByIdAndUserId(id, userId)
+    public NotificationDto markAsUnread(Long id) {
+        User user = getUser();
+
+        Notification notification = notificationRepository.findByIdAndUserId(id, user.getId())
             .orElseThrow(() -> new RuntimeException("Notification not found"));
 
         notification.markAsUnread();
@@ -117,40 +118,45 @@ public class NotificationService {
         return NotificationDto.fromEntity(updated);
     }
 
-    @Transactional
-    public void markAllAsRead(Long userId) {
-        int updated = notificationRepository.markAllAsReadForUser(userId);
-        log.info("Marked {} notifications as read for user {}", updated, userId);
+    public void markAllAsRead() {
+        User user = getUser();
+
+        int updated = notificationRepository.markAllAsReadForUser(user.getId());
+        log.info("Marked {} notifications as read for user {}", updated, user.getId());
     }
 
-    @Transactional
-    public void deleteNotification(Long id, Long userId) {
-        Notification notification = notificationRepository.findByIdAndUserId(id, userId)
+    public void deleteNotification(Long id) {
+        User user = getUser();
+
+        Notification notification = notificationRepository.findByIdAndUserId(id, user.getId())
             .orElseThrow(() -> new RuntimeException("Notification not found"));
 
         notificationRepository.delete(notification);
-        log.info("Deleted notification {} for user {}", id, userId);
+        log.info("Deleted notification {}", id);
     }
 
-    @Transactional
-    public void deleteAllRead(Long userId) {
-        int deleted = notificationRepository.deleteAllReadForUser(userId);
-        log.info("Deleted {} read notifications for user {}", deleted, userId);
+    public void deleteAllRead() {
+        User user = getUser();
+
+        int deleted = notificationRepository.deleteAllReadForUser(user.getId());
+        log.info("Deleted {} read notifications for user {}", deleted, user.getId());
     }
 
-    @Transactional(readOnly = true)
-    public Long getUnreadCount(Long userId) {
-        return notificationRepository.countByUserIdAndIsReadFalse(userId);
+    public Long getUnreadCount() {
+        User user = getUser();
+
+        return notificationRepository.countByUserIdAndIsReadFalse(user.getId());
     }
 
-    @Transactional(readOnly = true)
-    public NotificationStatsDto getNotificationStats(Long userId) {
-        Long total = notificationRepository.countByUserId(userId);
-        Long unread = notificationRepository.countByUserIdAndIsReadFalse(userId);
+    public NotificationStatsDto getNotificationStats() {
+        User user = getUser();
+
+        Long total = notificationRepository.countByUserId(user.getId());
+        Long unread = notificationRepository.countByUserIdAndIsReadFalse(user.getId());
 
         Map<String, Long> byCategory = new HashMap<>();
         Arrays.stream(NotificationCategory.values()).forEach(category -> {
-            Long count = notificationRepository.countByUserIdAndCategory(userId, category);
+            Long count = notificationRepository.countByUserIdAndCategory(user.getId(), category);
             byCategory.put(category.name().toLowerCase(), count);
         });
 
@@ -159,12 +165,5 @@ public class NotificationService {
             .unread(unread)
             .byCategory(byCategory)
             .build();
-    }
-
-    @Transactional(readOnly = true)
-    public Page<NotificationDto> getRecentNotifications(Long userId, int limit) {
-        Pageable pageable = PageRequest.of(0, limit);
-        return notificationRepository.findRecentByUserId(userId, pageable)
-            .map(NotificationDto::fromEntity);
     }
 }

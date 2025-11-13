@@ -14,11 +14,10 @@ import java.util.Set;
 @Entity
 @Table(name = "users")
 @Data
-@EqualsAndHashCode(callSuper = true)
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class User extends BaseTenantEntity {
+public class User {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,6 +25,9 @@ public class User extends BaseTenantEntity {
     
     @Column(nullable = false, unique = true)
     private String email;
+
+    @Column(name = "tenant_id", nullable = false)
+    private Long tenantId;
     
     @Column(nullable = false)
     private String password;

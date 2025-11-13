@@ -10,7 +10,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -28,9 +27,9 @@ import java.util.stream.Collectors;
  * Filter for authenticating API requests using API keys.
  * This filter is specifically for external API endpoints (/api/v1/external/**).
  */
+@Slf4j
 @Component
 @RequiredArgsConstructor
-@Slf4j
 public class ApiKeyAuthenticationFilter extends OncePerRequestFilter {
 
     private static final String API_KEY_HEADER = "X-API-Key";
