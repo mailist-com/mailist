@@ -4,6 +4,7 @@ import com.mailist.mailist.automation.application.eventhandler.factory.EventHand
 import com.mailist.mailist.automation.application.eventhandler.strategy.EventHandlerStrategy;
 import com.mailist.mailist.automation.domain.event.EmailClickedEvent;
 import com.mailist.mailist.automation.domain.event.EmailOpenedEvent;
+import com.mailist.mailist.contact.domain.event.ContactCreatedEvent;
 import com.mailist.mailist.contact.domain.event.ContactListJoinedEvent;
 import com.mailist.mailist.contact.domain.event.ContactTagAddedEvent;
 import com.mailist.mailist.automation.domain.event.*;
@@ -21,27 +22,33 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Slf4j
 public class AutomationEventHandler {
-    
+
     private final EventHandlerFactory eventHandlerFactory;
-    
+
+    @EventListener
+    @Async
+    public void handleContactCreated(ContactCreatedEvent event) {
+        handleEvent(event);
+    }
+
     @EventListener
     @Async
     public void handleContactTagAdded(ContactTagAddedEvent event) {
         handleEvent(event);
     }
-    
+
     @EventListener
     @Async
     public void handleEmailOpened(EmailOpenedEvent event) {
         handleEvent(event);
     }
-    
+
     @EventListener
     @Async
     public void handleEmailClicked(EmailClickedEvent event) {
         handleEvent(event);
     }
-    
+
     @EventListener
     @Async
     public void handleContactListJoined(ContactListJoinedEvent event) {

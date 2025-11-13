@@ -5,8 +5,12 @@ import com.mailist.mailist.automation.application.usecase.command.CreateAutomati
 import com.mailist.mailist.automation.application.usecase.command.DeleteAutomationRuleCommand;
 import com.mailist.mailist.automation.application.usecase.command.ExecuteAutomationRuleCommand;
 import com.mailist.mailist.automation.application.usecase.command.UpdateAutomationRuleCommand;
+import com.mailist.mailist.automation.domain.aggregate.AutomationExecution;
 import com.mailist.mailist.automation.domain.aggregate.AutomationRule;
+import com.mailist.mailist.automation.domain.aggregate.AutomationStepExecution;
+import com.mailist.mailist.automation.infrastructure.repository.AutomationExecutionRepository;
 import com.mailist.mailist.automation.infrastructure.repository.AutomationRuleRepository;
+import com.mailist.mailist.automation.infrastructure.repository.AutomationStepExecutionRepository;
 import com.mailist.mailist.automation.interfaces.dto.AutomationRuleDto;
 import com.mailist.mailist.automation.interfaces.mapper.AutomationRuleMapper;
 import com.mailist.mailist.shared.interfaces.dto.ApiResponse;
@@ -41,6 +45,8 @@ public class AutomationRuleController {
     private final DuplicateAutomationRuleUseCase duplicateAutomationRuleUseCase;
     private final GetAutomationStatisticsUseCase getAutomationStatisticsUseCase;
     private final AutomationRuleRepository automationRuleRepository;
+    private final AutomationExecutionRepository executionRepository;
+    private final AutomationStepExecutionRepository stepExecutionRepository;
     private final AutomationRuleMapper automationRuleMapper;
     
     @PostMapping
@@ -140,6 +146,98 @@ public class AutomationRuleController {
         response.put("inactive", stats.inactive());
         response.put("draft", stats.draft());
         response.put("paused", 0);  // Can be computed from inactive if needed
+
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
+    @GetMapping("/{id}/executions")
+    @Operation(summary = "Get execution history for automation rule",
+               description = "Retrieve all executions for a specific automation rule")
+    public ResponseEntity<ApiResponse<Page<Map<String, Object>>>> getExecutionHistory(
+            @PathVariable Long id,
+            Pageable pageable) {
+
+        Page<AutomationExecution> executions = executionRepository.findByAutomationRuleId(id, pageable);
+
+        Page<Map<String, Object>> response = executions.map(execution -> {
+            Map<String, Object> executionData = new HashMap<>();
+            executionData.put("id", execution.getId());
+            executionData.put("contactId", execution.getContactId());
+            executionData.put("contactEmail", execution.getContactEmail());
+            executionData.put("status", execution.getStatus());
+            executionData.put("startedAt", execution.getStartedAt());
+            executionData.put("completedAt", execution.getCompletedAt());
+            executionData.put("currentStepId", execution.getCurrentStepId());
+            executionData.put("errorMessage", execution.getErrorMessage());
+            return executionData;
+        });
+
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
+    @GetMapping("/{automationId}/executions/{executionId}")
+    @Operation(summary = "Get execution details",
+               description = "Get detailed execution information including all steps")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> getExecutionDetails(
+            @PathVariable Long automationId,
+            @PathVariable Long executionId) {
+
+        AutomationExecution execution = executionRepository.findById(executionId)
+                .orElseThrow(() -> new IllegalArgumentException("Execution not found"));
+
+        List<AutomationStepExecution> steps = stepExecutionRepository.findByAutomationExecutionId(executionId);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("id", execution.getId());
+        response.put("contactId", execution.getContactId());
+        response.put("contactEmail", execution.getContactEmail());
+        response.put("status", execution.getStatus());
+        response.put("startedAt", execution.getStartedAt());
+        response.put("completedAt", execution.getCompletedAt());
+        response.put("currentStepId", execution.getCurrentStepId());
+        response.put("errorMessage", execution.getErrorMessage());
+        response.put("context", execution.getContext());
+
+        List<Map<String, Object>> stepsData = steps.stream().map(step -> {
+            Map<String, Object> stepData = new HashMap<>();
+            stepData.put("id", step.getId());
+            stepData.put("stepId", step.getStepId());
+            stepData.put("stepType", step.getStepType());
+            stepData.put("status", step.getStatus());
+            stepData.put("startedAt", step.getStartedAt());
+            stepData.put("completedAt", step.getCompletedAt());
+            stepData.put("scheduledFor", step.getScheduledFor());
+            stepData.put("errorMessage", step.getErrorMessage());
+            stepData.put("retryCount", step.getRetryCount());
+            stepData.put("inputData", step.getInputData());
+            stepData.put("outputData", step.getOutputData());
+            return stepData;
+        }).toList();
+
+        response.put("steps", stepsData);
+
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
+    @GetMapping("/contacts/{contactId}/executions")
+    @Operation(summary = "Get execution history for contact",
+               description = "Retrieve all automation executions for a specific contact")
+    public ResponseEntity<ApiResponse<List<Map<String, Object>>>> getContactExecutionHistory(
+            @PathVariable Long contactId) {
+
+        List<AutomationExecution> executions = executionRepository.findByContactIdOrderByStartedAtDesc(contactId);
+
+        List<Map<String, Object>> response = executions.stream().map(execution -> {
+            Map<String, Object> executionData = new HashMap<>();
+            executionData.put("id", execution.getId());
+            executionData.put("automationRuleId", execution.getAutomationRule().getId());
+            executionData.put("automationRuleName", execution.getAutomationRule().getName());
+            executionData.put("status", execution.getStatus());
+            executionData.put("startedAt", execution.getStartedAt());
+            executionData.put("completedAt", execution.getCompletedAt());
+            executionData.put("errorMessage", execution.getErrorMessage());
+            return executionData;
+        }).toList();
 
         return ResponseEntity.ok(ApiResponse.success(response));
     }

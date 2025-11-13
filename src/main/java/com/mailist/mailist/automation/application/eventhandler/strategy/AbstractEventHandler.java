@@ -1,8 +1,8 @@
 package com.mailist.mailist.automation.application.eventhandler.strategy;
 
+import com.mailist.mailist.automation.application.usecase.AutomationExecutionService;
 import com.mailist.mailist.automation.domain.aggregate.AutomationRule;
 import com.mailist.mailist.automation.domain.valueobject.TriggerType;
-import com.mailist.mailist.automation.domain.service.AutomationEngine;
 import com.mailist.mailist.automation.infrastructure.repository.AutomationRuleRepository;
 import com.mailist.mailist.contact.domain.aggregate.Contact;
 import com.mailist.mailist.contact.infrastructure.repository.ContactRepository;
@@ -16,10 +16,10 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Slf4j
 public abstract class AbstractEventHandler<T extends DomainEvent> implements EventHandlerStrategy<T> {
-    
+
     protected final AutomationRuleRepository automationRuleRepository;
     protected final ContactRepository contactRepository;
-    protected final AutomationEngine automationEngine;
+    protected final AutomationExecutionService automationExecutionService;
     
     protected abstract TriggerType getTriggerType();
     protected abstract Map<String, Object> createContext(T event);
@@ -53,22 +53,32 @@ public abstract class AbstractEventHandler<T extends DomainEvent> implements Eve
     }
     
     private void executeMatchingRules(List<AutomationRule> rules, Contact contact, Map<String, Object> context) {
+        log.info("Found {} automation rules for trigger type {}", rules.size(), getTriggerType());
+
+        // WAŻNE: Wykonujemy WSZYSTKIE pasujące automatyzacje
         for (AutomationRule rule : rules) {
             if (rule.getIsActive()) {
                 try {
-                    log.info("Executing automation rule '{}' for contact {}", 
-                            rule.getName(), contact.getId());
-                    
-                    automationEngine.executeRule(rule, contact, context);
-                    contactRepository.save(contact);
-                    
-                    log.info("Successfully executed automation rule '{}' for contact {}", 
+                    log.info("Starting automation rule '{}' (ID: {}) for contact {} ({})",
+                            rule.getName(), rule.getId(), contact.getId(), contact.getEmail());
+
+                    // Użyj nowego systemu wykonywania automatyzacji
+                    automationExecutionService.startAutomation(rule, contact.getId(), context);
+
+                    log.info("Successfully started automation rule '{}' for contact {}",
                             rule.getName(), contact.getId());
                 } catch (Exception e) {
-                    log.error("Failed to execute automation rule '{}' for contact {}: {}", 
+                    log.error("Failed to start automation rule '{}' for contact {}: {}",
                             rule.getName(), contact.getId(), e.getMessage(), e);
+                    // Nie przerywaj wykonywania innych automatyzacji przy błędzie
                 }
+            } else {
+                log.debug("Skipping inactive automation rule '{}'", rule.getName());
             }
+        }
+
+        if (rules.isEmpty()) {
+            log.info("No automation rules configured for trigger type {}", getTriggerType());
         }
     }
 }
