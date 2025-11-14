@@ -45,16 +45,16 @@ email:
   # Used for: campaigns, automation, newsletters
   marketing:
     from:
-      address: ${MAIL_MARKETING_FROM_ADDRESS:hello@mailist.com}
+      address: ${MAIL_MARKETING_FROM_ADDRESS:team@mailist.pl}
       name: ${MAIL_MARKETING_FROM_NAME:Mailist Team}
 
 # AWS SES Configuration for Marketing Emails (Primary Provider)
 # AWS SES is enabled by default. To disable, set aws.ses.enabled=false
 aws:
   ses:
-    region: ${AWS_SES_REGION:eu-west-1}
-    access-key-id: ${AWS_ACCESS_KEY_ID:your-access-key-id}
-    secret-access-key: ${AWS_SECRET_ACCESS_KEY:your-secret-access-key}
+    region: ${AWS_SES_REGION:eu-central-1}
+    access-key-id: ${AWS_ACCESS_KEY_ID:AKIAZ3UW4MEAR6U7Q36Z}
+    secret-access-key: ${AWS_SECRET_ACCESS_KEY:rkg7eU/uONHFuVeOJiQ76KXZ77LaufA9eEZ+nviQ}
     configuration-set-name: ${AWS_SES_CONFIGURATION_SET:}
     timeout-seconds: 30
 

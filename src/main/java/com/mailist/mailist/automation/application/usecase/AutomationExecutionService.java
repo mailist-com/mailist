@@ -116,22 +116,6 @@ public class AutomationExecutionService {
 
         log.info("Created {} step executions for automation execution {}", steps.size(), execution.getId());
 
-        // Utwórz notyfikację (opcjonalnie - nie blokuje wykonania)
-        try {
-            notificationService.createNotification(
-                    CreateNotificationRequest.builder()
-                            .type(Notification.NotificationType.INFO)
-                            .category(Notification.NotificationCategory.AUTOMATION_TRIGGERED)
-                            .title("Automatyzacja uruchomiona")
-                            .message("Automatyzacja <b>" + automationRule.getName() + "</b> została uruchomiona dla kontaktu <b>" + contact.getEmail() + "</b>")
-                            .actionUrl("/automation/" + automationRule.getId() + "/executions/" + execution.getId())
-                            .build());
-        } catch (Exception e) {
-            // Notifications require user context which may not be available in async automation
-            // This is expected in automation context - notifications are optional
-            log.debug("Skipping notification creation in automation context (no user session): {}", e.getMessage());
-        }
-
         // Rozpocznij wykonywanie kroków
         processNextStep(execution.getId());
     }
@@ -159,23 +143,6 @@ public class AutomationExecutionService {
                 execution.complete();
                 executionRepository.save(execution);
                 log.info("Automation execution {} completed successfully", executionId);
-
-                // Utwórz notyfikację o zakończeniu (opcjonalnie)
-                try {
-                    notificationService.createNotification(
-                            CreateNotificationRequest.builder()
-                                    .type(Notification.NotificationType.SUCCESS)
-                                    .category(Notification.NotificationCategory.AUTOMATION_TRIGGERED)
-                                    .title("Automatyzacja zakończona")
-                                    .message("Automatyzacja <b>" + execution.getAutomationRule().getName() +
-                                            "</b> zakończona dla kontaktu <b>" + execution.getContactEmail() + "</b>")
-                                    .actionUrl("/automation/" + execution.getAutomationRule().getId() +
-                                            "/executions/" + execution.getId())
-                                    .build());
-                } catch (Exception e) {
-                    // Notifications require user context - skip in automation context
-                    log.debug("Skipping notification creation in automation context: {}", e.getMessage());
-                }
             }
             return;
         }
@@ -300,9 +267,12 @@ public class AutomationExecutionService {
                                   Map<String, Object> settings,
                                   AutomationExecution execution) {
         // Keys match what SendEmailStepStrategy saves
-        String subject = (String) settings.get("emailSubject");
-        String content = (String) settings.get("emailContent");
-        String template = (String) settings.get("emailTemplate");
+//        String subject = (String) settings.get("emailSubject");
+//        String content = (String) settings.get("emailContent");
+//        String template = (String) settings.get("emailTemplate");
+        String content = "test content";
+        String subject = "test subject";
+        String template = "test template";
 
         log.debug("Executing SEND_EMAIL step with settings: subject={}, content={}, template={}",
                   subject, content != null ? "present" : "null", template);
@@ -315,8 +285,10 @@ public class AutomationExecutionService {
                 .orElseThrow(() -> new IllegalArgumentException("Contact not found"));
 
         // Zamień placeholdery w treści
-        String finalContent = replacePlaceholders(content != null ? content : template, execution);
-        String finalSubject = replacePlaceholders(subject, execution);
+//        String finalContent = replacePlaceholders(content != null ? content : template, execution);
+//        String finalContent = replacePlaceholders(content != null ? content : template, execution);
+        String finalSubject = "test subject";
+        String finalContent = "test content";
 
         MarketingEmailMessage emailMessage = MarketingEmailMessage.builder()
                 .to(contact.getEmail())
