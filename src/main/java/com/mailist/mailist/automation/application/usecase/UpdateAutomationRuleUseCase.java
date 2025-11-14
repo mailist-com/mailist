@@ -6,6 +6,7 @@ import com.mailist.mailist.automation.domain.aggregate.AutomationStep;
 import com.mailist.mailist.automation.domain.service.FlowJsonParserService;
 import com.mailist.mailist.automation.infrastructure.repository.AutomationRuleRepository;
 import com.mailist.mailist.automation.infrastructure.repository.AutomationStepRepository;
+import com.mailist.mailist.automation.infrastructure.repository.AutomationExecutionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ public class UpdateAutomationRuleUseCase {
 
     private final AutomationRuleRepository automationRuleRepository;
     private final AutomationStepRepository automationStepRepository;
+    private final AutomationExecutionRepository automationExecutionRepository;
     private final FlowJsonParserService flowJsonParserService;
 
     @Transactional
@@ -28,6 +30,17 @@ public class UpdateAutomationRuleUseCase {
 
         AutomationRule automationRule = automationRuleRepository.findById(command.getId())
                 .orElseThrow(() -> new IllegalArgumentException("Automation rule not found with ID: " + command.getId()));
+
+        // Check if automation has active executions - if yes, block editing flow
+        if (command.getFlowJson() != null) {
+            boolean hasActiveExecutions = automationExecutionRepository.hasActiveExecutions(command.getId());
+            if (hasActiveExecutions) {
+                throw new IllegalStateException(
+                    "Nie można edytować automatyzacji, która ma aktywne wykonania. " +
+                    "Poczekaj aż wszystkie wykonania się zakończą lub anuluj je przed edycją."
+                );
+            }
+        }
 
         // Update fields if provided
         if (command.getName() != null) {

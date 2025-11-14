@@ -1,7 +1,7 @@
 package com.mailist.mailist.automation.application.eventhandler.strategy;
 
+import com.mailist.mailist.automation.application.usecase.AutomationExecutionService;
 import com.mailist.mailist.automation.domain.valueobject.TriggerType;
-import com.mailist.mailist.automation.domain.service.AutomationEngine;
 import com.mailist.mailist.automation.infrastructure.repository.AutomationRuleRepository;
 import com.mailist.mailist.contact.domain.event.ContactTagAddedEvent;
 import com.mailist.mailist.contact.infrastructure.repository.ContactRepository;
@@ -12,11 +12,11 @@ import java.util.Map;
 
 @Component
 public class ContactTagAddedEventHandler extends AbstractEventHandler<ContactTagAddedEvent> {
-    
+
     public ContactTagAddedEventHandler(AutomationRuleRepository automationRuleRepository,
                                        ContactRepository contactRepository,
-                                       AutomationEngine automationEngine) {
-        super(automationRuleRepository, contactRepository, automationEngine);
+                                       AutomationExecutionService automationExecutionService) {
+        super(automationRuleRepository, contactRepository, automationExecutionService);
     }
     
     @Override

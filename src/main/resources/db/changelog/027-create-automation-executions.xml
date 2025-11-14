@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="027-create-automation-executions-table" author="claude">
+        <comment>Create automation_executions table for tracking automation runs</comment>
+
+        <createTable tableName="automation_executions">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="tenant_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="automation_rule_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="contact_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="contact_email" type="VARCHAR(255)"/>
+
+            <column name="status" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="started_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="completed_at" type="TIMESTAMP"/>
+
+            <column name="context" type="JSONB"/>
+
+            <column name="error_message" type="TEXT"/>
+
+            <column name="current_step_id" type="VARCHAR(100)"/>
+        </createTable>
+
+        <!-- Add foreign key to automation_rules table -->
+        <addForeignKeyConstraint
+            baseTableName="automation_executions"
+            baseColumnNames="automation_rule_id"
+            constraintName="fk_automation_executions_rule"
+            referencedTableName="automation_rules"
+            referencedColumnNames="id"
+            onDelete="CASCADE"/>
+
+        <!-- Add foreign key to contacts table -->
+        <addForeignKeyConstraint
+            baseTableName="automation_executions"
+            baseColumnNames="contact_id"
+            constraintName="fk_automation_executions_contact"
+            referencedTableName="contacts"
+            referencedColumnNames="id"
+            onDelete="CASCADE"/>
+
+        <!-- Add foreign key to organizations table (tenant) -->
+        <addForeignKeyConstraint
+            baseTableName="automation_executions"
+            baseColumnNames="tenant_id"
+            constraintName="fk_automation_executions_tenant"
+            referencedTableName="organizations"
+            referencedColumnNames="id"
+            onDelete="CASCADE"/>
+
+        <!-- Create indexes for better performance -->
+        <createIndex indexName="idx_automation_execution_rule" tableName="automation_executions">
+            <column name="automation_rule_id"/>
+        </createIndex>
+
+        <createIndex indexName="idx_automation_execution_contact" tableName="automation_executions">
+            <column name="contact_id"/>
+        </createIndex>
+
+        <createIndex indexName="idx_automation_execution_status" tableName="automation_executions">
+            <column name="status"/>
+        </createIndex>
+
+        <createIndex indexName="idx_automation_execution_started" tableName="automation_executions">
+            <column name="started_at" descending="true"/>
+        </createIndex>
+
+        <rollback>
+            <dropTable tableName="automation_executions"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="027-create-automation-step-executions-table" author="claude">
+        <comment>Create automation_step_executions table for tracking step execution</comment>
+
+        <createTable tableName="automation_step_executions">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="tenant_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="automation_execution_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="automation_step_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="step_id" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="step_type" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="status" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="started_at" type="TIMESTAMP"/>
+
+            <column name="completed_at" type="TIMESTAMP"/>
+
+            <column name="scheduled_for" type="TIMESTAMP"/>
+
+            <column name="input_data" type="JSONB"/>
+
+            <column name="output_data" type="JSONB"/>
+
+            <column name="error_message" type="TEXT"/>
+
+            <column name="retry_count" type="INT" defaultValueNumeric="0"/>
+        </createTable>
+
+        <!-- Add foreign key to automation_executions table -->
+        <addForeignKeyConstraint
+            baseTableName="automation_step_executions"
+            baseColumnNames="automation_execution_id"
+            constraintName="fk_step_executions_execution"
+            referencedTableName="automation_executions"
+            referencedColumnNames="id"
+            onDelete="CASCADE"/>
+
+        <!-- Add foreign key to automation_steps table -->
+        <addForeignKeyConstraint
+            baseTableName="automation_step_executions"
+            baseColumnNames="automation_step_id"
+            constraintName="fk_step_executions_step"
+            referencedTableName="automation_steps"
+            referencedColumnNames="id"
+            onDelete="CASCADE"/>
+
+        <!-- Add foreign key to organizations table (tenant) -->
+        <addForeignKeyConstraint
+            baseTableName="automation_step_executions"
+            baseColumnNames="tenant_id"
+            constraintName="fk_step_executions_tenant"
+            referencedTableName="organizations"
+            referencedColumnNames="id"
+            onDelete="CASCADE"/>
+
+        <!-- Create indexes for better performance -->
+        <createIndex indexName="idx_step_execution_execution" tableName="automation_step_executions">
+            <column name="automation_execution_id"/>
+        </createIndex>
+
+        <createIndex indexName="idx_step_execution_step" tableName="automation_step_executions">
+            <column name="automation_step_id"/>
+        </createIndex>
+
+        <createIndex indexName="idx_step_execution_status" tableName="automation_step_executions">
+            <column name="status"/>
+        </createIndex>
+
+        <createIndex indexName="idx_step_execution_scheduled" tableName="automation_step_executions">
+            <column name="scheduled_for"/>
+        </createIndex>
+
+        <rollback>
+            <dropTable tableName="automation_step_executions"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

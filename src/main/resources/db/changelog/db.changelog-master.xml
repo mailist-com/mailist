@@ -77,4 +77,7 @@
     <!-- 020: Create notifications table for user notifications system -->
     <include file="db/changelog/026-create-notifications.xml"/>
 
+    <!-- 021: Create automation_executions and automation_step_executions tables for tracking automation flow -->
+    <include file="db/changelog/027-create-automation-executions.xml"/>
+
 </databaseChangeLog>

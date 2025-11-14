@@ -4,11 +4,13 @@ import com.mailist.mailist.contact.application.usecase.command.SubscribeContacts
 import com.mailist.mailist.contact.application.usecase.dto.SubscribeResult;
 import com.mailist.mailist.contact.domain.aggregate.Contact;
 import com.mailist.mailist.contact.domain.aggregate.ContactList;
+import com.mailist.mailist.contact.domain.event.ContactListJoinedEvent;
 import com.mailist.mailist.contact.domain.service.ListService;
 import com.mailist.mailist.contact.infrastructure.repository.ContactListRepository;
 import com.mailist.mailist.contact.infrastructure.repository.ContactRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -19,6 +21,7 @@ final class SubscribeContactsToListUseCase {
     private final ContactListRepository contactListRepository;
     private final ContactRepository contactRepository;
     private final ListService listService;
+    private final ApplicationEventPublisher eventPublisher;
 
     SubscribeResult execute(final SubscribeContactsCommand command) {
         log.info("Subscribing {} contacts to list ID: {}",
@@ -41,6 +44,14 @@ final class SubscribeContactsToListUseCase {
 
                 listService.addContactToList(contactList, contact);
                 subscribed++;
+
+                // Publikuj event o dołączeniu kontaktu do listy dla automatyzacji
+                eventPublisher.publishEvent(new ContactListJoinedEvent(
+                        contact.getId(),
+                        contact.getEmail(),
+                        contactList.getId(),
+                        contactList.getName()
+                ));
             } catch (Exception e) {
                 log.error("Failed to subscribe contact {} to list: {}", contactId, e.getMessage());
                 failed++;

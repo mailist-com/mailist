@@ -3,6 +3,7 @@ package com.mailist.mailist.contact.application.usecase;
 import com.mailist.mailist.contact.application.usecase.command.CreateContactCommand;
 import com.mailist.mailist.contact.domain.aggregate.Contact;
 import com.mailist.mailist.contact.domain.aggregate.ContactList;
+import com.mailist.mailist.contact.domain.event.ContactCreatedEvent;
 import com.mailist.mailist.contact.infrastructure.repository.ContactListRepository;
 import com.mailist.mailist.contact.infrastructure.repository.ContactRepository;
 import com.mailist.mailist.notification.application.usecase.NotificationService;
@@ -11,6 +12,7 @@ import com.mailist.mailist.notification.domain.aggregate.Notification;
 import com.mailist.mailist.shared.infrastructure.security.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,6 +24,7 @@ final class CreateContactUseCase {
     private final ContactRepository contactRepository;
     private final ContactListRepository contactListRepository;
     private final NotificationService notificationService;
+    private final ApplicationEventPublisher eventPublisher;
 
     Contact execute(final CreateContactCommand command) {
         if (contactRepository.existsByEmail(command.getEmail())) {
@@ -54,6 +57,14 @@ final class CreateContactUseCase {
                         .message("Kontakt <b>" + contact.getEmail() + "</b> dodany do listy")
                         .actionUrl("/contacts/view/" + contact.getId())
                         .build());
+
+        // Publikuj event o utworzeniu kontaktu dla automatyzacji
+        eventPublisher.publishEvent(new ContactCreatedEvent(
+                contact.getId(),
+                contact.getEmail(),
+                contact.getFirstName(),
+                contact.getLastName()
+        ));
 
         return contact;
     }

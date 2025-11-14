@@ -6,6 +6,7 @@ import com.mailist.mailist.campaign.infrastructure.config.EmailLabsProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -17,9 +18,12 @@ import java.util.HashMap;
 /**
  * EmailLabs implementation for marketing emails (campaigns, automation).
  * Provides advanced tracking and analytics capabilities for marketing communications.
+ * DEPRECATED: Use AwsSesMarketingEmailGateway instead.
+ * Only loaded when explicitly enabled via emaillabs.enabled=true
  */
 @Component
 @Slf4j
+@ConditionalOnProperty(prefix = "emaillabs", name = "enabled", havingValue = "true", matchIfMissing = false)
 public class EmailLabsMarketingEmailGateway implements MarketingEmailGateway {
 
     private final WebClient webClient;
