@@ -48,10 +48,13 @@ public interface AutomationStepExecutionRepository extends JpaRepository<Automat
     List<AutomationStepExecution> findPendingByExecutionId(@Param("executionId") Long executionId);
 
     /**
-     * Find the next pending step for a given automation execution
+     * Find the next pending step for a given automation execution.
+     * Returns the first pending step ordered by ID (creation order).
+     * IMPORTANT: Returns first result only to handle multiple pending steps correctly.
      */
-    @Query("SELECT se FROM AutomationStepExecution se WHERE se.automationExecution.id = :executionId " +
-           "AND se.status = 'PENDING' ORDER BY se.id ASC")
+    @Query(value = "SELECT * FROM automation_step_executions " +
+           "WHERE automation_execution_id = :executionId AND status = 'PENDING' " +
+           "ORDER BY id ASC LIMIT 1", nativeQuery = true)
     Optional<AutomationStepExecution> findNextPendingStep(@Param("executionId") Long executionId);
 
     /**

@@ -116,7 +116,7 @@ public class AutomationExecutionService {
 
         log.info("Created {} step executions for automation execution {}", steps.size(), execution.getId());
 
-        // Utwórz notyfikację
+        // Utwórz notyfikację (opcjonalnie - nie blokuje wykonania)
         try {
             notificationService.createNotification(
                     CreateNotificationRequest.builder()
@@ -127,7 +127,9 @@ public class AutomationExecutionService {
                             .actionUrl("/automation/" + automationRule.getId() + "/executions/" + execution.getId())
                             .build());
         } catch (Exception e) {
-            log.error("Failed to create notification", e);
+            // Notifications require user context which may not be available in async automation
+            // This is expected in automation context - notifications are optional
+            log.debug("Skipping notification creation in automation context (no user session): {}", e.getMessage());
         }
 
         // Rozpocznij wykonywanie kroków
@@ -158,7 +160,7 @@ public class AutomationExecutionService {
                 executionRepository.save(execution);
                 log.info("Automation execution {} completed successfully", executionId);
 
-                // Utwórz notyfikację o zakończeniu
+                // Utwórz notyfikację o zakończeniu (opcjonalnie)
                 try {
                     notificationService.createNotification(
                             CreateNotificationRequest.builder()
@@ -171,7 +173,8 @@ public class AutomationExecutionService {
                                             "/executions/" + execution.getId())
                                     .build());
                 } catch (Exception e) {
-                    log.error("Failed to create notification", e);
+                    // Notifications require user context - skip in automation context
+                    log.debug("Skipping notification creation in automation context: {}", e.getMessage());
                 }
             }
             return;
