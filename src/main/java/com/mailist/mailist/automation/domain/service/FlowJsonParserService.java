@@ -88,6 +88,14 @@ public class FlowJsonParserService {
 
         String nodeType = nodeJson.get("type").asText();
 
+        // IMPORTANT: Skip trigger nodes - they are NOT execution steps!
+        // Triggers define WHEN automation starts (stored in AutomationRule.triggerType)
+        // Steps define WHAT to do (stored in AutomationStep)
+        if ("trigger".equalsIgnoreCase(nodeType)) {
+            log.debug("Skipping trigger node {} - triggers are not execution steps", nodeId);
+            return null;
+        }
+
         // Get appropriate strategy for this node type
         StepParsingStrategy strategy = strategyFactory.getStrategy(nodeType);
 

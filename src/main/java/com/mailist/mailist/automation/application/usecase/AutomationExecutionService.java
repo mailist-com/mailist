@@ -206,9 +206,15 @@ public class AutomationExecutionService {
             // Wykonaj krok na podstawie typu
             switch (stepExecution.getStepType().toUpperCase()) {
                 case "TRIGGER":
-                    // Trigger jest tylko punktem startowym, od razu sukces
-                    outputData.put("triggered", true);
-                    break;
+                    // IMPORTANT: Triggers should NOT be execution steps!
+                    // This case exists only for backward compatibility with old data.
+                    // New automations will not have trigger steps (filtered in FlowJsonParserService).
+                    log.warn("Skipping TRIGGER step {} - triggers should not be execution steps!",
+                            stepExecution.getStepId());
+                    stepExecution.skip("Triggers are not executable steps");
+                    stepExecutionRepository.save(stepExecution);
+                    processNextStep(execution.getId());
+                    return;
 
                 case "SEND_EMAIL":
                     executeSendEmail(stepExecution, settings, execution);
