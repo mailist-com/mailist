@@ -315,7 +315,7 @@ public class AutomationExecutionService {
                 .orElseThrow(() -> new IllegalArgumentException("Contact not found"));
 
         // Zamień placeholdery w treści
-        String finalContent = replacePlaceholders(content != null ? content : htmlContent, execution);
+        String finalContent = replacePlaceholders(content != null ? content : template, execution);
         String finalSubject = replacePlaceholders(subject, execution);
 
         MarketingEmailMessage emailMessage = MarketingEmailMessage.builder()
