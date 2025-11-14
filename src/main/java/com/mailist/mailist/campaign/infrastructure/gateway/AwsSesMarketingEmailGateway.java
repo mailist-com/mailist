@@ -6,6 +6,7 @@ import com.mailist.mailist.shared.domain.model.MarketingEmailMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
@@ -20,10 +21,12 @@ import java.util.List;
 /**
  * AWS SES implementation for marketing emails (campaigns, automation).
  * Uses AWS SES v2 API for sending emails with tracking capabilities.
+ * This is the PRIMARY email gateway for the application.
  */
 @Component
+@Primary
 @Slf4j
-@ConditionalOnProperty(prefix = "aws.ses", name = "enabled", havingValue = "true")
+@ConditionalOnProperty(prefix = "aws.ses", name = "enabled", havingValue = "true", matchIfMissing = true)
 public class AwsSesMarketingEmailGateway implements MarketingEmailGateway {
 
     private final SesV2Client sesClient;

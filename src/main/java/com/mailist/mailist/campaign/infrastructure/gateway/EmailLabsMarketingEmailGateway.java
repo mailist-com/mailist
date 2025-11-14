@@ -18,10 +18,12 @@ import java.util.HashMap;
 /**
  * EmailLabs implementation for marketing emails (campaigns, automation).
  * Provides advanced tracking and analytics capabilities for marketing communications.
+ * DEPRECATED: Use AwsSesMarketingEmailGateway instead.
+ * Only loaded when explicitly enabled via emaillabs.enabled=true
  */
 @Component
 @Slf4j
-@ConditionalOnProperty(prefix = "emaillabs", name = "enabled", havingValue = "true")
+@ConditionalOnProperty(prefix = "emaillabs", name = "enabled", havingValue = "true", matchIfMissing = false)
 public class EmailLabsMarketingEmailGateway implements MarketingEmailGateway {
 
     private final WebClient webClient;
