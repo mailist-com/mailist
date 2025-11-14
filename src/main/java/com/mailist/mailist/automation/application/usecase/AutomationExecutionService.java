@@ -206,6 +206,9 @@ public class AutomationExecutionService {
             Map<String, Object> settings = step.getSettings();
             Map<String, Object> outputData = new HashMap<>();
 
+            log.debug("Executing step {} of type {} with settings: {}",
+                      stepExecution.getStepId(), stepExecution.getStepType(), settings);
+
             // Wykonaj krok na podstawie typu
             switch (stepExecution.getStepType().toUpperCase()) {
                 case "TRIGGER":
@@ -271,10 +274,16 @@ public class AutomationExecutionService {
             // Sprawdź czy można retry
             if (stepExecution.canRetry(3)) {
                 stepExecution.incrementRetry();
-                stepExecution.fail("Błąd wykonania: " + e.getMessage() + " (próba " + stepExecution.getRetryCount() + ")");
+                log.warn("Retrying step {} (attempt {}/3) after error: {}",
+                         stepExecution.getStepId(), stepExecution.getRetryCount(), e.getMessage());
+
+                // Reset status to PENDING for retry (don't call fail()!)
+                stepExecution.setStatus(AutomationStepExecution.StepExecutionStatus.PENDING);
+                stepExecution.setErrorMessage("Próba " + stepExecution.getRetryCount() + " po błędzie: " + e.getMessage());
                 stepExecutionRepository.save(stepExecution);
 
-                // Spróbuj ponownie
+                // Retry by calling executeStep again
+                // The recursive call will handle its own retries and failures
                 executeStep(stepExecution);
             } else {
                 stepExecution.fail("Błąd wykonania (przekroczono limit prób): " + e.getMessage());
@@ -290,12 +299,16 @@ public class AutomationExecutionService {
     private void executeSendEmail(AutomationStepExecution stepExecution,
                                   Map<String, Object> settings,
                                   AutomationExecution execution) {
-        String subject = (String) settings.get("subject");
-        String content = (String) settings.get("content");
-        String htmlContent = (String) settings.get("htmlContent");
+        // Keys match what SendEmailStepStrategy saves
+        String subject = (String) settings.get("emailSubject");
+        String content = (String) settings.get("emailContent");
+        String template = (String) settings.get("emailTemplate");
 
-        if (subject == null || (content == null && htmlContent == null)) {
-            throw new IllegalArgumentException("Email requires subject and content");
+        log.debug("Executing SEND_EMAIL step with settings: subject={}, content={}, template={}",
+                  subject, content != null ? "present" : "null", template);
+
+        if (subject == null || (content == null && template == null)) {
+            throw new IllegalArgumentException("Email requires subject and content or template");
         }
 
         Contact contact = contactRepository.findById(execution.getContactId())
