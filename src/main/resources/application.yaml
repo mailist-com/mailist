@@ -48,13 +48,24 @@ email:
       address: ${MAIL_MARKETING_FROM_ADDRESS:hello@mailist.com}
       name: ${MAIL_MARKETING_FROM_NAME:Mailist Team}
 
-# EmailLabs Configuration for Marketing Emails
+# EmailLabs Configuration for Marketing Emails (DISABLED - using AWS SES)
 emaillabs:
+  enabled: false
   api-base-url: https://api.emaillabs.net.pl/v1
   api-key: ${EMAILLABS_API_KEY:your-api-key-here}
   secret: ${EMAILLABS_SECRET:your-secret-here}
   timeout-seconds: 30
   retry-attempts: 3
+
+# AWS SES Configuration for Marketing Emails
+aws:
+  ses:
+    enabled: true
+    region: ${AWS_SES_REGION:eu-west-1}
+    access-key-id: ${AWS_ACCESS_KEY_ID:your-access-key-id}
+    secret-access-key: ${AWS_SECRET_ACCESS_KEY:your-secret-access-key}
+    configuration-set-name: ${AWS_SES_CONFIGURATION_SET:}
+    timeout-seconds: 30
 
 # JWT Configuration
 jwt:
