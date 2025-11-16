@@ -227,6 +227,38 @@ class AuthController {
         }
     }
 
+    @PostMapping("/change-password")
+    @Operation(summary = "Change password", description = "Change password for authenticated user")
+    ResponseEntity<ApiResponse> changePassword(
+            @RequestAttribute(value = "userId", required = false) final Long userId,
+            @Valid @RequestBody final ChangePasswordRequestDto changePasswordDto) {
+        log.info("Change password request for user ID: {}", userId);
+
+        try {
+            if (userId == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(ApiResponse.error("Authentication required"));
+            }
+
+            final ChangePasswordCommand command = authMapper.toCommand(changePasswordDto);
+            command.setUserId(userId);
+            authApplicationService.changePassword(command);
+
+            log.info("Password changed successfully for user ID: {}", userId);
+
+            return ResponseEntity.ok(ApiResponse.success("Password changed successfully. You have been logged out from all devices."));
+
+        } catch (IllegalArgumentException e) {
+            log.warn("Change password failed for user ID {}: {}", userId, e.getMessage());
+            return ResponseEntity.badRequest()
+                    .body(ApiResponse.error(e.getMessage()));
+        } catch (Exception e) {
+            log.error("Unexpected error during password change for user ID: {}", userId, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponse.error("Password change failed. Please try again."));
+        }
+    }
+
     @PostMapping("/verify-2fa")
     @Operation(summary = "Verify 2FA code", description = "Verify two-factor authentication code")
     ResponseEntity<?> verify2FA(@Valid @RequestBody final Verify2FARequestDto verify2FADto) {

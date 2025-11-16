@@ -21,6 +21,7 @@ public interface AuthMapper {
     RefreshTokenCommand toCommand(RefreshTokenRequestDto dto);
     Verify2FACommand toCommand(Verify2FARequestDto dto);
     SetPasswordCommand toCommand(SetPasswordRequestDto dto);
+    ChangePasswordCommand toCommand(ChangePasswordRequestDto dto);
     
     // Response mappings
     default LoginResponseDto toLoginResponse(LoginResult loginResult) {
