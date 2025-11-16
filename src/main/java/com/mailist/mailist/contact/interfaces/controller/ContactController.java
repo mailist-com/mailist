@@ -8,6 +8,7 @@ import com.mailist.mailist.contact.domain.aggregate.Contact;
 import com.mailist.mailist.contact.infrastructure.repository.ContactRepository;
 import com.mailist.mailist.contact.interfaces.dto.ContactDto;
 import com.mailist.mailist.contact.interfaces.mapper.ContactMapper;
+import com.mailist.mailist.shared.infrastructure.tenant.TenantContext;
 import com.mailist.mailist.shared.interfaces.dto.ApiResponse;
 import com.mailist.mailist.shared.interfaces.dto.PagedResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,7 +23,10 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/contacts")
@@ -73,6 +77,22 @@ class ContactController {
         stats.put("tagged", tagged);
 
         return ResponseEntity.ok(ApiResponse.success(stats));
+    }
+
+    @GetMapping("/tags")
+    @Operation(summary = "Get all unique tags used in contacts")
+    ResponseEntity<ApiResponse<Set<ContactDto.TagDto>>> getAllContactTags() {
+        log.info("Getting all unique contact tags");
+
+        final Long tenantId = TenantContext.getOrganizationId();
+        final List<com.mailist.mailist.contact.domain.valueobject.Tag> tags =
+            contactRepository.findAllDistinctTagsByTenantId(tenantId);
+
+        final Set<ContactDto.TagDto> tagDtos = tags.stream()
+            .map(contactMapper::toTagDto)
+            .collect(Collectors.toSet());
+
+        return ResponseEntity.ok(ApiResponse.success(tagDtos));
     }
 
     @GetMapping

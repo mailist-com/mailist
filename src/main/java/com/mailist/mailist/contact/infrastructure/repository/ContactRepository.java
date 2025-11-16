@@ -64,4 +64,7 @@ public interface ContactRepository extends JpaRepository<Contact, Long> {
            "GROUP BY EXTRACT(MONTH FROM c.createdAt) " +
            "ORDER BY month")
     List<Object[]> countByMonth(@Param("tenantId") Long tenantId, @Param("year") int year);
+
+    @Query("SELECT DISTINCT t FROM Contact c JOIN c.tags t WHERE c.tenantId = :tenantId ORDER BY t.name")
+    List<com.mailist.mailist.contact.domain.valueobject.Tag> findAllDistinctTagsByTenantId(@Param("tenantId") Long tenantId);
 }
