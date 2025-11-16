@@ -23,7 +23,10 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/contacts")
@@ -76,23 +79,38 @@ class ContactController {
         return ResponseEntity.ok(ApiResponse.success(stats));
     }
 
-    @GetMapping
-    @Operation(summary = "List all contacts with pagination and their contact lists")
-    ResponseEntity<ApiResponse<PagedResponse<ContactDto.Response>>> listContacts(final Pageable pageable) {
-        log.info("Listing contacts with contact lists - page: {}, size: {}", pageable.getPageNumber(), pageable.getPageSize());
+    @GetMapping("/tags")
+    @Operation(summary = "Get all unique tags used in contacts")
+    ResponseEntity<ApiResponse<Set<ContactDto.TagDto>>> getAllContactTags() {
+        log.info("Getting all unique contact tags");
 
         final Long tenantId = TenantContext.getOrganizationId();
-        final Page<Contact> contactsPage = contactRepository.findByTenantIdWithContactLists(tenantId, pageable);
+        final List<com.mailist.mailist.contact.domain.valueobject.Tag> tags =
+            contactRepository.findAllDistinctTagsByTenantId(tenantId);
+
+        final Set<ContactDto.TagDto> tagDtos = tags.stream()
+            .map(contactMapper::toTagDto)
+            .collect(Collectors.toSet());
+
+        return ResponseEntity.ok(ApiResponse.success(tagDtos));
+    }
+
+    @GetMapping
+    @Operation(summary = "List all contacts with pagination")
+    ResponseEntity<ApiResponse<PagedResponse<ContactDto.Response>>> listContacts(final Pageable pageable) {
+        log.info("Listing contacts - page: {}, size: {}", pageable.getPageNumber(), pageable.getPageSize());
+
+        final Page<Contact> contactsPage = contactRepository.findAll(pageable);
 
         return ResponseEntity.ok(ApiResponse.success(PagedResponse.of(contactsPage, contactMapper::toResponse)));
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Get contact by ID with contact lists")
+    @Operation(summary = "Get contact by ID")
     ResponseEntity<ApiResponse<ContactDto.Response>> getContact(@PathVariable final long id) {
-        log.info("Getting contact with ID and contact lists: {}", id);
+        log.info("Getting contact with ID: {}", id);
 
-        final Optional<Contact> contact = contactRepository.findByIdWithContactLists(id);
+        final Optional<Contact> contact = contactRepository.findById(id);
 
         return contact.map(value -> ResponseEntity.ok(ApiResponse.success(contactMapper.toResponse(value))))
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
