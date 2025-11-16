@@ -68,6 +68,15 @@ final class UpdateContactUseCase {
             }
         }
 
+        // Update tags if provided
+        if (command.getTags() != null) {
+            log.info("Updating tags for contact ID: {}", contact.getId());
+            // Clear existing tags
+            contact.getTags().clear();
+            // Add new tags
+            contact.getTags().addAll(command.getTags());
+        }
+
         contactRepository.save(contact);
         log.info("Contact updated successfully with ID: {}", contact.getId());
 

@@ -24,14 +24,21 @@ public interface ContactMapper {
 
     List<ContactDto.Response> toResponseList(List<Contact> contacts);
 
+    @Mapping(target = "tags", source = "tags", qualifiedByName = "tagDtoSetToTagSet")
     CreateContactCommand toCreateCommand(ContactDto.CreateRequest request);
 
     @Mapping(target = "id", source = "id")
+    @Mapping(target = "tags", source = "request.tags", qualifiedByName = "tagDtoSetToTagSet")
     UpdateContactCommand toUpdateCommand(Long id, ContactDto.UpdateRequest request);
 
     ContactDto.TagDto toTagDto(Tag tag);
 
     Set<ContactDto.TagDto> toTagDtoSet(Set<Tag> tags);
+
+    Tag toTag(ContactDto.TagDto tagDto);
+
+    @org.mapstruct.Named("tagDtoSetToTagSet")
+    Set<Tag> toTagSet(Set<ContactDto.TagDto> tagDtos);
 
     ContactDto.ContactListDto toContactListDto(ContactList contactList);
 

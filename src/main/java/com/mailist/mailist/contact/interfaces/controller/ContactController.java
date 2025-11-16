@@ -41,9 +41,13 @@ class ContactController {
     ResponseEntity<ApiResponse<ContactDto.Response>> createContact(
             @Valid @RequestBody final ContactDto.CreateRequest request) {
         log.info("Creating new contact with email: {}", request.getEmail());
+        log.info("Received tags in request: {}", request.getTags());
 
         final CreateContactCommand command = contactMapper.toCreateCommand(request);
+        log.info("Tags in command after mapping: {}", command.getTags());
+
         final Contact contact = contactApplicationService.create(command);
+        log.info("Tags in created contact: {}", contact.getTags());
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success(contactMapper.toResponse(contact), "Contact created successfully"));

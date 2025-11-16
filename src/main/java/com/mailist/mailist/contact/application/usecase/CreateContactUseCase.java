@@ -37,6 +37,7 @@ final class CreateContactUseCase {
                 .email(command.getEmail())
                 .phone(command.getPhone())
                 .leadScore(0)
+                .tags(command.getTags() != null ? command.getTags() : new java.util.HashSet<>())
                 .build();
 
         if (CollectionUtils.isNotEmpty(command.getListIds())) {

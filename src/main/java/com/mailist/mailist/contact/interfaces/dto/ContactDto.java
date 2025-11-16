@@ -75,6 +75,9 @@ public class ContactDto {
 
         @Schema(description = "List IDs to assign contact to")
         private Set<Long> listIds;
+
+        @Schema(description = "Tags to assign to contact")
+        private Set<TagDto> tags;
     }
 
     @Data
@@ -99,6 +102,9 @@ public class ContactDto {
 
         @Schema(description = "List IDs to assign contact to")
         private Set<Long> listIds;
+
+        @Schema(description = "Tags to assign to contact")
+        private Set<TagDto> tags;
     }
 
     @Data

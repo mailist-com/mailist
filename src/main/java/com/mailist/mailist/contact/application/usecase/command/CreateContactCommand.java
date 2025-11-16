@@ -1,5 +1,6 @@
 package com.mailist.mailist.contact.application.usecase.command;
 
+import com.mailist.mailist.contact.domain.valueobject.Tag;
 import lombok.Data;
 import lombok.Builder;
 import lombok.AllArgsConstructor;
@@ -17,4 +18,5 @@ public class CreateContactCommand {
     private String email;
     private String phone;
     private Set<Long> listIds;
+    private Set<Tag> tags;
 }
