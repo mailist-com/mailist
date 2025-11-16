@@ -19,7 +19,6 @@ final class ChangePasswordUseCase {
     private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordEncoder passwordEncoder;
 
-    @Transactional
     void execute(final ChangePasswordCommand command) {
         log.debug("Attempting to change password for user ID: {}", command.getUserId());
 
