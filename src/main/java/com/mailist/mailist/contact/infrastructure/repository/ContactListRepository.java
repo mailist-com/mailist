@@ -14,6 +14,8 @@ import java.util.Set;
 @Repository
 public interface ContactListRepository extends JpaRepository<ContactList, Long> {
 
+    // Hibernate automatically filters by tenantId using @TenantId annotation
+
     Optional<ContactList> findByName(String name);
 
     boolean existsByName(String name);
@@ -44,6 +46,7 @@ public interface ContactListRepository extends JpaRepository<ContactList, Long> 
                 (SELECT COUNT(*) FROM contact_list_contacts clc WHERE clc.list_id = cl.id)
             ), 0) as totalSubscribers
         FROM contact_lists cl
+        WHERE cl.tenant_id = :tenantId
         """, nativeQuery = true)
-    ListStatistics getGlobalStatistics();
+    ListStatistics getGlobalStatistics(@Param("tenantId") Long tenantId);
 }

@@ -38,6 +38,7 @@ public class AutomationExecutionService {
     private final ContactRepository contactRepository;
     private final MarketingEmailGateway marketingEmailGateway;
     private final NotificationService notificationService;
+    private final com.mailist.mailist.template.application.usecase.TemplateApplicationService templateApplicationService;
 
     /**
      * Rozpoczyna wykonanie automatyzacji dla danego kontaktu.
@@ -266,41 +267,97 @@ public class AutomationExecutionService {
     private void executeSendEmail(AutomationStepExecution stepExecution,
                                   Map<String, Object> settings,
                                   AutomationExecution execution) {
-        // Keys match what SendEmailStepStrategy saves
-//        String subject = (String) settings.get("emailSubject");
-//        String content = (String) settings.get("emailContent");
-//        String template = (String) settings.get("emailTemplate");
-        String content = "test content";
-        String subject = "test subject";
-        String template = "test template";
-
-        log.debug("Executing SEND_EMAIL step with settings: subject={}, content={}, template={}",
-                  subject, content != null ? "present" : "null", template);
-
-        if (subject == null || (content == null && template == null)) {
-            throw new IllegalArgumentException("Email requires subject and content or template");
-        }
-
         Contact contact = contactRepository.findById(execution.getContactId())
                 .orElseThrow(() -> new IllegalArgumentException("Contact not found"));
 
-        // Zamień placeholdery w treści
-//        String finalContent = replacePlaceholders(content != null ? content : template, execution);
-//        String finalContent = replacePlaceholders(content != null ? content : template, execution);
-        String finalSubject = "test subject";
-        String finalContent = "test content";
+        String emailMode = (String) settings.get("emailMode");
+        String finalSubject;
+        String finalHtmlContent;
+        String finalTextContent = null;
 
+        log.debug("Executing SEND_EMAIL step with mode: {}, settings: {}", emailMode, settings);
+
+        if ("template".equals(emailMode)) {
+            // Mode: Template - pobierz szablon z bazy danych
+            Object templateIdObj = settings.get("emailTemplateId");
+            if (templateIdObj == null) {
+                throw new IllegalArgumentException("Template mode requires emailTemplateId");
+            }
+
+            // Convert to Long (templateId może być zapisany jako String lub Integer)
+            Long templateId;
+            if (templateIdObj instanceof String) {
+                templateId = Long.parseLong((String) templateIdObj);
+            } else if (templateIdObj instanceof Integer) {
+                templateId = ((Integer) templateIdObj).longValue();
+            } else if (templateIdObj instanceof Long) {
+                templateId = (Long) templateIdObj;
+            } else {
+                throw new IllegalArgumentException("Invalid emailTemplateId type: " + templateIdObj.getClass());
+            }
+
+            log.debug("Loading template with ID: {}", templateId);
+
+            // Pobierz szablon z bazy (Hibernate automatycznie filtruje po tenantId)
+            com.mailist.mailist.template.domain.aggregate.Template template =
+                templateApplicationService.getTemplateById(templateId)
+                    .orElseThrow(() -> new IllegalArgumentException("Template not found or access denied: " + templateId));
+
+            // Sprawdź czy szablon jest aktywny
+            if (!template.isActive()) {
+                throw new IllegalArgumentException("Template " + templateId + " is not active");
+            }
+
+            // Użyj danych z szablonu
+            finalSubject = template.getSubject();
+            finalHtmlContent = template.getHtmlContent();
+            finalTextContent = template.getTextContent();
+
+            // Zamień placeholdery w subject i content
+            finalSubject = replacePlaceholders(finalSubject, execution);
+            finalHtmlContent = replacePlaceholders(finalHtmlContent, execution);
+            if (finalTextContent != null) {
+                finalTextContent = replacePlaceholders(finalTextContent, execution);
+            }
+
+            // Zwiększ statystyki użycia szablonu
+            template.incrementUsage();
+            // Note: Template will be saved automatically by @Transactional
+
+            log.info("Using template '{}' (ID: {}) for automation email", template.getName(), templateId);
+
+        } else {
+            // Mode: Simple - użyj prostych pól tekstowych
+            String subject = (String) settings.get("emailSubject");
+            String content = (String) settings.get("emailContent");
+
+            if (subject == null || subject.trim().isEmpty()) {
+                throw new IllegalArgumentException("Simple mode requires emailSubject");
+            }
+            if (content == null || content.trim().isEmpty()) {
+                throw new IllegalArgumentException("Simple mode requires emailContent");
+            }
+
+            // Zamień placeholdery
+            finalSubject = replacePlaceholders(subject, execution);
+            finalHtmlContent = replacePlaceholders(content, execution);
+            finalTextContent = finalHtmlContent; // W trybie simple HTML i text są takie same
+
+            log.debug("Using simple email mode with subject: {}", finalSubject);
+        }
+
+        // Wysłanie emaila
         MarketingEmailMessage emailMessage = MarketingEmailMessage.builder()
                 .to(contact.getEmail())
                 .subject(finalSubject)
-                .htmlContent(finalContent)
-                .textContent(finalContent)
+                .htmlContent(finalHtmlContent)
+                .textContent(finalTextContent != null ? finalTextContent : finalHtmlContent)
                 .contactId(contact.getId().toString())
                 .trackingId(UUID.randomUUID().toString())
                 .build();
 
         marketingEmailGateway.sendEmail(emailMessage);
-        log.info("Automation email sent to {}", contact.getEmail());
+        log.info("Automation email sent to {} using mode: {}", contact.getEmail(), emailMode);
     }
 
     private void executeAddTag(AutomationStepExecution stepExecution,

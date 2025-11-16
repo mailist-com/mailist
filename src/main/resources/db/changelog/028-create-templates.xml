@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="028-create-templates" author="marketing-automation">
+        <comment>Create templates table for email templates management</comment>
+
+        <createTable tableName="templates">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <!-- Tenant for multi-tenancy -->
+            <column name="tenant_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <!-- Basic Information -->
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="subject" type="VARCHAR(500)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="preview_text" type="VARCHAR(255)"/>
+
+            <!-- Template Category -->
+            <column name="category" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+
+            <!-- Template Content -->
+            <column name="html_content" type="LONGTEXT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="text_content" type="TEXT"/>
+
+            <!-- Design Settings -->
+            <column name="background_color" type="VARCHAR(50)"/>
+            <column name="font_family" type="VARCHAR(100)"/>
+            <column name="primary_color" type="VARCHAR(50)"/>
+            <column name="secondary_color" type="VARCHAR(50)"/>
+
+            <!-- Template Status -->
+            <column name="status" type="VARCHAR(50)" defaultValue="DRAFT">
+                <constraints nullable="false"/>
+            </column>
+
+            <!-- Additional Information -->
+            <column name="thumbnail_url" type="VARCHAR(500)"/>
+            <column name="created_by" type="VARCHAR(255)"/>
+            <column name="is_default" type="BOOLEAN" defaultValueBoolean="false"/>
+
+            <!-- Statistics -->
+            <column name="usage_count" type="INTEGER" defaultValueNumeric="0"/>
+            <column name="last_used_at" type="TIMESTAMP"/>
+            <column name="campaigns_count" type="INTEGER" defaultValueNumeric="0"/>
+            <column name="avg_open_rate" type="DOUBLE"/>
+            <column name="avg_click_rate" type="DOUBLE"/>
+
+            <!-- Timestamps -->
+            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="updated_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <!-- Add foreign key for tenant -->
+        <addForeignKeyConstraint
+            baseTableName="templates"
+            baseColumnNames="tenant_id"
+            referencedTableName="organizations"
+            referencedColumnNames="id"
+            constraintName="fk_templates_tenant"
+            onDelete="CASCADE"/>
+
+        <!-- Add unique constraint for name per tenant -->
+        <addUniqueConstraint
+            tableName="templates"
+            columnNames="tenant_id,name"
+            constraintName="uk_templates_tenant_name"/>
+
+        <!-- Create template_tags table for storing tags -->
+        <createTable tableName="template_tags">
+            <column name="template_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="tag" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <!-- Add primary key for template_tags -->
+        <addPrimaryKey
+            tableName="template_tags"
+            columnNames="template_id,tag"
+            constraintName="pk_template_tags"/>
+
+        <!-- Add foreign key for template_tags -->
+        <addForeignKeyConstraint
+            baseTableName="template_tags"
+            baseColumnNames="template_id"
+            referencedTableName="templates"
+            referencedColumnNames="id"
+            constraintName="fk_template_tags_template"
+            onDelete="CASCADE"/>
+
+        <!-- Create indexes for better query performance -->
+        <createIndex indexName="idx_templates_tenant_status" tableName="templates">
+            <column name="tenant_id"/>
+            <column name="status"/>
+        </createIndex>
+
+        <createIndex indexName="idx_templates_tenant_category" tableName="templates">
+            <column name="tenant_id"/>
+            <column name="category"/>
+        </createIndex>
+
+        <createIndex indexName="idx_templates_created_at" tableName="templates">
+            <column name="created_at"/>
+        </createIndex>
+
+    </changeSet>
+
+</databaseChangeLog>

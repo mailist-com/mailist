@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="029-refactor-templates-custom-fields" author="marketing-automation">
+        <comment>Refactor templates: remove design settings and preview text, add custom fields support</comment>
+
+        <!-- Drop design-related columns -->
+        <dropColumn tableName="templates" columnName="preview_text"/>
+        <dropColumn tableName="templates" columnName="background_color"/>
+        <dropColumn tableName="templates" columnName="font_family"/>
+        <dropColumn tableName="templates" columnName="primary_color"/>
+        <dropColumn tableName="templates" columnName="secondary_color"/>
+
+        <!-- Add custom_fields column as JSONB for PostgreSQL -->
+        <addColumn tableName="templates">
+            <column name="custom_fields" type="jsonb">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+
+    </changeSet>
+
+</databaseChangeLog>

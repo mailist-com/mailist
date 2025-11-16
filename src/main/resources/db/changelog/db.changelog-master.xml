@@ -80,4 +80,10 @@
     <!-- 021: Create automation_executions and automation_step_executions tables for tracking automation flow -->
     <include file="db/changelog/027-create-automation-executions.xml"/>
 
+    <!-- 022: Create templates table for email templates management -->
+    <include file="db/changelog/028-create-templates.xml"/>
+
+    <!-- 023: Refactor templates - remove design settings, add custom fields -->
+    <include file="db/changelog/029-refactor-templates-custom-fields.xml"/>
+
 </databaseChangeLog>
