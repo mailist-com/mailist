@@ -8,6 +8,7 @@ import com.mailist.mailist.contact.domain.aggregate.Contact;
 import com.mailist.mailist.contact.infrastructure.repository.ContactRepository;
 import com.mailist.mailist.contact.interfaces.dto.ContactDto;
 import com.mailist.mailist.contact.interfaces.mapper.ContactMapper;
+import com.mailist.mailist.shared.infrastructure.tenant.TenantContext;
 import com.mailist.mailist.shared.interfaces.dto.ApiResponse;
 import com.mailist.mailist.shared.interfaces.dto.PagedResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -76,21 +77,22 @@ class ContactController {
     }
 
     @GetMapping
-    @Operation(summary = "List all contacts with pagination")
+    @Operation(summary = "List all contacts with pagination and their contact lists")
     ResponseEntity<ApiResponse<PagedResponse<ContactDto.Response>>> listContacts(final Pageable pageable) {
-        log.info("Listing contacts - page: {}, size: {}", pageable.getPageNumber(), pageable.getPageSize());
+        log.info("Listing contacts with contact lists - page: {}, size: {}", pageable.getPageNumber(), pageable.getPageSize());
 
-        final Page<Contact> contactsPage = contactRepository.findAll(pageable);
+        final Long tenantId = TenantContext.getOrganizationId();
+        final Page<Contact> contactsPage = contactRepository.findByTenantIdWithContactLists(tenantId, pageable);
 
         return ResponseEntity.ok(ApiResponse.success(PagedResponse.of(contactsPage, contactMapper::toResponse)));
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Get contact by ID")
+    @Operation(summary = "Get contact by ID with contact lists")
     ResponseEntity<ApiResponse<ContactDto.Response>> getContact(@PathVariable final long id) {
-        log.info("Getting contact with ID: {}", id);
+        log.info("Getting contact with ID and contact lists: {}", id);
 
-        final Optional<Contact> contact = contactRepository.findById(id);
+        final Optional<Contact> contact = contactRepository.findByIdWithContactLists(id);
 
         return contact.map(value -> ResponseEntity.ok(ApiResponse.success(contactMapper.toResponse(value))))
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)

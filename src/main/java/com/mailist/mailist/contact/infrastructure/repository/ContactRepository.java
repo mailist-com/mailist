@@ -64,4 +64,20 @@ public interface ContactRepository extends JpaRepository<Contact, Long> {
            "GROUP BY EXTRACT(MONTH FROM c.createdAt) " +
            "ORDER BY month")
     List<Object[]> countByMonth(@Param("tenantId") Long tenantId, @Param("year") int year);
+
+    @Query("SELECT DISTINCT c FROM Contact c LEFT JOIN FETCH c.contactLists WHERE c.id = :id")
+    Optional<Contact> findByIdWithContactLists(@Param("id") Long id);
+
+    @Query("SELECT DISTINCT c FROM Contact c LEFT JOIN FETCH c.contactLists")
+    List<Contact> findAllWithContactLists();
+
+    @Query("SELECT DISTINCT c FROM Contact c LEFT JOIN FETCH c.contactLists WHERE c.tenantId = :tenantId")
+    List<Contact> findByTenantIdWithContactLists(@Param("tenantId") Long tenantId);
+
+    @Query(value = "SELECT DISTINCT c FROM Contact c LEFT JOIN FETCH c.contactLists WHERE c.tenantId = :tenantId",
+           countQuery = "SELECT COUNT(c) FROM Contact c WHERE c.tenantId = :tenantId")
+    org.springframework.data.domain.Page<Contact> findByTenantIdWithContactLists(
+        @Param("tenantId") Long tenantId,
+        org.springframework.data.domain.Pageable pageable
+    );
 }
