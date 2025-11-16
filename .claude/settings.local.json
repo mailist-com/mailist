@@ -8,7 +8,10 @@
       "Bash(./mvnw clean compile)",
       "Bash(./mvnw clean compile -e)",
       "Bash(diff:*)",
-      "Bash(./mvnw test:*)"
+      "Bash(./mvnw test:*)",
+      "Bash(./mvnw clean:*)",
+      "Bash(git checkout:*)",
+      "Bash(npm run build:*)"
     ],
     "deny": []
   }

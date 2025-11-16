@@ -19,7 +19,7 @@ import java.util.Set;
 )
 public interface ContactMapper {
 
-    @Mapping(target = "lists", ignore = true)
+    @Mapping(target = "lists", source = "contactLists")
     ContactDto.Response toResponse(Contact contact);
 
     List<ContactDto.Response> toResponseList(List<Contact> contacts);
