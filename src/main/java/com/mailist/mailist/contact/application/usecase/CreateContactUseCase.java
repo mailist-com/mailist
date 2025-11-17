@@ -1,5 +1,7 @@
 package com.mailist.mailist.contact.application.usecase;
 
+import com.mailist.mailist.billing.application.service.SubscriptionLimitService;
+import com.mailist.mailist.billing.application.service.UsageTrackingService;
 import com.mailist.mailist.contact.application.usecase.command.CreateContactCommand;
 import com.mailist.mailist.contact.domain.aggregate.Contact;
 import com.mailist.mailist.contact.domain.aggregate.ContactList;
@@ -25,8 +27,19 @@ final class CreateContactUseCase {
     private final ContactListRepository contactListRepository;
     private final NotificationService notificationService;
     private final ApplicationEventPublisher eventPublisher;
+    private final SubscriptionLimitService subscriptionLimitService;
+    private final UsageTrackingService usageTrackingService;
 
     Contact execute(final CreateContactCommand command) {
+        // Get current tenant ID from security context
+        Long tenantId = SecurityUtils.getTenantId();
+
+        // Check subscription limits before creating contact
+        if (!subscriptionLimitService.canAddContacts(tenantId, 1)) {
+            throw new IllegalStateException("Osiągnięto limit kontaktów w ramach Twojej subskrypcji. " +
+                    "Zwiększ plan aby dodać więcej kontaktów.");
+        }
+
         if (contactRepository.existsByEmail(command.getEmail())) {
             throw new IllegalArgumentException("Contact with this email already exists");
         }
@@ -49,6 +62,12 @@ final class CreateContactUseCase {
             }
         }
         contactRepository.save(contact);
+
+        // Increment contact count in usage tracking
+        usageTrackingService.incrementContactCount(tenantId, 1);
+
+        // Check and notify if approaching limits
+        subscriptionLimitService.checkAndNotifyLimits(tenantId);
 
         notificationService.createNotification(
                 CreateNotificationRequest.builder()

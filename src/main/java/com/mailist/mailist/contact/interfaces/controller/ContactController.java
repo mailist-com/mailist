@@ -1,5 +1,6 @@
 package com.mailist.mailist.contact.interfaces.controller;
 
+import com.mailist.mailist.billing.application.service.UsageTrackingService;
 import com.mailist.mailist.contact.application.usecase.ContactApplicationService;
 import com.mailist.mailist.contact.application.usecase.command.CreateContactCommand;
 import com.mailist.mailist.contact.application.usecase.command.UpdateContactCommand;
@@ -39,6 +40,7 @@ class ContactController {
     private final ContactApplicationService contactApplicationService;
     private final ContactRepository contactRepository;
     private final ContactMapper contactMapper;
+    private final UsageTrackingService usageTrackingService;
 
     @PostMapping
     @Operation(summary = "Create a new contact")
@@ -178,6 +180,11 @@ class ContactController {
         }
 
         contactRepository.deleteById(id);
+
+        // Decrement contact count in usage tracking
+        Long tenantId = TenantContext.getOrganizationId();
+        usageTrackingService.decrementContactCount(tenantId, 1);
+
         return ResponseEntity.ok(ApiResponse.success("Contact deleted successfully"));
     }
 }
