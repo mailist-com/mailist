@@ -118,24 +118,31 @@ public class Organization {
      * Organization subscription plans
      */
     public enum Plan {
-        FREE("Free Plan", 1000, 10, 5),
-        PRO("Pro Plan", 10000, 100, 25),
-        ENTERPRISE("Enterprise Plan", -1, -1, -1); // -1 = unlimited
-        
+        FREE("Free Plan", 1000, 9000, 1, 10, 5),
+        STANDARD("Standard Plan", -1, -1, 3, -1, -1),
+        PRO("Pro Plan", -1, -1, -1, -1, -1); // -1 = unlimited
+
         private final String displayName;
         private final int contactLimit;
+        private final int emailLimitPerMonth;
+        private final int userLimit;
         private final int campaignLimit;
         private final int automationLimit;
-        
-        Plan(String displayName, int contactLimit, int campaignLimit, int automationLimit) {
+
+        Plan(String displayName, int contactLimit, int emailLimitPerMonth, int userLimit,
+             int campaignLimit, int automationLimit) {
             this.displayName = displayName;
             this.contactLimit = contactLimit;
+            this.emailLimitPerMonth = emailLimitPerMonth;
+            this.userLimit = userLimit;
             this.campaignLimit = campaignLimit;
             this.automationLimit = automationLimit;
         }
-        
+
         public String getDisplayName() { return displayName; }
         public int getContactLimit() { return contactLimit; }
+        public int getEmailLimitPerMonth() { return emailLimitPerMonth; }
+        public int getUserLimit() { return userLimit; }
         public int getCampaignLimit() { return campaignLimit; }
         public int getAutomationLimit() { return automationLimit; }
     }

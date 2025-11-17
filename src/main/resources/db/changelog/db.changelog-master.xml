@@ -86,4 +86,7 @@
     <!-- 023: Refactor templates - remove design settings, add custom fields -->
     <include file="db/changelog/029-refactor-templates-custom-fields.xml"/>
 
+    <!-- 024: Create subscription system with payment providers and invoicing -->
+    <include file="db/changelog/030-create-subscription-system.xml"/>
+
 </databaseChangeLog>

@@ -68,6 +68,31 @@ aws:
 #   timeout-seconds: 30
 #   retry-attempts: 3
 
+# Billing and Subscription Configuration
+billing:
+  # Stripe Payment Provider
+  stripe:
+    api-key: ${STRIPE_API_KEY:sk_test_your_stripe_secret_key}
+    webhook-secret: ${STRIPE_WEBHOOK_SECRET:whsec_your_webhook_secret}
+    enabled: true
+
+  # Fakturownia Invoicing Provider
+  fakturownia:
+    api-token: ${FAKTUROWNIA_API_TOKEN:your_api_token}
+    account-name: ${FAKTUROWNIA_ACCOUNT_NAME:your_account}
+    api-url: ${FAKTUROWNIA_API_URL:https://ACCOUNT.fakturownia.pl}
+    enabled: true
+
+  # Subscription Settings
+  subscription:
+    trial-period-days: 14
+    grace-period-days: 3
+    send-limit-warnings: true
+    warning-thresholds:
+      - 80
+      - 90
+      - 95
+
 # JWT Configuration
 jwt:
   secret: ${JWT_SECRET:sAJDIBq1V7/b7GZlpX/W960BGHwCzRWPQTqp/PvUFg4=}
